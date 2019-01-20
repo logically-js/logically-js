@@ -5,7 +5,7 @@ class Formula {
   constructor(formulaString) {
     this.operator = null;
     this.operands = [];
-    this.parseFormulaString(formulaString);
+    // this.parseFormulaString(formulaString);
   }
 
   /**
@@ -107,4 +107,4 @@ const RE = {
   operator: /^(~|V|&|->|<->)/
 };
 
-export default Formula;
+module.exports.default = Formula;
