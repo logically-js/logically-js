@@ -52,7 +52,7 @@ class Formula {
         return formulaString;
       }
     }
-    return trimParens(formulaString.slice(1, length - 1));
+    return this.trimParens(formulaString.slice(1, length - 1));
   }
 
   /**
