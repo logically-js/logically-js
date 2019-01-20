@@ -107,4 +107,4 @@ const RE = {
   operator: /^(~|V|&|->|<->)/
 };
 
-module.exports.default = Formula;
+export default Formula;
