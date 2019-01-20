@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "lint": "eslint src/ --ext .js,.jsx",
-    "test": "mocha **/*.test.js",
+    "test": "mocha **/*.test.js --require @babel/register",
     "precommit": "npm run lint && npm run test"
   },
   "keywords": [
