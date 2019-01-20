@@ -13,6 +13,7 @@ describe('Formula', function() {
       { formula: 'p -> q', result: 2 },
       { formula: '(p & q) & r', result: 8 },
       { formula: '(p V q) -> (p & q)', result: 8 },
+      { formula: 'p <-> q & r', result: 2 }, // example of right-associativity
       /** Negative cases. */
       { formula: '~p', result: -1 }, // main operator is unary (not binary)
       { formula: '~(p V q)', result: -1 },
