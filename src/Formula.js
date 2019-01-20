@@ -2,6 +2,10 @@
  * Class for representing propositional formulas.
  */
 class Formula {
+  /**
+   * Class constructor
+   * @param {string} formulaString - A logical formula in string format.
+   */
   constructor(formulaString) {
     this.operator = null;
     this.operands = [];
@@ -34,10 +38,7 @@ class Formula {
    */
   trimParens(formulaString) {
     const length = formulaString.length;
-    if (
-      formulaString[0] !== '(' ||
-      formulaString[length - 1] !== ')'
-    ) {
+    if (formulaString[0] !== '(' || formulaString[length - 1] !== ')') {
       return formulaString; // if no leading/trailing parens, just return;
     }
     // Walk through the string and see if the open parens count ever hits 0.
@@ -48,7 +49,7 @@ class Formula {
       count += char === '(';
       count -= char === ')';
       if (count === 0) {
-        return formulaString
+        return formulaString;
       }
     }
     return trimParens(formulaString.slice(1, length - 1));
@@ -64,10 +65,41 @@ class Formula {
   }
 
   /**
-   * Takes a formula and returns
+   * Find the index of the main binary operator in a formula string,
+   * if it exists.
+   * @param  {string} trimmedFormulaString - The string to be analyzed.
+   *                  We assume that extra parens have been trimmed.
+   * @return {number}                      - The index of the main operator.
+   */
+  findMainBinaryOperatorIndex(trimmedFormulaString) {
+    /*
+     * The main binary operator in a (trimmed) wff is the first binary operator
+     * that you see when there are no open parens.
+     * If there is no main binary operator, the formula must be atomic,
+     * or the main operator is negation, or it is not well formed.
+     */
+    const length = trimmedFormulaString.length;
+    let count = 0;
+    for (let i = 0; i < length; i++) {
+      const suffix = trimmedFormulaString.slice(i);
+      if (count === 0) {
+        const operatorMatch = suffix.match(RE.binaryOperator);
+        if (operatorMatch) {
+          return i;
+        }
+      }
+      count += suffix[0] === '(';
+      count -= suffix[0] === ')';
+    }
+    return -1; // no main binary operator found.
+  }
+
+  /**
+   * Takes a formula string and returns an object with
+   * the main operator and main operands.
    * @param  {string} formulaString - Formula string
-   *                  with extra parens removed.
-   * @return {[type]}                      [description]
+   *                                  with extra parens removed.
+   * @return {object}               - Object with operator and operands.
    */
   parseString(formulaString) {
     // Remove whitespace and any unnecessary parens.
@@ -75,36 +107,76 @@ class Formula {
     formulaString = trimParens(formulaString);
 
     if (this.isAtomicString(formulaString)) {
+      // Atomic formula.
+      // An atomic formula is a Formula with no operator and one operand.
       return {
         operator: null,
         operands: [formulaString]
       };
     }
 
-    let operator = null;;
-    const operands = [];
+    // Check for main binary operator first.
+    // We have to do this before checking for negation, because
+    // negation is right-associative, and parentheses are often omitted.
+    // We want to assume that the main operator is the first operator
+    // encountered with no open parentheses, but the syntax of negation
+    // precludes this. So, first we check if there is a main binary operator,
+    // before proceeding.
+    // Ex.: `~p V q` should be parsed as `~p` OR `q`, but `~` would otherwise
+    // appear to be the main operator, so we would get `~(p V q)`.
+    // (By default, we apply right-associativity if there is ambiguity.)
 
-    const length = formulaString.length;
-    let count = 0; // count of open parens
-    for (let i = 0; i < length; i++) {
-      const suffix = formulaString.slice(i);
-      count += suffix[0] === '(';
-      count -= suffix[0] === ')';
-      const operatorMatch = suffix.match(RE.operator);
-      if (operatorMatch) {
-        operator = operatorMatch[0];
-        const operatorLength = operator.length;
-        formulaString.slice(0, i);
+    const mainBinaryOperatorIndex = this.findMainBinaryOperatorIndex(
+      formulaString
+    );
+
+    if (mainBinaryOperatorIndex > -1) {
+      // Main operator is a binary operator.
+      // Take slices to the left and right of the main operator,
+      // make new Formulas, and set them as the operands.
+      const match = formulaString
+        .slice(mainBinaryOperatorIndex)
+        .match(RE.binaryOperator);
+      const operator = match[0];
+      const operandL = new Formula(
+        formulaString.slice(0, mainBinaryOperatorIndex)
+      );
+      const operandR = new Formula(
+        formulaString.slice(mainBinaryOperatorIndex + operator.length)
+      );
+      operands.push(operandL, operandR);
+      return {
+        operator,
+        operands
+      };
+    } else {
+      // Main operator should be negation.
+      if (RE.unaryOperator.test(formulaString)) {
+        // Main operator is negation.
+        const subFormula = new Formula(formulaString.slice(1));
+        return {
+          operator: '~',
+          operands: [subFormula]
+        };
       }
     }
+
+    // Unable to parse the formula.
+    throw new Error('Not a well-formed formula.');
   }
 }
 
+/**
+ * Enum of regular expressions for testing various logical patterns.
+ * @type {Object}
+ */
 const RE = {
   // Any lowercase alphabetic letter is an atomic variable.
-  atomicVariable: /^[a-z]$/,
-  // Operators are ~, V, &, ->, and <->
-  operator: /^(~|V|&|->|<->)/
+  atomicVariable: /^([a-z])$/,
+  // Operators are ~, V, &, ->, and <->.
+  binaryOperator: /^(V|&|->|<->)/,
+  operator: /^(~|V|&|->|<->)/,
+  unaryOperator: /^(~)/
 };
 
 export default Formula;
