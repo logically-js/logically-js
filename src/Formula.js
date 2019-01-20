@@ -179,4 +179,4 @@ const RE = {
   unaryOperator: /^(~)/
 };
 
-module.exports.default = Formula;
+export default Formula;

@@ -1,6 +1,6 @@
-const assert = require('chai').assert;
+import { assert } from 'chai';
 
-const Formula = require('./Formula.js').default;
+import Formula from './Formula';
 
 describe('Formula', function() {
   it('should exist', function() {
