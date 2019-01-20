@@ -4,11 +4,18 @@
   "description": "Library for representing and evaluating symbolic logic formulas.",
   "main": "index.js",
   "scripts": {
+    "lint": "eslint src/ --ext .js,.jsx",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [
     "logic"
   ],
   "author": "JDR",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "^5.12.1",
+    "eslint-config-google": "^0.11.0",
+    "husky": "^1.3.1"
+  }
 }
