@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import util from 'util';
+import { inspect } from 'util';
 
 import { arrayEquals } from './utils';
 
@@ -234,7 +234,7 @@ describe('Formula', function() {
         { input: ['p', { p: false }], output: false }
       ];
       for (const test of testCases) {
-        const assignment = util.inspect(test.input[1]);
+        const assignment = inspect(test.input[1]);
         it(`should recognize that the formula '${test.input[0]}'
         is ${test.output} under the assignment ${assignment}`, function() {
           const formula = new Formula();
@@ -277,7 +277,7 @@ describe('Formula', function() {
         { input: ['p <-> q', { p: false, q: false }], output: true }
       ];
       for (const test of testCases) {
-        const assignment = util.inspect(test.input[1]);
+        const assignment = inspect(test.input[1]);
         it(`should recognize that the formula '${test.input[0]}'
         is ${test.output} under the assignment ${assignment}`, function() {
           const formula = new Formula();
@@ -339,7 +339,7 @@ describe('Formula', function() {
         }
       ];
       for (const test of testCases) {
-        const assignment = util.inspect(test.input[1]);
+        const assignment = inspect(test.input[1]);
         it(`should recognize that the formula '${test.input[0]}' is ${
           test.output
         } under the assignment ${assignment}`, function() {
