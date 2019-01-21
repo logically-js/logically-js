@@ -295,12 +295,54 @@ describe('Formula', function() {
         { input: ['p -> (q -> p)', { p: true, q: false }], output: true },
         { input: ['p -> (q -> p)', { p: false, q: true }], output: true },
         { input: ['p -> (q -> p)', { p: false, q: false }], output: true },
-        { input: ['p -> (q -> (p))', { p: false, q: false }], output: true }
+        { input: ['p  -> ( q ->  (p))', { p: false, q: false }], output: true },
+
+        { input: ['p & (q V p)', { p: true, q: true }], output: true },
+        { input: ['p & (q V p)', { p: true, q: false }], output: true },
+        { input: ['p & (q V p)', { p: false, q: true }], output: false },
+        { input: ['p & (q V p)', { p: false, q: false }], output: false },
+
+        { input: ['(p & q) -> p', { p: true, q: true }], output: true },
+        { input: ['(p & q) -> p', { p: true, q: false }], output: true },
+        { input: ['(p & q) -> p', { p: false, q: true }], output: true },
+        { input: ['(p & q) -> p', { p: false, q: false }], output: true },
+
+        { input: ['(p -> q) V (q -> p)', { p: true, q: true }], output: true },
+        { input: ['(p -> q) V (q -> p)', { p: true, q: false }], output: true },
+        { input: ['(p -> q) V (q -> p)', { p: false, q: true }], output: true },
+        { input: ['(p -> q)V(q -> p)', { p: false, q: false }], output: true },
+
+        { input: ['(p -> q) V (q -> p)', { p: true, q: true }], output: true },
+        { input: ['(p -> q) V (q -> p)', { p: true, q: false }], output: true },
+        { input: ['(p -> q) V (q -> p)', { p: false, q: true }], output: true },
+        { input: ['(p->(q))V (q ->p)', { p: false, q: false }], output: true },
+
+        {
+          input: ['(p <-> q) -> (p -> q)', { p: true, q: true }],
+          output: true
+        },
+        {
+          input: ['(p <-> q) -> (p -> q)', { p: false, q: false }],
+          output: true
+        },
+        {
+          input: ['(p <-> q) -> (p -> q)', { p: true, q: false }],
+          output: true
+        },
+        {
+          input: ['(p <-> q) -> (p -> q)', { p: false, q: true }],
+          output: true
+        },
+        {
+          input: ['(p <-> q) -> (p -> q)', { p: false, q: false }],
+          output: true
+        }
       ];
       for (const test of testCases) {
         const assignment = util.inspect(test.input[1]);
-        it(`should recognize that the formula '${test.input[0]}'
-        is ${test.output} under the assignment ${assignment}`, function() {
+        it(`should recognize that the formula '${test.input[0]}' is ${
+          test.output
+        } under the assignment ${assignment}`, function() {
           const formula = new Formula();
           assert.equal(
             formula.evaluateFormulaString(...test.input),
