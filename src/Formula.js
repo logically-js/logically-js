@@ -220,6 +220,29 @@ class Formula {
     // Apply the corresponding truth function with the values.
     return TRUTH_FUNCTIONS[parsed.operator](...values);
   }
+
+  /**
+   * Translate a (rough) English formula to symbolic notation.
+   * This trivially works for a symbolic formula as well.
+   * @param  {string} formulaString - The formula to be translated.
+   * @return {string}               - The proposition in symbolic notation.
+   */
+  translateEnglishToSymbolic(formulaString) {
+    formulaString = formulaString
+      .replace(/\s*\bif and only if\b\s*/g, ' <-> ')
+      .replace(/\s*\bonly if\b\s*/g, ' -> ')
+      // NOTE: Next line should be valid (works in node console)
+      // but won't compile.
+      /* eslint-disable-next-line */
+      .replace(/(?<=\w+.*)(?<!(and|or|then|only|if|not)(\s|\()*)\bif\b/g, '<-')
+      .replace(/\s*\bor\b\s*/g, ' V ')
+      .replace(/\s*\band\b\s*/g, ' & ')
+      .replace(/\s*\bthen\b\s*/g, ' -> ')
+      .replace(/\s*\bnot\b\s*/g, '~')
+      .replace(/\s*\bimplies\b\s*/g, ' -> ')
+      .replace(/\s*\bif\b\s*/g, '');
+    return formulaString;
+  }
 }
 
 /**

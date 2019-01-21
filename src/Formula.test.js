@@ -352,4 +352,28 @@ describe('Formula', function() {
       }
     });
   });
+
+  describe('translateEnglishToSymbolic()', function() {
+    const testCases = [
+      { input: 'p and q', output: 'p & q' },
+      { input: 'p or q', output: 'p V q' },
+      { input: 'if p then q', output: 'p -> q' },
+      { input: 'p if q', output: 'p <- q' },
+      { input: 'p implies q', output: 'p -> q' },
+      { input: 'p if and only if q', output: 'p <-> q' },
+      { input: '(not p) or q', output: '(~p) V q' },
+      { input: 'not (if p then q)', output: '~(p -> q)' },
+      { input: '(p if q) and r', output: '(p <- q) & r' },
+      { input: 'if (p or q) then ( q or p)', output: '(p V q) -> ( q V p)' }
+    ];
+    for (const test of testCases) {
+      const formula = new Formula();
+      it(`should translate '${test.input}' to '${test.output}'`, function() {
+        assert.equal(
+          formula.translateEnglishToSymbolic(test.input),
+          test.output
+        );
+      });
+    }
+  });
 });
