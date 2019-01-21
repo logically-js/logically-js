@@ -211,7 +211,8 @@ describe('Formula', function() {
         { input: '* -> r', output: false },
         { input: 'p -> (q & )', output: false },
         { input: '(p -> q) -> ~', output: false },
-        { input: '(p -> q))', output: false } // Unbalanced parentheses
+        { input: '(p -> q))', output: false }, // Unbalanced parentheses
+        { input: 'p (-> q)', output: false }
       ];
       for (const test of testCases) {
         it(`should recognize that the formula '${
