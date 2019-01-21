@@ -52,6 +52,7 @@ describe('Formula', function() {
       }
     });
   });
+
   describe('trimParens()', function() {
     const testCases = [
       { input: 'p & q', output: 'p & q' },
@@ -174,20 +175,48 @@ describe('Formula', function() {
     describe('should validate well-formed formulas', function() {
       const testCases = [
         { input: 'p', output: true },
-        { input: 'p & q', output: true },
-        { input: 'p -> q', output: true },
-        { input: 'p V q', output: true },
-        { input: 'p <-> q', output: true },
+        { input: 'p  ', output: true }, // Whitespace doesn't matter
+        { input: 'p &  q', output: true },
+        { input: 'p ->   q', output: true },
+        { input: 'p   V  q', output: true }, // Lots of whitespace
+        { input: 'p  <-> q', output: true },
         { input: '~p', output: true },
-        { input: '(p V q) -> (r & s)', output: true },
-        { input: '(p V (r & s))', output: true },
-        { input: 'p -> (q -> (r -> s))', output: true },
-        { input: '(a & ~b) -> ~(~c V d)', output: true }
+        { input: '(p  V q) -> (r & s)', output: true },
+        { input: '(p V  (r & s))', output: true },
+        { input: 'p ->  (q -> (r -> s))', output: true },
+        { input: '(a  &   ~b) -> ~(~c V d)', output: true }
       ];
       for (const test of testCases) {
         it(`should recognize that the formula '${
           test.input
         }' is well-formed`, function() {
+          const formula = new Formula();
+          const isWFF = formula.isWFFString(test.input);
+          assert.equal(isWFF, test.output);
+        });
+      }
+    });
+
+    describe('should recognize non-wff', function() {
+      const testCases = [
+        { input: 'pp', output: false },
+        { input: 'p a ', output: false },
+        { input: 'p->', output: false },
+        { input: '~&p', output: false },
+        { input: 'p~q', output: false },
+        { input: 'p<-q', output: false },
+        { input: '& p -> q', output: false },
+        { input: 'p & 1', output: false }, // No illegal variables
+        { input: 'p & $', output: false },
+        { input: '* -> r', output: false },
+        { input: 'p -> (q & )', output: false },
+        { input: '(p -> q) -> ~', output: false },
+        { input: '(p -> q))', output: false } // Unbalanced parentheses
+      ];
+      for (const test of testCases) {
+        it(`should recognize that the formula '${
+          test.input
+        }' is *not* well-formed`, function() {
           const formula = new Formula();
           const isWFF = formula.isWFFString(test.input);
           assert.equal(isWFF, test.output);

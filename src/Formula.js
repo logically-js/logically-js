@@ -174,6 +174,8 @@ class Formula {
    * @return {boolean}             - Does the string represent a wff?
    */
   isWFFString(formulaString) {
+    formulaString = this.removeWhiteSpace(formulaString);
+    formulaString = this.trimParens(formulaString);
     if (formulaString.length === 1) return this.isAtomicString(formulaString);
     // Not an atomic formula, so parse it and continue.
     const formula = this.parseString(formulaString);
