@@ -72,19 +72,101 @@ describe('Formula', function() {
   });
 
   describe('parseString()', function() {
-    const testCases = [
-      { input: 'p', output: { operator: null, operands: ['p'] } },
-      { input: 'p & q', output: { operator: '&', operands: ['p', 'q'] } }
-    ];
-    for (const test of testCases) {
-      it(`should parse the formula '${test.input}' and return \{ operator: ${
-        test.output.operator
-      }, operands: [${test.output.operands}]}`, function() {
-        const formula = new Formula();
-        const output = formula.parseString(test.input);
-        assert.equal(output.operator, test.output.operator);
-        assert.isTrue(arrayEquals(output.operands, test.output.operands));
-      });
-    }
+    describe('handles the basic connectives', function() {
+      const testCases = [
+        { input: 'p', output: { operator: null, operands: ['p'] } },
+        { input: 'p & q', output: { operator: '&', operands: ['p', 'q'] } },
+        { input: 'p -> q', output: { operator: '->', operands: ['p', 'q'] } },
+        { input: 'a <-> b', output: { operator: '<->', operands: ['a', 'b'] } },
+        { input: '~p', output: { operator: '~', operands: ['p'] } }
+      ];
+      for (const test of testCases) {
+        it(`should parse the formula '${
+          test.input
+        }' and return \`{ operator: '${
+          test.output.operator
+        }', operands: [${test.output.operands.map(
+          p => `'${p}'`
+        )}]}\``, function() {
+          const formula = new Formula();
+          const output = formula.parseString(test.input);
+          assert.equal(output.operator, test.output.operator);
+          assert.isTrue(arrayEquals(output.operands, test.output.operands));
+        });
+      }
+    });
+
+    describe('handles two connectives', function() {
+      const testCases = [
+        {
+          input: 'p -> (p & q)',
+          output: { operator: '->', operands: ['p', '(p&q)'] }
+        },
+        {
+          input: '(p V q) -> r',
+          output: { operator: '->', operands: ['(pVq)', 'r'] }
+        },
+        {
+          input: '(p & q) V (r <-> s)',
+          output: { operator: 'V', operands: ['(p&q)', '(r<->s)'] }
+        },
+        {
+          input: '~(p -> q)',
+          output: { operator: '~', operands: ['(p->q)'] }
+        },
+        {
+          input: '~p -> q',
+          output: { operator: '->', operands: ['~p', 'q'] }
+        }
+      ];
+      for (const test of testCases) {
+        it(`should parse the formula '${
+          test.input
+        }' and return \`{ operator: '${
+          test.output.operator
+        }', operands: [${test.output.operands.map(
+          p => `'${p}'`
+        )}]}\``, function() {
+          const formula = new Formula();
+          const output = formula.parseString(test.input);
+          assert.equal(output.operator, test.output.operator);
+          assert.isTrue(arrayEquals(output.operands, test.output.operands));
+        });
+      }
+    });
+
+    describe('handles complex cases', function() {
+      const testCases = [
+        {
+          input: '(~(p & q) <-> (p -> (r V s)))',
+          output: { operator: '<->', operands: ['~(p&q)', '(p->(rVs))'] }
+        },
+        {
+          input: '(((p V (s & (q -> r)))))',
+          output: { operator: 'V', operands: ['p', '(s&(q->r))'] }
+        },
+        {
+          input: '((p & q) & (r & (s V p))) & ((p <-> q) V (r -> s))',
+          output: {
+            operator: '&',
+            operands: ['((p&q)&(r&(sVp)))', '((p<->q)V(r->s))']
+          }
+        }
+      ];
+      for (const test of testCases) {
+        it(`should parse the formula '${
+          test.input
+        }' and return \`{ operator: '${
+          test.output.operator
+        }', operands: [${test.output.operands.map(
+          p => `'${p}'`
+        )}]}\``, function() {
+          const formula = new Formula();
+          const output = formula.parseString(test.input);
+          assert.equal(output.operator, test.output.operator);
+          assert.isTrue(arrayEquals(output.operands, test.output.operands));
+        });
+      }
+    });
   });
 });

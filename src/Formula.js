@@ -111,10 +111,7 @@ class Formula {
     formulaString = this.removeWhiteSpace(formulaString);
     formulaString = this.trimParens(formulaString);
 
-    console.log('Trimmed formulaString: ', formulaString);
-
     if (this.isAtomicString(formulaString)) {
-      console.log('isAtomicString');
       // Atomic formula.
       // An atomic formula is a Formula with no operator and one operand.
       return {
@@ -150,17 +147,6 @@ class Formula {
       const operandR = formulaString.slice(
         mainBinaryOperatorIndex + operator.length
       );
-      // const operandR = new Formula(
-      //   formulaString.slice(mainBinaryOperatorIndex + operator.length)
-      // );
-      // const operandL = new Formula(
-      //   formulaString.slice(0, mainBinaryOperatorIndex)
-      // );
-      // const operandR = new Formula(
-      //   formulaString.slice(mainBinaryOperatorIndex + operator.length)
-      // );
-      console.log('operator', operator);
-      console.log('operands', [operandL, operandR]);
       return {
         operator,
         operands: [operandL, operandR]
@@ -169,7 +155,7 @@ class Formula {
       // Main operator should be negation.
       if (RE.unaryOperator.test(formulaString)) {
         // Main operator is negation.
-        const subFormula = new Formula(formulaString.slice(1));
+        const subFormula = formulaString.slice(1);
         return {
           operator: '~',
           operands: [subFormula]
