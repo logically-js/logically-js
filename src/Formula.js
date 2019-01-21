@@ -129,7 +129,8 @@ class Formula {
     // before proceeding.
     // Ex.: `~p V q` should be parsed as `~p` OR `q`, but `~` would otherwise
     // appear to be the main operator, so we would get `~(p V q)`.
-    // (By default, we apply right-associativity if there is ambiguity.)
+    // (By default, we apply right-associativity if there is ambiguity,
+    // except for negation.)
 
     const mainBinaryOperatorIndex = this.findMainBinaryOperatorIndex(
       formulaString
