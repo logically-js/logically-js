@@ -231,7 +231,6 @@ class Formula {
       // preceded by another connective.
       // The assumption is that 'p if q' occurs whenever 'if' follows
       // a propositional variable.
-      /* eslint-disable-next-line */
       .replace(/(?<=\w+.*)(?<!(and|or|then|only|if|not)(\s|\()*)\bif\b/g, '<-')
       .replace(/\s*\bor\b\s*/g, ' V ') // Replace 'or'.
       .replace(/\s*\band\b\s*/g, ' & ') // Replace 'and'.
