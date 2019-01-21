@@ -1,6 +1,7 @@
 import { assert } from 'chai';
 import { inspect } from 'util';
 
+import translateEnglishToSymbolic from './Formula.translate';
 import { arrayEquals } from './utils';
 
 import Formula from './Formula';
@@ -384,12 +385,8 @@ describe('Formula', function() {
       { input: '(p and not q) implies r', output: '(p & ~q) -> r' }
     ];
     for (const test of testCases) {
-      const formula = new Formula();
       it(`should translate '${test.input}' to '${test.output}'`, function() {
-        assert.equal(
-          formula.translateEnglishToSymbolic(test.input),
-          test.output
-        );
+        assert.equal(translateEnglishToSymbolic(test.input), test.output);
       });
     }
   });
