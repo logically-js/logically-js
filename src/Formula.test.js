@@ -1,5 +1,7 @@
 import { assert } from 'chai';
 
+import { arrayEquals } from './utils';
+
 import Formula from './Formula';
 
 describe('Formula', function() {
@@ -65,6 +67,23 @@ describe('Formula', function() {
       }'`, function() {
         const formula = new Formula();
         assert.equal(formula.trimParens(test.input), test.output);
+      });
+    }
+  });
+
+  describe('parseString()', function() {
+    const testCases = [
+      { input: 'p', output: { operator: null, operands: ['p'] } },
+      { input: 'p & q', output: { operator: '&', operands: ['p', 'q'] } }
+    ];
+    for (const test of testCases) {
+      it(`should parse the formula '${test.input}' and return \{ operator: ${
+        test.output.operator
+      }, operands: [${test.output.operands}]}`, function() {
+        const formula = new Formula();
+        const output = formula.parseString(test.input);
+        assert.equal(output.operator, test.output.operator);
+        assert.isTrue(arrayEquals(output.operands, test.output.operands));
       });
     }
   });

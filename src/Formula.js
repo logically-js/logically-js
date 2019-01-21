@@ -9,7 +9,12 @@ class Formula {
   constructor(formulaString) {
     this.operator = null;
     this.operands = [];
-    // this.parseFormulaString(formulaString);
+    this.formulaString = formulaString;
+    if (formulaString) {
+      this.formula = this.parseString(formulaString);
+      this.operator = this.formula.operator;
+      this.operands = this.formula.operands;
+    }
   }
 
   /**
@@ -103,10 +108,13 @@ class Formula {
    */
   parseString(formulaString) {
     // Remove whitespace and any unnecessary parens.
-    formulaString = removeWhiteSpace(formulaString);
-    formulaString = trimParens(formulaString);
+    formulaString = this.removeWhiteSpace(formulaString);
+    formulaString = this.trimParens(formulaString);
+
+    console.log('Trimmed formulaString: ', formulaString);
 
     if (this.isAtomicString(formulaString)) {
+      console.log('isAtomicString');
       // Atomic formula.
       // An atomic formula is a Formula with no operator and one operand.
       return {
@@ -138,16 +146,24 @@ class Formula {
         .slice(mainBinaryOperatorIndex)
         .match(RE.binaryOperator);
       const operator = match[0];
-      const operandL = new Formula(
-        formulaString.slice(0, mainBinaryOperatorIndex)
+      const operandL = formulaString.slice(0, mainBinaryOperatorIndex);
+      const operandR = formulaString.slice(
+        mainBinaryOperatorIndex + operator.length
       );
-      const operandR = new Formula(
-        formulaString.slice(mainBinaryOperatorIndex + operator.length)
-      );
-      operands.push(operandL, operandR);
+      // const operandR = new Formula(
+      //   formulaString.slice(mainBinaryOperatorIndex + operator.length)
+      // );
+      // const operandL = new Formula(
+      //   formulaString.slice(0, mainBinaryOperatorIndex)
+      // );
+      // const operandR = new Formula(
+      //   formulaString.slice(mainBinaryOperatorIndex + operator.length)
+      // );
+      console.log('operator', operator);
+      console.log('operands', [operandL, operandR]);
       return {
         operator,
-        operands
+        operands: [operandL, operandR]
       };
     } else {
       // Main operator should be negation.
