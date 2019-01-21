@@ -288,5 +288,26 @@ describe('Formula', function() {
         });
       }
     });
+
+    describe('should correctly evaluate more complex formulas', function() {
+      const testCases = [
+        { input: ['p -> (q -> p)', { p: true, q: true }], output: true },
+        { input: ['p -> (q -> p)', { p: true, q: false }], output: true },
+        { input: ['p -> (q -> p)', { p: false, q: true }], output: true },
+        { input: ['p -> (q -> p)', { p: false, q: false }], output: true },
+        { input: ['p -> (q -> (p))', { p: false, q: false }], output: true }
+      ];
+      for (const test of testCases) {
+        const assignment = util.inspect(test.input[1]);
+        it(`should recognize that the formula '${test.input[0]}'
+        is ${test.output} under the assignment ${assignment}`, function() {
+          const formula = new Formula();
+          assert.equal(
+            formula.evaluateFormulaString(...test.input),
+            test.output
+          );
+        });
+      }
+    });
   });
 });

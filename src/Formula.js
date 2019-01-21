@@ -201,13 +201,23 @@ class Formula {
    */
   evaluateFormulaString(formulaString, assignment) {
     if (!this.isWFFString(formulaString)) return null;
+    // Clean the formula.
     formulaString = this.removeWhiteSpace(formulaString);
     formulaString = this.trimParens(formulaString);
     if (this.isAtomicString(formulaString)) {
+      // Base case - atomic formula
       return assignment[formulaString];
     }
     const parsed = this.parseString(formulaString);
-    const values = parsed.operands.map(operand => assignment[operand]);
+    const values = parsed.operands.map(operand => {
+      if (this.isAtomicString(operand)) {
+        return assignment[operand];
+      } else {
+        // If an operand is complex, recurse on it to get the value.
+        return this.evaluateFormulaString(operand, assignment);
+      }
+    });
+    // Apply the corresponding truth function with the values.
     return TRUTH_FUNCTIONS[parsed.operator](...values);
   }
 }
