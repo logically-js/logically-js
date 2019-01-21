@@ -207,7 +207,8 @@ class Formula {
       return assignment[formulaString];
     }
     const parsed = this.parseString(formulaString);
-    return TRUTH_FUNCTIONS[parsed.operator](...parsed.operands);
+    const values = parsed.operands.map(operand => assignment[operand]);
+    return TRUTH_FUNCTIONS[parsed.operator](...values);
   }
 }
 
@@ -225,11 +226,11 @@ const RE = {
 };
 
 const TRUTH_FUNCTIONS = {
-  '~': p => !p,
-  '&': (p, q) => p && q,
-  V: (p, q) => p || q,
-  '->': (p, q) => ~p || q,
-  '<->': (p, q) => p === q
+  '~': p => p === false,
+  '&': (p, q) => p === true && q === true,
+  V: (p, q) => p === true || q === true,
+  '->': (p, q) => p === false || q === true,
+  '<->': (p, q) => p === q && typeof p === 'boolean'
 };
 
 export default Formula;

@@ -245,5 +245,48 @@ describe('Formula', function() {
         });
       }
     });
+
+    describe('should correctly evaluate the basic connectives', function() {
+      const testCases = [
+        // NEGATION
+        { input: ['~p', { p: true }], output: false },
+        { input: ['~p', { p: false }], output: true },
+
+        // CONJUNCTION
+        { input: ['p & q', { p: true, q: true }], output: true },
+        { input: ['p & q', { p: true, q: false }], output: false },
+        { input: ['p & q', { p: false, q: true }], output: false },
+        { input: ['p & q', { p: false, q: false }], output: false },
+
+        // DISJUNCTION
+        { input: ['p V q', { p: true, q: true }], output: true },
+        { input: ['p V q', { p: true, q: false }], output: true },
+        { input: ['p V q', { p: false, q: true }], output: true },
+        { input: ['p V q', { p: false, q: false }], output: false },
+
+        // CONDITIONAL
+        { input: ['p -> q', { p: true, q: true }], output: true },
+        { input: ['p -> q', { p: true, q: false }], output: false },
+        { input: ['p -> q', { p: false, q: true }], output: true },
+        { input: ['p -> q', { p: false, q: false }], output: true },
+
+        // BICONDITIONAL
+        { input: ['p <-> q', { p: true, q: true }], output: true },
+        { input: ['p <-> q', { p: true, q: false }], output: false },
+        { input: ['p <-> q', { p: false, q: true }], output: false },
+        { input: ['p <-> q', { p: false, q: false }], output: true }
+      ];
+      for (const test of testCases) {
+        const assignment = util.inspect(test.input[1]);
+        it(`should recognize that the formula '${test.input[0]}'
+        is ${test.output} under the assignment ${assignment}`, function() {
+          const formula = new Formula();
+          assert.equal(
+            formula.evaluateFormulaString(...test.input),
+            test.output
+          );
+        });
+      }
+    });
   });
 });
