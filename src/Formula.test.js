@@ -203,6 +203,7 @@ describe('Formula', function() {
         { input: 'pp', output: false },
         { input: 'p a ', output: false },
         { input: 'p->', output: false },
+        { input: 'p#q', output: false },
         { input: '~&p', output: false },
         { input: 'p~q', output: false },
         { input: 'p<-q', output: false },
@@ -231,7 +232,8 @@ describe('Formula', function() {
     describe('should correctly evaluate atomic formulas', function() {
       const testCases = [
         { input: ['p', { p: true }], output: true },
-        { input: ['p', { p: false }], output: false }
+        { input: ['p', { p: false }], output: false },
+        { input: ['pq', { p: false, q: true }], output: null }
       ];
       for (const test of testCases) {
         const assignment = inspect(test.input[1]);
@@ -360,11 +362,26 @@ describe('Formula', function() {
       { input: 'if p then q', output: 'p -> q' },
       { input: 'p if q', output: 'p <- q' },
       { input: 'p implies q', output: 'p -> q' },
+      { input: 'p only if q', output: 'p -> q' },
       { input: 'p if and only if q', output: 'p <-> q' },
+      {
+        input: 'if (p if and only if q) then (p implies q)',
+        output: '(p <-> q) -> (p -> q)'
+      },
+      {
+        input: 'if (p if (q and not r)) then not s',
+        output: '(p <- (q & ~r)) -> ~s'
+      },
       { input: '(not p) or q', output: '(~p) V q' },
       { input: 'not (if p then q)', output: '~(p -> q)' },
       { input: '(p if q) and r', output: '(p <- q) & r' },
-      { input: 'if (p or q) then ( q or p)', output: '(p V q) -> ( q V p)' }
+      { input: 'if (p or q) then ( q or p)', output: '(p V q) -> ( q V p)' },
+      {
+        input: 'if (p implies q) then (if not q then not p)',
+        output: '(p -> q) -> (~q -> ~p)'
+      },
+      { input: '(p V q) -> ( q V p)', output: '(p V q) -> ( q V p)' },
+      { input: '(p and not q) implies r', output: '(p & ~q) -> r' }
     ];
     for (const test of testCases) {
       const formula = new Formula();

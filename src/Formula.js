@@ -10,19 +10,11 @@ class Formula {
     this.operator = null;
     this.operands = [];
     this.formulaString = formulaString;
-    if (formulaString) {
-      this.formula = this.parseString(formulaString);
-      this.operator = this.formula.operator;
-      this.operands = this.formula.operands;
-    }
-  }
-
-  /**
-   * Is the formula an atomic proposition?
-   * @return {boolean}
-   */
-  get isAtomic() {
-    return this.operator === null;
+    // if (formulaString) {
+    //   this.formula = this.parseString(formulaString);
+    //   this.operator = this.formula.operator;
+    //   this.operands = this.formula.operands;
+    // }
   }
 
   /**
@@ -185,6 +177,8 @@ class Formula {
     return formula.operands.every(operand => this.isWFFString(operand));
   }
 
+  // TODO: Reconsider the treatment of `undefined` return values.
+  // Ex. `p V q` where `{ p: true }` (and `q` is `undefined`).
   /**
    * Takes a formula (string) and a set of assignments of propositional
    * variables to truth values, and returns true iff the proposition
@@ -228,20 +222,27 @@ class Formula {
    * @return {string}               - The proposition in symbolic notation.
    */
   translateEnglishToSymbolic(formulaString) {
-    formulaString = formulaString
-      .replace(/\s*\bif and only if\b\s*/g, ' <-> ')
-      .replace(/\s*\bonly if\b\s*/g, ' -> ')
+    return formulaString
+      .replace(/\s*\bif and only if\b\s*/g, ' <-> ') // Replace 'if and only if'
+      .replace(/\s*\bonly if\b\s*/g, ' -> ') // Replace 'only if'
       // NOTE: Next line should be valid (works in node console)
       // but won't compile.
+      // Replace 'if' with '<-' if it's preceded by a word/letter but *not*
+      // preceded by another connective.
+      // The assumption is that 'p if q' occurs whenever 'if' follows
+      // a propositional variable.
       /* eslint-disable-next-line */
       .replace(/(?<=\w+.*)(?<!(and|or|then|only|if|not)(\s|\()*)\bif\b/g, '<-')
-      .replace(/\s*\bor\b\s*/g, ' V ')
-      .replace(/\s*\band\b\s*/g, ' & ')
+      .replace(/\s*\bor\b\s*/g, ' V ') // Replace 'or'.
+      .replace(/\s*\band\b\s*/g, ' & ') // Replace 'and'.
+      // Replace 'then' with '->' since 'then' only occurs in 'if...then'.
       .replace(/\s*\bthen\b\s*/g, ' -> ')
-      .replace(/\s*\bnot\b\s*/g, '~')
-      .replace(/\s*\bimplies\b\s*/g, ' -> ')
-      .replace(/\s*\bif\b\s*/g, '');
-    return formulaString;
+      // Replace 'not' with '~' if it follows an open parenthesis.
+      .replace(/(?<=(\(|^))\s*\bnot\b\s*/g, '~')
+      // Replace 'not' with ' ~' (extra space) otherwise.
+      .replace(/\s*\bnot\b\s*/g, ' ~')
+      .replace(/\s*\bimplies\b\s*/g, ' -> ') // Replace 'implies'.
+      .replace(/\s*\bif\b\s*/g, ''); // Delete any remaining 'if's.
   }
 }
 
