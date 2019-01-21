@@ -66,12 +66,12 @@ class Formula {
    * @return {string}        - String with whitespace removed.
    */
   removeWhiteSpace(string) {
-    return string.replace(/\s/g, '');
+    return string && string.replace(/\s/g, '');
   }
 
   /**
    * Find the index of the main binary operator in a formula string,
-   * if it exists.
+   * if it exists, or `-1` if there is no main binary operator.
    * @param  {string} trimmedFormulaString - The string to be analyzed.
    *                  We assume that extra parens have been trimmed.
    * @return {number}                      - The index of the main operator.
@@ -165,7 +165,22 @@ class Formula {
     }
 
     // Unable to parse the formula.
-    throw new Error('Not a well-formed formula.');
+    return null;
+  }
+
+  /**
+   * Returns true iff the `formulaString` is a well-formed formula (wff).
+   * @param {string} formulaString - The string to be analyzed.
+   * @return {boolean}             - Does the string represent a wff?
+   */
+  isWFFString(formulaString) {
+    if (formulaString.length === 1) return this.isAtomicString(formulaString);
+    // Not an atomic formula, so parse it and continue.
+    const formula = this.parseString(formulaString);
+    if (formula === null) return false; // couldn't parse
+    if (!RE.operator.test(formula.operator)) return false; // illegal operator
+    // Every operand must also be a wff.
+    return formula.operands.every(operand => this.isWFFString(operand));
   }
 }
 

@@ -169,4 +169,30 @@ describe('Formula', function() {
       }
     });
   });
+
+  describe('isWFFString()', function() {
+    describe('should validate well-formed formulas', function() {
+      const testCases = [
+        { input: 'p', output: true },
+        { input: 'p & q', output: true },
+        { input: 'p -> q', output: true },
+        { input: 'p V q', output: true },
+        { input: 'p <-> q', output: true },
+        { input: '~p', output: true },
+        { input: '(p V q) -> (r & s)', output: true },
+        { input: '(p V (r & s))', output: true },
+        { input: 'p -> (q -> (r -> s))', output: true },
+        { input: '(a & ~b) -> ~(~c V d)', output: true }
+      ];
+      for (const test of testCases) {
+        it(`should recognize that the formula '${
+          test.input
+        }' is well-formed`, function() {
+          const formula = new Formula();
+          const isWFF = formula.isWFFString(test.input);
+          assert.equal(isWFF, test.output);
+        });
+      }
+    });
+  });
 });
