@@ -1,4 +1,5 @@
 import { assert } from 'chai';
+import util from 'util';
 
 import { arrayEquals } from './utils';
 
@@ -221,6 +222,26 @@ describe('Formula', function() {
           const formula = new Formula();
           const isWFF = formula.isWFFString(test.input);
           assert.equal(isWFF, test.output);
+        });
+      }
+    });
+  });
+
+  describe('evaluateFormulaString()', function() {
+    describe('should correctly evaluate atomic formulas', function() {
+      const testCases = [
+        { input: ['p', { p: true }], output: true },
+        { input: ['p', { p: false }], output: false }
+      ];
+      for (const test of testCases) {
+        const assignment = util.inspect(test.input[1]);
+        it(`should recognize that the formula '${test.input[0]}'
+        is ${test.output} under the assignment ${assignment}`, function() {
+          const formula = new Formula();
+          assert.equal(
+            formula.evaluateFormulaString(...test.input),
+            test.output
+          );
         });
       }
     });

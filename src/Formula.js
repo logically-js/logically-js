@@ -184,6 +184,31 @@ class Formula {
     // Every operand must also be a wff.
     return formula.operands.every(operand => this.isWFFString(operand));
   }
+
+  /**
+   * Takes a formula (string) and a set of assignments of propositional
+   * variables to truth values, and returns true iff the proposition
+   * represented by the formula is true under the given assignment.
+   * Returns `null` if the string is non-well-formed. (Cannot evaluate.)
+   * Returns `undefined` if the formula contains atomic variables
+   * that do not have an assignment. (Truth value is indeterminate.)
+   * @param  {string} formulaString - String representing the proposition to
+   *                                  evaluate.
+   * @param  {object} assignment    - Assignment of atomic variables to truth
+   *                                  values.
+   * @return {boolean|null|undefined} Is the `formulaString` true under the
+   *                                  `assignment`?
+   */
+  evaluateFormulaString(formulaString, assignment) {
+    if (!this.isWFFString(formulaString)) return null;
+    formulaString = this.removeWhiteSpace(formulaString);
+    formulaString = this.trimParens(formulaString);
+    if (this.isAtomicString(formulaString)) {
+      return assignment[formulaString];
+    }
+    const parsed = this.parseString(formulaString);
+    return TRUTH_FUNCTIONS[parsed.operator](...parsed.operands);
+  }
 }
 
 /**
@@ -197,6 +222,14 @@ const RE = {
   binaryOperator: /^(V|&|->|<->)/,
   operator: /^(~|V|&|->|<->)/,
   unaryOperator: /^(~)/
+};
+
+const TRUTH_FUNCTIONS = {
+  '~': p => !p,
+  '&': (p, q) => p && q,
+  V: (p, q) => p || q,
+  '->': (p, q) => ~p || q,
+  '<->': (p, q) => p === q
 };
 
 export default Formula;
