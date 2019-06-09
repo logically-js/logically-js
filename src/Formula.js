@@ -217,7 +217,7 @@ class Formula {
   }
 
   /**
-   * [generateTruthTableHeader description]
+   * Generate the headers for the truth table
    * @param  {[type]} formulaString [description]
    * @return {void}               [description]
    */
@@ -235,7 +235,10 @@ class Formula {
           result.add(operand);
         } else {
           // If an operand is complex, recurse on it to get the value.
-          result.add(...this.generateTruthTableHeader(operand));
+          const h = this.generateTruthTableHeaders(operand);
+          for (const x of h) {
+            result.add(x);
+          }
         }
       });
     };
@@ -255,7 +258,7 @@ class Formula {
   getAtomicVariables(formulaString) {
     const result = new Set();
     for (const letter of formulaString) {
-      if (/[a-z]/i.test(letter)) {
+      if (/[a-z]/.test(letter)) {
         result.add(letter);
       }
     }
