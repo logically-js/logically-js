@@ -216,11 +216,11 @@ class Formula {
   }
 
   /**
-   * [generateTruthTableArray description]
+   * [generateTruthTableHeader description]
    * @param  {[type]} formulaString [description]
    * @return {void}               [description]
    */
-  generateTruthTableArray(formulaString) {
+  generateTruthTableHeaders(formulaString) {
     const result = new Set();
     const helper = formulaString => {
       result.add(formulaString);
@@ -234,7 +234,7 @@ class Formula {
           result.add(operand);
         } else {
           // If an operand is complex, recurse on it to get the value.
-          result.add(...this.generateTruthTableArray(operand));
+          result.add(...this.generateTruthTableHeader(operand));
         }
       });
     };
