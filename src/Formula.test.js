@@ -392,7 +392,9 @@ describe('Formula', function() {
   });
 
   describe('Truth Tables', function() {
-    const formula = new Formula('p & q');
-    console.log('HELLLOOO!', formula.generateTruthTableHeaders('p & q'));
+    // TODO: Make tests for truth tables.
+    // const formula = new Formula('p & q');
+    // console.log('HELLLOOO!', formula.generateTruthTableHeaders('p & q'));
+    // console.log('HIIII', formula.generateTruthTable('p & q'));
   });
 });

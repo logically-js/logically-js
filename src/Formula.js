@@ -194,6 +194,7 @@ class Formula {
    *                                  `assignment`?
    */
   evaluateFormulaString(formulaString, assignment) {
+    console.log('evaluateFormulaString', formulaString, assignment);
     if (!this.isWFFString(formulaString)) return null;
     // Clean the formula.
     formulaString = this.removeWhiteSpace(formulaString);
@@ -259,6 +260,41 @@ class Formula {
       }
     }
     return Array.from(result).sort();
+  }
+
+  /**
+   * Generate a complete truth table with values filled in if partail = true.
+   * @param  {string}  formulaString
+   * @param  {Boolean} partial=false Should we only fill out the atomic values?
+   * @return {Array.Boolean[]}    Truth table as matrix with values filled in.
+   */
+  generateTruthTable(formulaString, partial = false) {
+    const headers = this.generateTruthTableHeaders(formulaString);
+    const atomicVars = this.getAtomicVariables(formulaString);
+    const nRows = Math.pow(2, atomicVars.length);
+    const result = new Array(nRows)
+      .fill(0)
+      .map(el => new Array(headers.length).fill(null));
+    let i = 0;
+    // Set the values for the atomic variables
+    for (; i < atomicVars.length; i++) {
+      for (let j = 0; j < nRows; j++) {
+        const lengthOfSegment = nRows / Math.pow(2, i);
+        result[j][i] = j % lengthOfSegment < lengthOfSegment / 2;
+      }
+    }
+    if (partial) return result;
+    // Evaluate the values for each cell based on the truth value assignment
+    for (; i < result[0].length; i++) {
+      for (let j = 0; j < result.length; j++) {
+        const assignment = {};
+        result[j].slice(0, atomicVars.length).forEach((val, idx) => {
+          assignment[atomicVars[idx]] = val;
+        });
+        result[j][i] = this.evaluateFormulaString(headers[i], assignment);
+      }
+    }
+    return result;
   }
 }
 
