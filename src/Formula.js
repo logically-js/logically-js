@@ -247,42 +247,6 @@ class Formula {
   }
 }
 
-class TruthTable {
-  /**
-   * Takes in a formula and generates a truth table.
-   * Takes in a truth table and validates if correct or incorrect.
-   * [[p, q, p & q], [T, F, T, T], [T, F, T, T], [F, F, F, F]]
-   *
-   * How to represent a truth table?
-   * Variable assignments are stipulated.
-   * Really only the order is stipualated, the assignments can be calculated
-   * from the order.
-   * The order could also be calculated if it's assumed to be alphabetical.
-   *
-   * {
-   *  variables: [p, q, r],
-   *  p: [T, T, F, F],
-   *  q: [T, F, T, F],
-   *  p & q: [T, F, F, F]
-   * }
-   *
-   * assignment[i] = varibles[i] % i
-   *
-   * Generate a matrix with the assignments?
-   *
-   * function assignmentAt(i, j) {
-   *  0, 0: T,
-   *  0, 1: T,
-   *  0, 2: F,
-   *  0, 3: F,
-   *  1, 0: T,
-   *  1, 1: F,
-   *  1, 2: T,
-   *  1, 3: F
-   * }
-   */
-}
-
 /**
  * Enum of regular expressions for testing various logical patterns.
  * @type {Object}
