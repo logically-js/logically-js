@@ -1,5 +1,5 @@
 {
-  "name": "symbolic-logic",
+  "name": "logically",
   "version": "0.0.1",
   "description": "Library for representing and evaluating symbolic logic formulas.",
   "main": "index.js",

@@ -214,6 +214,37 @@ class Formula {
     // Apply the corresponding truth function with the values.
     return TRUTH_FUNCTIONS[parsed.operator](...values);
   }
+
+  /**
+   * [generateTruthTableArray description]
+   * @param  {[type]} formulaString [description]
+   * @return {void}               [description]
+   */
+  generateTruthTableArray(formulaString) {
+    const result = new Set();
+    const helper = formulaString => {
+      result.add(formulaString);
+      if (this.isAtomicString(formulaString)) {
+        // Base case - atomic formula
+        return;
+      }
+      const parsed = this.parseString(formulaString);
+      parsed.operands.forEach(operand => {
+        if (this.isAtomicString(operand)) {
+          result.add(operand);
+        } else {
+          // If an operand is complex, recurse on it to get the value.
+          result.add(...this.generateTruthTableArray(operand));
+        }
+      });
+    };
+    helper(formulaString);
+    return Array.from(result).sort((a, b) => {
+      if (a.length < b.length) return -1;
+      else if (a.length > b.length) return 1;
+      else return a < b ? -1 : b < a ? 1 : 0;
+    });
+  }
 }
 
 /**

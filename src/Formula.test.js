@@ -390,4 +390,9 @@ describe('Formula', function() {
       });
     }
   });
+
+  describe('Truth Tables', function() {
+    const formula = new Formula('p & q');
+    console.log('HELLLOOO!', formula.generateTruthTableArray('p & q'));
+  });
 });
