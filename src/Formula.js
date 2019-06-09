@@ -245,6 +245,21 @@ class Formula {
       else return a < b ? -1 : b < a ? 1 : 0;
     });
   }
+
+  /**
+   * Returns a sorted list of the atomic variables.
+   * @param  {string} formulaString
+   * @return {string[]}
+   */
+  getAtomicVariables(formulaString) {
+    const result = new Set();
+    for (const letter of formulaString) {
+      if (/[a-z]/i.test(letter)) {
+        result.add(letter);
+      }
+    }
+    return Array.from(result).sort();
+  }
 }
 
 /**
@@ -268,4 +283,4 @@ const TRUTH_FUNCTIONS = {
   '<->': (p, q) => p === q && typeof p === 'boolean'
 };
 
-export default Formula;
+module.exports = Formula;
