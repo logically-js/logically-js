@@ -1,5 +1,5 @@
 {
-  "name": "logicallylocal",
+  "name": "logically-local",
   "version": "0.0.6",
   "description": "Library for representing and evaluating symbolic logic formulas.",
   "main": "index.js",
