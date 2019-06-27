@@ -1,4 +1,4 @@
-const Formula = require('./Formula.js');
+const Formula = require('./Formula');
 
 module.exports = {
   Formula: Formula
