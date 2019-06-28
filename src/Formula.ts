@@ -4,6 +4,15 @@ interface FormulaInterface {
   formulaString: string
 }
 
+interface ParsedInterface {
+  operator: string;
+  operands: string[];
+}
+
+interface AssignmentInterface {
+  [variable: string]: boolean
+}
+
 /**
  * Class for representing propositional formulas.
  */
@@ -107,7 +116,7 @@ export default class Formula implements FormulaInterface {
    *                                  with extra parens removed.
    * @return {object}               - Object with operator and operands.
    */
-  parseString(formulaString) {
+  parseString(formulaString: string): ParsedInterface | null {
     // Remove whitespace and any unnecessary parens.
     formulaString = this.removeWhiteSpace(formulaString);
     formulaString = this.trimParens(formulaString);
@@ -144,9 +153,9 @@ export default class Formula implements FormulaInterface {
       const match = formulaString
         .slice(mainBinaryOperatorIndex)
         .match(RE.binaryOperator);
-      const operator = match[0];
-      const operandL = formulaString.slice(0, mainBinaryOperatorIndex);
-      const operandR = formulaString.slice(
+      const operator: string = match[0];
+      const operandL: string = formulaString.slice(0, mainBinaryOperatorIndex);
+      const operandR: string = formulaString.slice(
         mainBinaryOperatorIndex + operator.length
       );
       return {
@@ -174,7 +183,7 @@ export default class Formula implements FormulaInterface {
    * @param {string} formulaString - The string to be analyzed.
    * @return {boolean}             - Does the string represent a wff?
    */
-  isWFFString(formulaString) {
+  isWFFString(formulaString: string): boolean {
     formulaString = this.removeWhiteSpace(formulaString);
     formulaString = this.trimParens(formulaString);
     if (formulaString.length === 1) return this.isAtomicString(formulaString);
@@ -202,7 +211,7 @@ export default class Formula implements FormulaInterface {
    * @return {boolean|null|undefined} Is the `formulaString` true under the
    *                                  `assignment`?
    */
-  evaluateFormulaString(formulaString, assignment) {
+  evaluateFormulaString(formulaString: string, assignment: AssignmentInterface): boolean {
     console.log('evaluateFormulaString', formulaString, assignment);
     if (!this.isWFFString(formulaString)) return null;
     // Clean the formula.
@@ -230,7 +239,7 @@ export default class Formula implements FormulaInterface {
    * @param  {[type]} formulaString [description]
    * @return {void}               [description]
    */
-  generateTruthTableHeaders(formulaString: string) {
+  generateTruthTableHeaders(formulaString: string): string[] {
     const result: Set<string> = new Set();
     const helper = (formulaString: string): void => {
       result.add(formulaString);
