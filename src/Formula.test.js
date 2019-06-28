@@ -22,9 +22,7 @@ describe('Formula', function() {
         { formula: 'p <-> q & r', result: 2 } // example of right-associativity
       ];
       for (const test of testCases) {
-        it(`should return ${test.result} for the formula '${
-          test.formula
-        }'`, function() {
+        it(`should return ${test.result} for the formula '${test.formula}'`, function() {
           const formula = new Formula();
           assert.equal(
             formula.findMainBinaryOperatorIndex(test.formula),
@@ -42,9 +40,7 @@ describe('Formula', function() {
         { formula: 'foo', result: -1 } // non-wff
       ];
       for (const test of testCases) {
-        it(`should return ${test.result} for the formula '${
-          test.formula
-        }'`, function() {
+        it(`should return ${test.result} for the formula '${test.formula}'`, function() {
           const formula = new Formula();
           assert.equal(
             formula.findMainBinaryOperatorIndex(test.formula),
@@ -65,9 +61,7 @@ describe('Formula', function() {
       { input: '(p & (p -> q))', output: 'p & (p -> q)' }
     ];
     for (const test of testCases) {
-      it(`should return '${test.output}' for the formula '${
-        test.input
-      }'`, function() {
+      it(`should return '${test.output}' for the formula '${test.input}'`, function() {
         const formula = new Formula();
         assert.equal(formula.trimParens(test.input), test.output);
       });
@@ -189,9 +183,7 @@ describe('Formula', function() {
         { input: '(a  &   ~b) -> ~(~c V d)', output: true }
       ];
       for (const test of testCases) {
-        it(`should recognize that the formula '${
-          test.input
-        }' is well-formed`, function() {
+        it(`should recognize that the formula '${test.input}' is well-formed`, function() {
           const formula = new Formula();
           const isWFF = formula.isWFFString(test.input);
           assert.equal(isWFF, test.output);
@@ -218,9 +210,7 @@ describe('Formula', function() {
         { input: 'p (-> q)', output: false }
       ];
       for (const test of testCases) {
-        it(`should recognize that the formula '${
-          test.input
-        }' is *not* well-formed`, function() {
+        it(`should recognize that the formula '${test.input}' is *not* well-formed`, function() {
           const formula = new Formula();
           const isWFF = formula.isWFFString(test.input);
           assert.equal(isWFF, test.output);

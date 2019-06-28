@@ -5,7 +5,7 @@
  * @param  {array} arr2 - Second input array
  * @return {boolean}    - Do the arrays have identical elements in order?
  */
-export const arrayEquals = (arr1, arr2) => {
+export const arrayEquals = (arr1: any[], arr2: any[]): boolean => {
   if (arr1.length !== arr2.length) {
     return false;
   }
