@@ -1,12 +1,21 @@
+interface FormulaInterface {
+  operator: string,
+  operands: string[],
+  formulaString: string
+}
+
 /**
  * Class for representing propositional formulas.
  */
-class Formula {
+export default class Formula implements FormulaInterface {
+  operator: string | null;
+  operands: string[];
+  formulaString: string;
   /**
    * Class constructor
    * @param {string} formulaString - A logical formula in string format.
    */
-  constructor(formulaString) {
+  constructor(formulaString: string) {
     this.operator = null;
     this.operands = [];
     this.formulaString = formulaString;
@@ -22,7 +31,7 @@ class Formula {
    * @param  {string}  string - The string to test
    * @return {boolean}        - Is the input string atomic?
    */
-  isAtomicString(string) {
+  isAtomicString(string: string): boolean {
     return RE.atomicVariable.test(string);
   }
 
@@ -33,8 +42,8 @@ class Formula {
    * @param  {string} formulaString - the string to be trimmed
    * @return {string}               - the trimmed string
    */
-  trimParens(formulaString) {
-    const length = formulaString.length;
+  trimParens(formulaString: string): string {
+    const length: number = formulaString.length;
     if (formulaString[0] !== '(' || formulaString[length - 1] !== ')') {
       return formulaString; // if no leading/trailing parens, just return;
     }
@@ -43,8 +52,8 @@ class Formula {
     let count = 1;
     for (let i = 1; i < length - 1; i++) {
       const char = formulaString[i];
-      count += char === '(';
-      count -= char === ')';
+      count += Number(char === '(');
+      count -= Number(char === ')');
       if (count === 0) {
         return formulaString;
       }
@@ -57,8 +66,8 @@ class Formula {
    * @param  {string} string - String to be trimmed.
    * @return {string}        - String with whitespace removed.
    */
-  removeWhiteSpace(string) {
-    return string && string.replace(/\s/g, '');
+  removeWhiteSpace(string: string): string {
+    return string.replace(/\s/g, '');
   }
 
   /**
@@ -68,15 +77,15 @@ class Formula {
    *                  We assume that extra parens have been trimmed.
    * @return {number}                      - The index of the main operator.
    */
-  findMainBinaryOperatorIndex(trimmedFormulaString) {
+  findMainBinaryOperatorIndex(trimmedFormulaString: string) {
     /*
      * The main binary operator in a (trimmed) wff is the first binary operator
      * that you see when there are no open parens.
      * If there is no main binary operator, the formula must be atomic,
      * or the main operator is negation, or it is not well formed.
      */
-    const length = trimmedFormulaString.length;
-    let count = 0;
+    const length: number = trimmedFormulaString.length;
+    let count: number = 0;
     for (let i = 0; i < length; i++) {
       const suffix = trimmedFormulaString.slice(i);
       if (count === 0) {
@@ -85,8 +94,8 @@ class Formula {
           return i;
         }
       }
-      count += suffix[0] === '(';
-      count -= suffix[0] === ')';
+      count += Number(suffix[0] === '(');
+      count -= Number(suffix[0] === ')');
     }
     return -1; // no main binary operator found.
   }
@@ -221,9 +230,9 @@ class Formula {
    * @param  {[type]} formulaString [description]
    * @return {void}               [description]
    */
-  generateTruthTableHeaders(formulaString) {
-    const result = new Set();
-    const helper = formulaString => {
+  generateTruthTableHeaders(formulaString: string) {
+    const result: Set<string> = new Set();
+    const helper = (formulaString: string): void => {
       result.add(formulaString);
       if (this.isAtomicString(formulaString)) {
         // Base case - atomic formula
@@ -255,8 +264,8 @@ class Formula {
    * @param  {string} formulaString
    * @return {string[]}
    */
-  getAtomicVariables(formulaString) {
-    const result = new Set();
+  getAtomicVariables(formulaString: string): string[] {
+    const result: Set<string> = new Set();
     for (const letter of formulaString) {
       if (/[a-z]/.test(letter)) {
         result.add(letter);
@@ -271,10 +280,10 @@ class Formula {
    * @param  {Boolean} partial=false Should we only fill out the atomic values?
    * @return {Array.Boolean[]}    Truth table as matrix with values filled in.
    */
-  generateTruthTable(formulaString, partial = false) {
+  generateTruthTable(formulaString: string, partial: boolean = false) {
     const headers = this.generateTruthTableHeaders(formulaString);
-    const atomicVars = this.getAtomicVariables(formulaString);
-    const nRows = Math.pow(2, atomicVars.length);
+    const atomicVars: string[] = this.getAtomicVariables(formulaString);
+    const nRows: number = Math.pow(2, atomicVars.length);
     const result = new Array(nRows)
       .fill(0)
       .map(el => new Array(headers.length).fill(null));
@@ -321,5 +330,3 @@ const TRUTH_FUNCTIONS = {
   '->': (p, q) => p === false || q === true,
   '<->': (p, q) => p === q && typeof p === 'boolean'
 };
-
-module.exports = Formula;
