@@ -16,7 +16,7 @@ interface AssignmentInterface {
 /**
  * Class for representing propositional formulas.
  */
-export default class Formula implements FormulaInterface {
+export class Formula implements FormulaInterface {
   operator: string | null;
   operands: string[];
   formulaString: string;

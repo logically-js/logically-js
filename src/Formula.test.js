@@ -4,7 +4,7 @@ import { inspect } from 'util';
 import translateEnglishToSymbolic from './Formula.translate';
 import { arrayEquals } from './utils';
 
-import Formula from './Formula';
+import { Formula } from './Formula';
 
 describe('Formula', function() {
   it('should be imported correctly', function() {

@@ -1,5 +1,3 @@
-const Formula = require('./Formula');
+import { Formula } from './formula';
 
-module.exports = {
-  Formula: Formula
-};
+export { Formula };
