@@ -18,6 +18,7 @@ interface AssignmentInterface {
  * Class for representing propositional formulas.
  */
 export class Formula implements FormulaInterface {
+  cleansedFormula: string;
   operator: string | null;
   operands: string[];
   formula: ParsedInterface;
@@ -31,9 +32,13 @@ export class Formula implements FormulaInterface {
     this.operator = null;
     this.operands = [];
     this.formulaString = formulaString;
+    this.cleansedFormula = undefined;
     if (formulaString) {
       console.log('formulaString exists');
-      this.formula = this.parseString(formulaString);
+      this.cleansedFormula = this.removeWhiteSpace(
+        this.trimParens(formulaString)
+      );
+      this.formula = this.parseString(this.cleansedFormula);
       this.operator = this.formula.operator;
       this.operands = this.formula.operands;
     }
@@ -48,10 +53,10 @@ export class Formula implements FormulaInterface {
     return RE.atomicVariable.test(string);
   }
 
-  isEqual(formula: Formula | string): boolean {
+  isEqual(formula: Formula | string, formula2?: Formula | string): boolean {
     formula = formula instanceof Formula ? formula : new Formula(formula);
-    return this.trimParens(formula.formulaString) ===
-      this.trimParens(this.formulaString);
+    const otherFormula = formula2 ? formula2 instanceof Formula ? formula2 : new Formula(formula2) : this;
+    return formula.cleansedFormula === otherFormula.cleansedFormula;
   }
 
   /**
@@ -120,12 +125,13 @@ export class Formula implements FormulaInterface {
     return -1; // no main binary operator found.
   }
 
-  isNegation(formula: Formula | string): boolean {
+  isNegation(formula: Formula | string, formula2?: Formula | string): boolean {
     formula = formula instanceof Formula ? formula : new Formula(formula);
-    return (this.formula.operands[0] === '~' &&
-           formula.formulaString === this.formula.operator) ||
+    const compareFormula = formula2 ? formula2 instanceof Formula ? formula2 : new Formula(formula2) : this;
+    return (compareFormula.operands[0] === '~' &&
+           formula.cleansedFormula === compareFormula.operator) ||
            (formula.operands[0] === '~' &&
-            this.formulaString === formula.operator);
+            compareFormula.cleansedFormula === formula.operator);
   }
 
   /**
