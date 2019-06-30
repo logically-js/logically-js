@@ -35,12 +35,12 @@ export class Formula implements FormulaInterface {
     this.cleansedFormula = undefined;
     if (formulaString) {
       console.log('formulaString exists');
-      this.cleansedFormula = this.removeWhiteSpace(
-        this.trimParens(formulaString)
-      );
+      this.cleansedFormula = this.cleanseFormula(formulaString);
       this.formula = this.parseString(this.cleansedFormula);
       this.operator = this.formula.operator;
-      this.operands = this.formula.operands;
+      this.operands = this.formula.operands.map(
+        operand => this.cleanseFormula(operand)
+      );
     }
   }
 
@@ -91,7 +91,6 @@ export class Formula implements FormulaInterface {
    * @return {string}        - String with whitespace removed.
    */
   removeWhiteSpace(string: string): string {
-    console.log('removeWhiteSpace', string, typeof string);
     return string.replace(/\s/g, '');
   }
 
@@ -128,10 +127,15 @@ export class Formula implements FormulaInterface {
   isNegation(formula: Formula | string, formula2?: Formula | string): boolean {
     formula = formula instanceof Formula ? formula : new Formula(formula);
     const compareFormula = formula2 ? formula2 instanceof Formula ? formula2 : new Formula(formula2) : this;
-    return (compareFormula.operands[0] === '~' &&
-           formula.cleansedFormula === compareFormula.operator) ||
-           (formula.operands[0] === '~' &&
-            compareFormula.cleansedFormula === formula.operator);
+    return (compareFormula.operator === '~' &&
+           formula.cleansedFormula === compareFormula.operands[0]) ||
+           (formula.operator === '~' &&
+            compareFormula.cleansedFormula === formula.operands[0]);
+  }
+
+  cleanseFormula(formula: string): string {
+    console.log('cleanseFormula', formula);
+    return formula && this.trimParens(this.removeWhiteSpace(formula));
   }
 
   /**

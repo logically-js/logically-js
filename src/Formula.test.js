@@ -346,6 +346,91 @@ describe('Formula', function() {
     });
   });
 
+  describe('isEqual()', () => {
+    const testCases = [
+      /** POSITIVE CASES */
+      { input: ['p', 'p'], output: true },
+      { input: ['q', 'q'], output: true },
+      { input: ['~p', '~p'], output: true },
+      { input: ['(p & q)', 'p & q'], output: true },
+      { input: ['p -> (q & r)', 'p  ->  (  q & r)'], output: true },
+      {
+        input: ['(p V q) <-> (p & ~q)', '((pVq)  <-> (p & ~q))'],
+        output: true
+      },
+      /** NEGATIVE CASES */
+      { input: ['p', '~q'], output: false },
+      { input: ['p', 'p & p'], output: false },
+      { input: ['~(p & q)', '~p & q'], output: false },
+      { input: ['(p & q)', '~(~(p & q))'], output: false },
+      { input: ['p -> (q & r)', 'p -> ~(q & r)'], output: false },
+      {
+        input: ['(p V q) <-> (p & ~q)', '~((p&q)  <-> (p & ~q))'],
+        output: false
+      }
+    ];
+    for (const test of testCases) {
+      it(`should recognize that the formula ${test.input[0]}
+        is ${test.output ? '' : 'not '}equal to ${test.input[1]}`, function() {
+        const formula = new Formula(test.input[0]);
+        const otherFormula = new Formula(test.input[1]);
+        assert.equal(formula.isEqual(otherFormula), test.output);
+        assert.equal(formula.isEqual(test.input[1]), test.output);
+        assert.equal(formula.isEqual(formula, otherFormula), test.output);
+        assert.equal(formula.isEqual(formula, test.input[1]), test.output);
+        assert.equal(
+          formula.isEqual(test.input[0], test.input[1]),
+          test.output
+        );
+        assert.equal(otherFormula.isEqual(formula), test.output);
+        assert.equal(otherFormula.isEqual(test.input[0]), test.output);
+      });
+    }
+  });
+
+  describe('isNegation()', () => {
+    const testCases = [
+      /** POSITIVE CASES */
+      { input: ['p', '~p'], output: true },
+      { input: ['~p', 'p'], output: true },
+      { input: ['~(p & q)', 'p & q'], output: true },
+      { input: ['(p & q)', '~(p & q)'], output: true },
+      { input: ['p -> (q & r)', '~(p -> (q & r))'], output: true },
+      {
+        input: ['(p V q) <-> (p & ~q)', '~((pVq)  <-> (p & ~q))'],
+        output: true
+      },
+      /** NEGATIVE CASES */
+      { input: ['p', '~q'], output: false },
+      { input: ['p', 'p'], output: false },
+      { input: ['~(p & q)', '~p & q'], output: false },
+      { input: ['(p & q)', '~(~(p & q))'], output: false },
+      { input: ['p -> (q & r)', 'p -> ~(q & r)'], output: false },
+      {
+        input: ['(p V q) <-> (p & ~q)', '~((p&q)  <-> (p & ~q))'],
+        output: false
+      }
+    ];
+    for (const test of testCases) {
+      it(`should recognize that the formula ${test.input[0]} is ${
+        test.output ? '' : 'not '
+      }the negation of ${test.input[1]}`, function() {
+        const formula = new Formula(test.input[0]);
+        const otherFormula = new Formula(test.input[1]);
+        assert.equal(formula.isNegation(otherFormula), test.output);
+        assert.equal(formula.isNegation(test.input[1]), test.output);
+        assert.equal(formula.isNegation(formula, otherFormula), test.output);
+        assert.equal(formula.isNegation(formula, test.input[1]), test.output);
+        assert.equal(
+          formula.isNegation(test.input[0], test.input[1]),
+          test.output
+        );
+        assert.equal(otherFormula.isNegation(formula), test.output);
+        assert.equal(otherFormula.isNegation(test.input[0]), test.output);
+      });
+    }
+  });
+
   describe('translateEnglishToSymbolic()', function() {
     const testCases = [
       { input: 'p and q', output: 'p & q' },
