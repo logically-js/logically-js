@@ -72,10 +72,12 @@ export class Proof implements ProofInterface {
   };
 
   addLineToProof = (newLine: LineOfProof | SimpleAddLineToProofInterface): void => {
+    console.log('addLineToProof', newLine, newLine instanceof LineOfProof);
     if (newLine instanceof LineOfProof) {
       this.lines.push(newLine);
     } else {
       const proposition: Formula = new Formula(newLine.proposition);
+      console.log('new LINE', proposition);
       const { citedLines, rule } = newLine;
       const newLineOfProof: LineOfProof = new LineOfProof(
         { citedLines, proposition, rule }

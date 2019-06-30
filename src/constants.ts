@@ -7,7 +7,8 @@ export const DEDUCTION_RULES = <DeductionRulesInterface>{
   CONJUNCTION: 'Conjunction',
   MODUS_PONENS: 'Modus Ponens',
   MODUS_TOLLENS: 'Modus Tollens',
-  PREMISE: 'Premise'
+  PREMISE: 'Premise',
+  SIMPLIFICATION: 'Simplification'
 };
 
 interface CitedLinesCount {
@@ -19,5 +20,6 @@ export const CITED_LINES_COUNT = <CitedLinesCount>{
   [DEDUCTION_RULES.CONJUNCTION]: 2,
   [DEDUCTION_RULES.MODUS_PONENS]: 2,
   [DEDUCTION_RULES.MODUS_TOLLENS]: 2,
-  [DEDUCTION_RULES.PREMISE]: 0
+  [DEDUCTION_RULES.PREMISE]: 0,
+  [DEDUCTION_RULES.SIMPLIFICATION]: 1
 };

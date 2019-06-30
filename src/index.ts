@@ -1,4 +1,4 @@
 import { Formula } from './Formula';
-import { Proof } from './Proof';
+import { LineOfProof, Proof } from './Proof';
 
-export { Formula, Proof };
+export { Formula, LineOfProof, Proof };

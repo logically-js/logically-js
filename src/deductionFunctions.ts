@@ -5,13 +5,15 @@ export const evaluateMove = (
   move: LineOfProof,
   proof: Proof
 ): boolean => {
-  console.log('evaluateMove', move, CITED_LINES_COUNT[move.rule], move.citedLines.length, DEDUCTION_FUNCTIONS[move.rule](move, move.citedLines.map(
-    line => proof.lines[line]
+  console.log('evaluateMove', proof, move, CITED_LINES_COUNT[move.rule], move.citedLines.length, move.citedLines.map(
+    line => proof.lines[line - 1]
+  ), DEDUCTION_FUNCTIONS[move.rule](move, move.citedLines.map(
+    line => proof.lines[line - 1]
   )));
   return (
     CITED_LINES_COUNT[move.rule] === move.citedLines.length &&
     DEDUCTION_FUNCTIONS[move.rule](move, move.citedLines.map(
-      line => proof.lines[line]
+      line => proof.lines[line - 1]
     ))
   );
 }
@@ -19,33 +21,37 @@ export const evaluateMove = (
 interface DeductionFunctionsInterface {
   [deductionRule: string]: (
     target: LineOfProof,
-    source: LineOfProof[]
+    sources: LineOfProof[]
   ) => boolean
 }
 
 export const DEDUCTION_FUNCTIONS = <DeductionFunctionsInterface>{
-  [DEDUCTION_RULES.ADDITION]: (target, source) => (
-    target.proposition.operands.includes(source[0].proposition.formulaString) &&
+  [DEDUCTION_RULES.ADDITION]: (target, sources) => (
+    target.proposition.operands.includes(sources[0].proposition.formulaString) &&
     target.proposition.operator === 'V'
   ),
-  [DEDUCTION_RULES.CONJUNCTION]: (target, source) => (
-    target.proposition.operands.includes(source[0].proposition.formulaString) &&
-    target.proposition.operands.includes(source[1].proposition.formulaString) &&
+  [DEDUCTION_RULES.CONJUNCTION]: (target, sources) => (
+    target.proposition.operands.includes(sources[0].proposition.formulaString) &&
+    target.proposition.operands.includes(sources[1].proposition.formulaString) &&
     target.proposition.operator === '&'
   ),
-  [DEDUCTION_RULES.MODUS_PONENS]: (target, source) => (
+  [DEDUCTION_RULES.MODUS_PONENS]: (target, sources) => (
     (
-      target.proposition.formulaString === source[1].proposition.operands[1] &&
-      source[0].proposition.formulaString ===
-        source[1].proposition.operands[0] &&
-      source[1].proposition.operator === '->'
+      target.proposition.formulaString === sources[1].proposition.operands[1] &&
+      sources[0].proposition.formulaString ===
+        sources[1].proposition.operands[0] &&
+      sources[1].proposition.operator === '->'
     ) ||
     (
-      target.proposition.formulaString === source[0].proposition.operands[1] &&
-      source[1].proposition.formulaString ===
-        source[0].proposition.operands[0] &&
-      source[0].proposition.operator === '->'
+      target.proposition.formulaString === sources[0].proposition.operands[1] &&
+      sources[1].proposition.formulaString ===
+        sources[0].proposition.operands[0] &&
+      sources[0].proposition.operator === '->'
     )
   ),
-  [DEDUCTION_RULES.PREMISE]: () => true
+  [DEDUCTION_RULES.PREMISE]: () => true,
+  [DEDUCTION_RULES.SIMPLIFICATION]: (target, sources) => (
+    sources[0].proposition.operands.includes(target.proposition.formulaString)
+    && sources[0].proposition.operator === '&'
+  )
 };

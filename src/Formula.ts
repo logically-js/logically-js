@@ -25,15 +25,16 @@ export class Formula implements FormulaInterface {
    * @param {string} formulaString - A logical formula in string format.
    */
   constructor(formulaString: string) {
-    console.log('CONSTRUCTOR');
+    console.log('CONSTRUCTOR', formulaString);
     this.operator = null;
     this.operands = [];
     this.formulaString = formulaString;
-    // if (formulaString) {
-    //   this.formula = this.parseString(formulaString);
-    //   this.operator = this.formula.operator;
-    //   this.operands = this.formula.operands;
-    // }
+    if (formulaString) {
+      console.log('formulaString exists');
+      const formula = this.parseString(formulaString);
+      this.operator = formula.operator;
+      this.operands = formula.operands;
+    }
   }
 
   /**
@@ -82,6 +83,7 @@ export class Formula implements FormulaInterface {
    * @return {string}        - String with whitespace removed.
    */
   removeWhiteSpace(string: string): string {
+    console.log('removeWhiteSpace', string, typeof string);
     return string.replace(/\s/g, '');
   }
 
@@ -301,7 +303,7 @@ export class Formula implements FormulaInterface {
     const nRows: number = Math.pow(2, atomicVars.length);
     const result = new Array(nRows)
       .fill(0)
-      .map(el => new Array(headers.length).fill(null));
+      .map(() => new Array(headers.length).fill(null));
     let i = 0;
     // Set the values for the atomic variables
     for (; i < atomicVars.length; i++) {
@@ -331,7 +333,6 @@ interface REInterface {
 
 /**
  * Enum of regular expressions for testing various logical patterns.
- * @type {REInterface}
  */
 const RE = <REInterface>{
   // Any lowercase alphabetic letter is an atomic variable.
