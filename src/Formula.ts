@@ -1,6 +1,7 @@
 interface FormulaInterface {
   operator: string,
   operands: string[],
+  formula: ParsedInterface,
   formulaString: string
 }
 
@@ -19,6 +20,7 @@ interface AssignmentInterface {
 export class Formula implements FormulaInterface {
   operator: string | null;
   operands: string[];
+  formula: ParsedInterface;
   formulaString: string;
   /**
    * Class constructor
@@ -31,9 +33,9 @@ export class Formula implements FormulaInterface {
     this.formulaString = formulaString;
     if (formulaString) {
       console.log('formulaString exists');
-      const formula = this.parseString(formulaString);
-      this.operator = formula.operator;
-      this.operands = formula.operands;
+      this.formula = this.parseString(formulaString);
+      this.operator = this.formula.operator;
+      this.operands = this.formula.operands;
     }
   }
 
@@ -46,7 +48,8 @@ export class Formula implements FormulaInterface {
     return RE.atomicVariable.test(string);
   }
 
-  isEqual(formula: Formula): boolean {
+  isEqual(formula: Formula | string): boolean {
+    formula = formula instanceof Formula ? formula : new Formula(formula);
     return this.trimParens(formula.formulaString) ===
       this.trimParens(this.formulaString);
   }
@@ -115,6 +118,14 @@ export class Formula implements FormulaInterface {
       count -= Number(suffix[0] === ')');
     }
     return -1; // no main binary operator found.
+  }
+
+  isNegation(formula: Formula | string): boolean {
+    formula = formula instanceof Formula ? formula : new Formula(formula);
+    return (this.formula.operands[0] === '~' &&
+           formula.formulaString === this.formula.operator) ||
+           (formula.operands[0] === '~' &&
+            this.formulaString === formula.operator);
   }
 
   /**
