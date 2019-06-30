@@ -58,12 +58,35 @@ describe('Formula', function() {
       { input: '((p & q))', output: 'p & q' },
       { input: '(p & q) <-> (p V q)', output: '(p & q) <-> (p V q)' },
       { input: '((p & q) <-> (p V q))', output: '(p & q) <-> (p V q)' },
-      { input: '(p & (p -> q))', output: 'p & (p -> q)' }
+      { input: '(p & (p -> q))', output: 'p & (p -> q)' },
+      { input: 'p & (q)', output: 'p & q' },
+      { input: '((p) & ((q)))', output: 'p & q' }
     ];
     for (const test of testCases) {
       it(`should return '${test.output}' for the formula '${test.input}'`, function() {
         const formula = new Formula();
         assert.equal(formula.trimParens(test.input), test.output);
+      });
+    }
+  });
+
+  describe('cleanseFormula()', function() {
+    const testCases = [
+      { input: 'p & q', output: 'p&q' },
+      { input: '(p & q)', output: 'p&q' },
+      { input: '((p & q))', output: 'p&q' },
+      { input: '(p & q) <-> (p V q)', output: '(p&q)<->(pVq)' },
+      { input: '((p & q) <-> (p V q))', output: '(p&q)<->(pVq)' },
+      { input: '(p & (p -> q))', output: 'p&(p->q)' },
+      { input: 'p & (q)', output: 'p&q' },
+      { input: '((p) & ((q)))', output: 'p&q' },
+      { input: 'p -> ((q & r))', output: 'p->(q&r)' },
+      { input: '((p) -> (((q) & r)))', output: 'p->(q&r)' }
+    ];
+    for (const test of testCases) {
+      it(`should return '${test.output}' for the formula '${test.input}'`, function() {
+        const formula = new Formula();
+        assert.equal(formula.cleanseFormula(test.input), test.output);
       });
     }
   });

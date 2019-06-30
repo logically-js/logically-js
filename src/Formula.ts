@@ -68,6 +68,11 @@ export class Formula implements FormulaInterface {
    * @return {string}               - the trimmed string
    */
   trimParens = (formulaString: string): string => {
+    while (/\([a-z]\)/g.test(formulaString)) {
+      formulaString = formulaString.replace(
+        /(\([a-z]\))/g, (_, group) => group[1]
+      );
+    }
     const length: number = formulaString.length;
     if (formulaString[0] !== '(' || formulaString[length - 1] !== ')') {
       return formulaString; // if no leading/trailing parens, just return;
@@ -137,8 +142,24 @@ export class Formula implements FormulaInterface {
             compareFormula.cleansedFormula === formula.operands[0]);
   }
 
-  cleanseFormula = (formula: string): string => {
-    return formula && this.trimParens(this.removeWhiteSpace(formula));
+  cleanseFormula = (formula?: string): string | undefined => {
+    if (!formula) return;
+    const parsed = this.parseString(formula);
+    if (!parsed.operator) {
+      return formula && this.trimParens(this.removeWhiteSpace(formula));
+    }
+    let op1 = this.cleanseFormula(parsed.operands[0]);
+    let op2 = this.cleanseFormula(parsed.operands[1]);
+    const operator = parsed.operator;
+    op1 = op1 && (op1.length > 1 ? `(${op1})` : op1);
+    op2 = op2 && (op2.length > 1 ? `(${op2})` : op2);
+    let result;
+    if (op2) {
+      result = `${op1} ${operator} ${op2}`;
+    } else {
+      result = operator + op1;
+    }
+    return this.trimParens(this.removeWhiteSpace(result));
   }
 
   /**
