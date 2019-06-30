@@ -25,6 +25,7 @@ export class Formula implements FormulaInterface {
    * @param {string} formulaString - A logical formula in string format.
    */
   constructor(formulaString: string) {
+    console.log('CONSTRUCTOR');
     this.operator = null;
     this.operands = [];
     this.formulaString = formulaString;

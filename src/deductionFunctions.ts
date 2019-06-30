@@ -18,7 +18,7 @@ interface DeductionFunctionsInterface {
   ) => boolean
 }
 
-const DEDUCTION_FUNCTIONS = <DeductionFunctionsInterface>{
+export const DEDUCTION_FUNCTIONS = <DeductionFunctionsInterface>{
   [DEDUCTION_RULES.ADDITION]: (target, source) => (
     target.proposition.operands.includes(source[0].proposition.formulaString) &&
     target.proposition.operator === 'V'
