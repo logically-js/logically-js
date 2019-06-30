@@ -38,9 +38,7 @@ export class Formula implements FormulaInterface {
       this.cleansedFormula = this.cleanseFormula(formulaString);
       this.formula = this.parseString(this.cleansedFormula);
       this.operator = this.formula.operator;
-      this.operands = this.formula.operands.map(
-        operand => this.cleanseFormula(operand)
-      );
+      this.operands = this.formula.operands.map(this.cleanseFormula);
     }
   }
 
@@ -49,11 +47,14 @@ export class Formula implements FormulaInterface {
    * @param  {string}  string - The string to test
    * @return {boolean}        - Is the input string atomic?
    */
-  isAtomicString(string: string): boolean {
+  isAtomicString = (string: string): boolean => {
     return RE.atomicVariable.test(string);
   }
 
-  isEqual(formula: Formula | string, formula2?: Formula | string): boolean {
+  isEqual = (
+    formula: Formula | string,
+    formula2?: Formula | string
+  ): boolean => {
     formula = formula instanceof Formula ? formula : new Formula(formula);
     const otherFormula = formula2 ? formula2 instanceof Formula ? formula2 : new Formula(formula2) : this;
     return formula.cleansedFormula === otherFormula.cleansedFormula;
@@ -66,7 +67,7 @@ export class Formula implements FormulaInterface {
    * @param  {string} formulaString - the string to be trimmed
    * @return {string}               - the trimmed string
    */
-  trimParens(formulaString: string): string {
+  trimParens = (formulaString: string): string => {
     const length: number = formulaString.length;
     if (formulaString[0] !== '(' || formulaString[length - 1] !== ')') {
       return formulaString; // if no leading/trailing parens, just return;
@@ -90,7 +91,7 @@ export class Formula implements FormulaInterface {
    * @param  {string} string - String to be trimmed.
    * @return {string}        - String with whitespace removed.
    */
-  removeWhiteSpace(string: string): string {
+  removeWhiteSpace = (string: string): string => {
     return string.replace(/\s/g, '');
   }
 
@@ -101,7 +102,7 @@ export class Formula implements FormulaInterface {
    *                  We assume that extra parens have been trimmed.
    * @return {number}                      - The index of the main operator.
    */
-  findMainBinaryOperatorIndex(trimmedFormulaString: string) {
+  findMainBinaryOperatorIndex = (trimmedFormulaString: string): number => {
     /*
      * The main binary operator in a (trimmed) wff is the first binary operator
      * that you see when there are no open parens.
@@ -124,7 +125,10 @@ export class Formula implements FormulaInterface {
     return -1; // no main binary operator found.
   }
 
-  isNegation(formula: Formula | string, formula2?: Formula | string): boolean {
+  isNegation = (
+    formula: Formula | string,
+    formula2?: Formula | string
+  ): boolean => {
     formula = formula instanceof Formula ? formula : new Formula(formula);
     const compareFormula = formula2 ? formula2 instanceof Formula ? formula2 : new Formula(formula2) : this;
     return (compareFormula.operator === '~' &&
@@ -133,7 +137,7 @@ export class Formula implements FormulaInterface {
             compareFormula.cleansedFormula === formula.operands[0]);
   }
 
-  cleanseFormula(formula: string): string {
+  cleanseFormula = (formula: string): string => {
     console.log('cleanseFormula', formula);
     return formula && this.trimParens(this.removeWhiteSpace(formula));
   }
@@ -145,7 +149,7 @@ export class Formula implements FormulaInterface {
    *                                  with extra parens removed.
    * @return {object}               - Object with operator and operands.
    */
-  parseString(formulaString: string): ParsedInterface | null {
+  parseString = (formulaString: string): ParsedInterface | null => {
     // Remove whitespace and any unnecessary parens.
     formulaString = this.removeWhiteSpace(formulaString);
     formulaString = this.trimParens(formulaString);
@@ -212,7 +216,7 @@ export class Formula implements FormulaInterface {
    * @param {string} formulaString - The string to be analyzed.
    * @return {boolean}             - Does the string represent a wff?
    */
-  isWFFString(formulaString: string): boolean {
+  isWFFString = (formulaString: string): boolean => {
     formulaString = this.removeWhiteSpace(formulaString);
     formulaString = this.trimParens(formulaString);
     if (formulaString.length === 1) return this.isAtomicString(formulaString);
@@ -240,7 +244,10 @@ export class Formula implements FormulaInterface {
    * @return {boolean|null|undefined} Is the `formulaString` true under the
    *                                  `assignment`?
    */
-  evaluateFormulaString(formulaString: string, assignment: AssignmentInterface): boolean {
+  evaluateFormulaString = (
+    formulaString: string,
+    assignment: AssignmentInterface
+  ): boolean =>{
     console.log('evaluateFormulaString', formulaString, assignment);
     if (!this.isWFFString(formulaString)) return null;
     // Clean the formula.
@@ -268,7 +275,7 @@ export class Formula implements FormulaInterface {
    * @param  {[type]} formulaString [description]
    * @return {void}               [description]
    */
-  generateTruthTableHeaders(formulaString: string): string[] {
+  generateTruthTableHeaders = (formulaString: string): string[] => {
     const result: Set<string> = new Set();
     const helper = (formulaString: string): void => {
       result.add(formulaString);
@@ -302,7 +309,7 @@ export class Formula implements FormulaInterface {
    * @param  {string} formulaString
    * @return {string[]}
    */
-  getAtomicVariables(formulaString: string): string[] {
+  getAtomicVariables = (formulaString: string): string[] => {
     const result: Set<string> = new Set();
     for (const letter of formulaString) {
       if (/[a-z]/.test(letter)) {
@@ -318,7 +325,7 @@ export class Formula implements FormulaInterface {
    * @param  {Boolean} partial=false Should we only fill out the atomic values?
    * @return {Array.Boolean[]}    Truth table as matrix with values filled in.
    */
-  generateTruthTable(formulaString: string, partial: boolean = false) {
+  generateTruthTable = (formulaString: string, partial: boolean = false) => {
     const headers = this.generateTruthTableHeaders(formulaString);
     const atomicVars: string[] = this.getAtomicVariables(formulaString);
     const nRows: number = Math.pow(2, atomicVars.length);
