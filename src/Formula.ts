@@ -325,9 +325,9 @@ interface REInterface {
 
 /**
  * Enum of regular expressions for testing various logical patterns.
- * @type {Object}
+ * @type {REInterface}
  */
-const RE: REInterface = {
+const RE = <REInterface>{
   // Any lowercase alphabetic letter is an atomic variable.
   atomicVariable: /^([a-z])$/,
   // Operators are ~, V, &, ->, and <->.
@@ -340,7 +340,7 @@ interface TruthFunctionInterface {
   [operator: string]: (...args:boolean[]) => boolean
 }
 
-const TRUTH_FUNCTIONS: TruthFunctionInterface = {
+const TRUTH_FUNCTIONS = <TruthFunctionInterface>{
   '~': (p: boolean): boolean => p === false,
   '&': (p: boolean, q: boolean): boolean => p === true && q === true,
   V: (p: boolean, q: boolean): boolean => p === true || q === true,
