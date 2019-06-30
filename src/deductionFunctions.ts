@@ -20,38 +20,38 @@ export const evaluateMove = (
 
 interface DeductionFunctionsInterface {
   [deductionRule: string]: (
-    target: LineOfProof,
-    sources: LineOfProof[]
+    target?: LineOfProof,
+    sources?: LineOfProof[]
   ) => boolean
 }
 
 export const DEDUCTION_FUNCTIONS = <DeductionFunctionsInterface>{
   [DEDUCTION_RULES.ADDITION]: (target, sources) => (
-    target.proposition.operands.includes(sources[0].proposition.formulaString) &&
-    target.proposition.operator === 'V'
+    target.proposition.operands.includes(sources[0].proposition.cleansedFormula)
+    && target.proposition.operator === 'V'
   ),
   [DEDUCTION_RULES.CONJUNCTION]: (target, sources) => (
-    target.proposition.operands.includes(sources[0].proposition.formulaString) &&
-    target.proposition.operands.includes(sources[1].proposition.formulaString) &&
+    target.proposition.operands.includes(sources[0].proposition.cleansedFormula) &&
+    target.proposition.operands.includes(sources[1].proposition.cleansedFormula) &&
     target.proposition.operator === '&'
   ),
   [DEDUCTION_RULES.MODUS_PONENS]: (target, sources) => (
     (
-      target.proposition.formulaString === sources[1].proposition.operands[1] &&
-      sources[0].proposition.formulaString ===
+      target.proposition.cleansedFormula === sources[1].proposition.operands[1] &&
+      sources[0].proposition.cleansedFormula ===
         sources[1].proposition.operands[0] &&
       sources[1].proposition.operator === '->'
     ) ||
     (
-      target.proposition.formulaString === sources[0].proposition.operands[1] &&
-      sources[1].proposition.formulaString ===
+      target.proposition.cleansedFormula === sources[0].proposition.operands[1] &&
+      sources[1].proposition.cleansedFormula ===
         sources[0].proposition.operands[0] &&
       sources[0].proposition.operator === '->'
     )
   ),
   [DEDUCTION_RULES.PREMISE]: () => true,
   [DEDUCTION_RULES.SIMPLIFICATION]: (target, sources) => (
-    sources[0].proposition.operands.includes(target.proposition.formulaString)
+    sources[0].proposition.operands.includes(target.proposition.cleansedFormula)
     && sources[0].proposition.operator === '&'
   )
 };

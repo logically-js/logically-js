@@ -138,7 +138,6 @@ export class Formula implements FormulaInterface {
   }
 
   cleanseFormula = (formula: string): string => {
-    console.log('cleanseFormula', formula);
     return formula && this.trimParens(this.removeWhiteSpace(formula));
   }
 
