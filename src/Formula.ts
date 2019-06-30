@@ -44,6 +44,11 @@ export class Formula implements FormulaInterface {
     return RE.atomicVariable.test(string);
   }
 
+  isEqual(formula: Formula): boolean {
+    return this.trimParens(formula.formulaString) ===
+      this.trimParens(this.formulaString);
+  }
+
   /**
    * Takes a formula and recursively removes any "extra"
    * leading/trailing parentheses, i.e.:
