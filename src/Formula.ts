@@ -58,7 +58,7 @@ export class Formula implements FormulaInterface {
     }
     // Walk through the string and see if the open parens count ever hits 0.
     // If it doesn't until the end, the leading/trailing parens are unnecessary.
-    let count = 1;
+    let count: number = 1;
     for (let i = 1; i < length - 1; i++) {
       const char = formulaString[i];
       count += Number(char === '(');
@@ -308,7 +308,7 @@ export class Formula implements FormulaInterface {
     // Evaluate the values for each cell based on the truth value assignment
     for (; i < result[0].length; i++) {
       for (let j = 0; j < result.length; j++) {
-        const assignment = {};
+        const assignment: AssignmentInterface = {};
         result[j].slice(0, atomicVars.length).forEach((val, idx) => {
           assignment[atomicVars[idx]] = val;
         });
@@ -319,11 +319,15 @@ export class Formula implements FormulaInterface {
   }
 }
 
+interface REInterface {
+  [operatorName: string]: RegExp
+}
+
 /**
  * Enum of regular expressions for testing various logical patterns.
  * @type {Object}
  */
-const RE = {
+const RE: REInterface = {
   // Any lowercase alphabetic letter is an atomic variable.
   atomicVariable: /^([a-z])$/,
   // Operators are ~, V, &, ->, and <->.
@@ -332,10 +336,14 @@ const RE = {
   unaryOperator: /^(~)/
 };
 
-const TRUTH_FUNCTIONS = {
-  '~': p => p === false,
-  '&': (p, q) => p === true && q === true,
-  V: (p, q) => p === true || q === true,
-  '->': (p, q) => p === false || q === true,
-  '<->': (p, q) => p === q && typeof p === 'boolean'
+interface TruthFunctionInterface {
+  [operator: string]: (...args:boolean[]) => boolean
+}
+
+const TRUTH_FUNCTIONS: TruthFunctionInterface = {
+  '~': (p: boolean): boolean => p === false,
+  '&': (p: boolean, q: boolean): boolean => p === true && q === true,
+  V: (p: boolean, q: boolean): boolean => p === true || q === true,
+  '->': (p: boolean, q: boolean): boolean => p === false || q === true,
+  '<->': (p: boolean, q: boolean): boolean => p === q && typeof p === 'boolean'
 };
