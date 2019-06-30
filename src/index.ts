@@ -1,3 +1,4 @@
-import { Formula } from './formula';
+import { Formula } from './Formula';
+import { Proof } from './Proof';
 
-export { Formula };
+export { Formula, Proof };
