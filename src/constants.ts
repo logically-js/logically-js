@@ -4,6 +4,7 @@ interface DeductionRulesInterface {
 
 export const DEDUCTION_RULES = <DeductionRulesInterface>{
   ADDITION: 'Addition',
+  ASSOCIATIVITY: 'Associativity',
   CONJUNCTION: 'Conjunction',
   DOUBLE_NEGATION: 'Double Negation',
   MODUS_PONENS: 'Modus Ponens',
@@ -18,6 +19,7 @@ interface CitedLinesCount {
 
 export const CITED_LINES_COUNT = <CitedLinesCount>{
   [DEDUCTION_RULES.ADDITION]: 1,
+  [DEDUCTION_RULES.ASSOCIATIVITY]: 1,
   [DEDUCTION_RULES.CONJUNCTION]: 2,
   [DEDUCTION_RULES.DOUBLE_NEGATION]: 1,
   [DEDUCTION_RULES.MODUS_PONENS]: 2,

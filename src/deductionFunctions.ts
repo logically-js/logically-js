@@ -31,6 +31,12 @@ export const DEDUCTION_FUNCTIONS = <DeductionFunctionsInterface>{
     target.proposition.operands.includes(sources[0].proposition.cleansedFormula)
     && target.proposition.operator === 'V'
   ),
+  [DEDUCTION_RULES.ASSOCIATIVITY]: (target, sources) => (
+    target.proposition.operator === sources[0].proposition.operator &&
+    target.proposition.operator.match(/[V&]/) &&
+    target.proposition.operands[0] === sources[0].proposition.operands[1] &&
+    target.proposition.operands[1] === sources[0].proposition.operands[0]
+  ),
   [DEDUCTION_RULES.CONJUNCTION]: (target, sources) => (
     target.proposition.operands.includes(sources[0].proposition.cleansedFormula) &&
     target.proposition.operands.includes(sources[1].proposition.cleansedFormula) &&
@@ -50,7 +56,7 @@ export const DEDUCTION_FUNCTIONS = <DeductionFunctionsInterface>{
       const operandFormula = new Formula(sources[0].proposition.operands[0]);
       return sources[0].proposition.operator === '~' &&
              operandFormula.operator === '~' &&
-             operandFormula.operands[0] === 
+             operandFormula.operands[0] ===
               target.proposition.cleansedFormula;
     }
   },
