@@ -1,4 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const formula_1 = require("./formula");
-exports.Formula = formula_1.Formula;
+const Formula_1 = require("./Formula");
+exports.Formula = Formula_1.Formula;
+const Proof_1 = require("./Proof");
+exports.Proof = Proof_1.Proof;

@@ -4,12 +4,17 @@ import { CITED_LINES_COUNT, DEDUCTION_RULES } from './constants';
 export const evaluateMove = (
   move: LineOfProof,
   proof: Proof
-): boolean => (
-  CITED_LINES_COUNT[move.rule] === move.citedLines.length &&
-  DEDUCTION_FUNCTIONS[move.rule](move, move.citedLines.map(
+): boolean => {
+  console.log('evaluateMove', move, CITED_LINES_COUNT[move.rule], move.citedLines.length, DEDUCTION_FUNCTIONS[move.rule](move, move.citedLines.map(
     line => proof.lines[line]
-  ))
-);
+  )));
+  return (
+    CITED_LINES_COUNT[move.rule] === move.citedLines.length &&
+    DEDUCTION_FUNCTIONS[move.rule](move, move.citedLines.map(
+      line => proof.lines[line]
+    ))
+  );
+}
 
 interface DeductionFunctionsInterface {
   [deductionRule: string]: (
@@ -41,5 +46,6 @@ export const DEDUCTION_FUNCTIONS = <DeductionFunctionsInterface>{
         source[0].proposition.operands[0] &&
       source[0].proposition.operator === '->'
     )
-  )
+  ),
+  [DEDUCTION_RULES.PREMISE]: () => true
 };

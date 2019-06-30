@@ -14,14 +14,14 @@ interface ConstructorArgsInterface {
   citedLines: number[]
 }
 
-type TesponseDataType = {
+type ResponseDataType = {
   incorrectMoves: boolean[],
-  lastLineIsNotConclusion: boolean
+  lastLineIsConclusion: boolean
 };
 
 interface EvaluateProofInterface {
   score: number,
-  responseData:TesponseDataType
+  responseData: ResponseDataType
 }
 
 export class LineOfProof implements LineOfProofInterface {
@@ -54,6 +54,12 @@ export class Proof implements ProofInterface {
   conclusion: Formula;
   lines: LineOfProof[];
 
+  constructor() {
+    this.premises = [];
+    this.conclusion = new Formula('');
+    this.lines = [];
+  }
+
   addPremiseToProof = (formulaString: string): void => {
     const proposition: Formula = new Formula(formulaString);
     const rule = DEDUCTION_RULES.PREMISE;
@@ -78,27 +84,37 @@ export class Proof implements ProofInterface {
     }
   };
 
+  setConclusion = (conclusion: Formula | string): void => {
+    if (typeof conclusion === 'string') {
+      this.conclusion = new Formula(conclusion);
+    } else {
+      this.conclusion = conclusion;
+    }
+  };
+
   evaluateProof = (): EvaluateProofInterface => {
-    let lastLineIsNotConclusion: boolean = false;
+    console.log('evaluateProof');
+    let lastLineIsConclusion: boolean = false;
     let hasWrongMoves: boolean = false;
     const lastLine: Formula = this.lines[this.lines.length - 1].proposition;
-    if (lastLine.formulaString !== this.conclusion.formulaString) {
-      // Proof does not reach the conclusion.
-      lastLineIsNotConclusion = true;
+    if (lastLine.formulaString === this.conclusion.formulaString) {
+      // Proof reaches the conclusion.
+      lastLineIsConclusion = true;
     }
     const incorrectMoves: boolean[] = new Array(this.lines.length).fill(false);
     this.lines.forEach( (line, index) => {
+      console.log('LINE!', line, index);
       const isValidMove = evaluateMove(line, this);
-      incorrectMoves[index] = isValidMove;
+      incorrectMoves[index] = !isValidMove;
       hasWrongMoves = Boolean(Math.max(
-        Number(hasWrongMoves), Number(isValidMove)
+        Number(hasWrongMoves), Number(!isValidMove)
       ));
     });
     return {
-      score: Number(hasWrongMoves),
+      score: Number(!hasWrongMoves && lastLineIsConclusion),
       responseData: {
         incorrectMoves,
-        lastLineIsNotConclusion
+        lastLineIsConclusion
       }
     }
   };
