@@ -1,5 +1,5 @@
 interface DeductionRulesInterface {
-  [rule: string]: string
+  [rule: string]: string;
 }
 
 export const DEDUCTION_RULES = <DeductionRulesInterface>{
@@ -16,7 +16,7 @@ export const DEDUCTION_RULES = <DeductionRulesInterface>{
 };
 
 interface CitedLinesCount {
-  [rule: string]: number
+  [rule: string]: number;
 }
 
 export const CITED_LINES_COUNT = <CitedLinesCount>{

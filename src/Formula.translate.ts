@@ -9,7 +9,7 @@
  * @param  {string} formulaString - The formula to be translated.
  * @return {string}               - The proposition in symbolic notation.
  */
-const translateEnglishToSymbolic = (formulaString: string): string => (
+const translateEnglishToSymbolic = (formulaString: string): string =>
   formulaString
     .replace(/\s*\bif and only if\b\s*/g, ' <-> ') // Replace 'if and only if'
     .replace(/\s*\bonly if\b\s*/g, ' -> ') // Replace 'only if'
@@ -29,7 +29,6 @@ const translateEnglishToSymbolic = (formulaString: string): string => (
     // Replace 'not' with ' ~' (extra space) otherwise.
     .replace(/\s*\bnot\b\s*/g, ' ~')
     .replace(/\s*\bimplies\b\s*/g, ' -> ') // Replace 'implies'.
-    .replace(/\s*\bif\b\s*/g, '') // Delete any remaining 'if's.
-);
+    .replace(/\s*\bif\b\s*/g, ''); // Delete any remaining 'if's.
 
 export default translateEnglishToSymbolic;

@@ -4,6 +4,7 @@ import { inspect } from 'util';
 import translateEnglishToSymbolic from './Formula.translate';
 import { arrayEquals } from './utils';
 
+/* eslint-disable-next-line */
 import { AssignmentInterface, Formula } from './Formula';
 
 describe('Formula', function() {
@@ -243,8 +244,8 @@ describe('Formula', function() {
   });
 
   interface TestCaseInterface {
-    input: [string, AssignmentInterface],
-    output: boolean | null
+    input: [string, AssignmentInterface];
+    output: boolean | null;
   }
 
   describe('evaluateFormulaString()', function() {
@@ -361,9 +362,7 @@ describe('Formula', function() {
       ];
       for (const test of testCases) {
         const assignment = inspect(test.input[1]);
-        it(`should recognize that the formula '${test.input[0]}' is ${
-          test.output
-        } under the assignment ${assignment}`, function() {
+        it(`should recognize that the formula '${test.input[0]}' is ${test.output} under the assignment ${assignment}`, function() {
           const formula = new Formula();
           assert.equal(
             formula.evaluateFormulaString(...test.input),

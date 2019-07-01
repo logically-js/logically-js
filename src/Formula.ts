@@ -1,8 +1,8 @@
 interface FormulaInterface {
-  operator: string,
-  operands: string[],
-  formula: ParsedInterface,
-  formulaString: string
+  operator: string;
+  operands: string[];
+  formula: ParsedInterface;
+  formulaString: string;
 }
 
 interface ParsedInterface {
@@ -11,7 +11,7 @@ interface ParsedInterface {
 }
 
 export interface AssignmentInterface {
-  [variable: string]: boolean
+  [variable: string]: boolean;
 }
 
 /**
@@ -51,15 +51,31 @@ export class Formula implements FormulaInterface {
     return RE.atomicVariable.test(string);
   };
 
+  /**
+   * Compares two formulas for equality.
+   * @param {Formula | string} formula - formula to be compared
+   * @param {Formula | string} formula2 - other formula to be compared
+                                    (if absent, compares with current formula)
+   * @return {boolean}
+   */
   isEqual = (
     formula: Formula | string,
     formula2?: Formula | string
   ): boolean => {
     console.log('ISEQUAL', formula, formula2);
     console.log('formula', formula, typeof formula, formula instanceof Formula);
-    console.log('formula2', formula2, typeof formula2, formula2 instanceof Formula);
+    console.log(
+      'formula2',
+      formula2,
+      typeof formula2,
+      formula2 instanceof Formula
+    );
     formula = formula instanceof Formula ? formula : new Formula(formula);
-    const otherFormula = formula2 ? formula2 instanceof Formula ? formula2 : new Formula(formula2) : this;
+    const otherFormula = formula2
+      ? formula2 instanceof Formula
+        ? formula2
+        : new Formula(formula2)
+      : this;
     return formula.cleansedFormula === otherFormula.cleansedFormula;
   };
 
@@ -73,7 +89,8 @@ export class Formula implements FormulaInterface {
   trimParens = (formulaString: string): string => {
     while (/\([a-z]\)/g.test(formulaString)) {
       formulaString = formulaString.replace(
-        /(\([a-z]\))/g, (_, group) => group[1]
+        /(\([a-z]\))/g,
+        (_, group) => group[1]
       );
     }
     const length: number = formulaString.length;
@@ -133,18 +150,36 @@ export class Formula implements FormulaInterface {
     return -1; // no main binary operator found.
   };
 
+  /**
+   * Checks whether a formula is the negation of another
+   * @param {Formula|string} formula - formula to compare for negation
+   * @param {Formula|string} formula2 - formula to compare for negation
+   * @return {boolean}
+   */
   isNegation = (
     formula: Formula | string,
     formula2?: Formula | string
   ): boolean => {
     formula = formula instanceof Formula ? formula : new Formula(formula);
-    const compareFormula = formula2 ? formula2 instanceof Formula ? formula2 : new Formula(formula2) : this;
-    return (compareFormula.operator === '~' &&
-           formula.cleansedFormula === compareFormula.operands[0]) ||
-           (formula.operator === '~' &&
-            compareFormula.cleansedFormula === formula.operands[0]);
+    const compareFormula = formula2
+      ? formula2 instanceof Formula
+        ? formula2
+        : new Formula(formula2)
+      : this;
+    return (
+      (compareFormula.operator === '~' &&
+        formula.cleansedFormula === compareFormula.operands[0]) ||
+      (formula.operator === '~' &&
+        compareFormula.cleansedFormula === formula.operands[0])
+    );
   };
 
+  /**
+   * Remove all whitespace and unnecessary parentheses from a formula.
+   * This produces a canonical string representation of a formula.
+   * @param {string} formula - the formula to "cleanse"
+   * @return {string} - the cleansed formula
+   */
   cleanseFormula = (formula?: string): string | undefined => {
     if (!formula) return;
     const parsed = this.parseString(formula);
@@ -184,7 +219,7 @@ export class Formula implements FormulaInterface {
         operator: null,
         operands: [formulaString]
       };
-    };
+    }
 
     // Check for main binary operator first.
     // We have to do this before checking for negation, because
@@ -270,7 +305,7 @@ export class Formula implements FormulaInterface {
   evaluateFormulaString = (
     formulaString: string,
     assignment: AssignmentInterface
-  ): boolean =>{
+  ): boolean => {
     console.log('evaluateFormulaString', formulaString, assignment);
     if (!this.isWFFString(formulaString)) return null;
     // Clean the formula.
@@ -375,11 +410,11 @@ export class Formula implements FormulaInterface {
       }
     }
     return result;
-  }
-};
+  };
+}
 
 interface REInterface {
-  [operatorName: string]: RegExp
+  [operatorName: string]: RegExp;
 }
 
 /**
@@ -395,7 +430,7 @@ const RE = <REInterface>{
 };
 
 interface TruthFunctionInterface {
-  [operator: string]: (...args:boolean[]) => boolean
+  [operator: string]: (...args: boolean[]) => boolean;
 }
 
 const TRUTH_FUNCTIONS = <TruthFunctionInterface>{
