@@ -1,0 +1,22 @@
+-
+  - ['p & q', 'Premise', []]
+  - ['q -> r', 'Premise', []]
+  - ['q', 'Simplification', [1]]
+  - ['r', 'Modus Ponens', [2, 3]]
+
+-
+  - ['p & (q & r)', 'Premise', []]
+  - ['(p & q) & r', 'Associativity', [1]]
+  - ['r', 'Simplification', [2]]
+
+-
+  - ['p', 'Premise', []]
+  - ['q', 'Premise', []]
+  - ['(p & q) -> r', 'Premise', []]
+  - ['p & q', 'Conjunction', [1, 2]]
+  - ['r', 'Modus Ponens', [3, 4]]
+
+-
+  - ['(p & q) & (r & s)', 'Premise', []]
+  - ['p & (q & (r & s))', 'Associativity', [1]]
+  - ['p', 'Simplification', [2]]

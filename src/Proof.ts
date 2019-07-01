@@ -134,7 +134,12 @@ export class Proof implements ProofInterface {
     let lastLineIsConclusion: boolean = false;
     let hasWrongMoves: boolean = false;
     const lastLine: Formula = this.lines[this.lines.length - 1].proposition;
-    if (lastLine.formulaString === this.conclusion.formulaString) {
+    console.log(
+      'HIIIIIIIII',
+      lastLine.cleansedFormula,
+      this.conclusion.cleansedFormula
+    );
+    if (lastLine.cleansedFormula === this.conclusion.cleansedFormula) {
       // Proof reaches the conclusion.
       lastLineIsConclusion = true;
     }

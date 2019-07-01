@@ -17,6 +17,7 @@ interface DeductionFunctionsInterface {
   ) => boolean;
 }
 
+// TODO: Some of these rules have to work for subformulas
 export const DEDUCTION_FUNCTIONS = <DeductionFunctionsInterface>{
   [DEDUCTION_RULES.ADDITION]: (target, sources) =>
     target.proposition.operands.includes(
