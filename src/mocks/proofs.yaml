@@ -1,5 +1,4 @@
 # SIMPLIFICATION
-
 -
   - ['((p -> q) & q) & (r & (s & t))', 'Premise', []]
   - ['r & (s & t)', 'Simplification', [1]]
@@ -10,6 +9,12 @@
   - ['p -> q', 'Simplification', [6]]
   - ['q', 'Simplification', [6]]
 
+-
+  - ['p & (q & (r & s))', 'Premise', []]
+  - ['q & (r & s)', 'Simplification', [1]]
+  - ['r & s', 'Simplification', [2]]
+  - ['s', 'Simplification', [3]]
+
 # ADDITION
 -
   - ['p & q', 'Premise', []]
@@ -18,12 +23,19 @@
   - ['(s V (p & q)) V r', 'Addition', [3]]
   - ['t V ((s V (p & q)) V r)', 'Addition', [4]]
 
+-
+  - ['p', 'Premise', []]
+  - ['p V q', 'Addition', [1]]
+  - ['(p V q) V ((s & t) -> (t <-> s))', 'Addition', [2]]
+
 # COMMUTATIVITY
 -
   - ['(p & q) V (r -> s)', 'Premise', []]
   - ['(r -> s) V (p & q)', 'Commutativity', [1]]
   - ['(r -> s) V (q & p)', 'Commutativity', [2]]
 
+
+# MIXED RULES
 -
   - ['p & (q & r)', 'Premise', []]
   - ['(p & q) & r', 'Associativity', [1]]

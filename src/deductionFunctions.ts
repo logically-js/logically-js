@@ -93,7 +93,26 @@ const commutativityHelper = (
     sources[0].proposition
   );
 
-// TODO: Some of these rules have to work for subformulas
+/**
+ * Rules of implication are easier to compute because they only apply to the
+ * main operator and only go in "one direction."
+ *
+ * If there isn't an obvious strategy for identifying the application of
+ * a rule of replacement, we attempt to apply the rule to the target
+ * in all possible ways and see if we can generate the source(s). Essentially,
+ * we perform a depth-first-search of the space of possible applications of
+ * the rule.
+ *
+ * First, we try to apply the rule to the main operator, at the top level,
+ * to see if we can generate a "match." If that fails, we check whether one
+ * of the main operands matches the other. If it does, we recurse on
+ * the other operand and try to generate a match.
+ *
+ * For rules of replacement, we first define a function that checks whether
+ * a match can be found by transforming on the main operator. Then we take
+ * that function and apply a higher-order-function that performs the DFS
+ * with that function/rule recursively on the formula.
+ */
 export const DEDUCTION_FUNCTIONS = <DeductionFunctionsInterface>{
   [DEDUCTION_RULES.ADDITION]: (target, sources) =>
     target.proposition.operands.includes(
@@ -132,7 +151,7 @@ export const DEDUCTION_FUNCTIONS = <DeductionFunctionsInterface>{
       }
     }
     return false;
-  }, // p & (q & r)   (q & r) & p
+  },
   [DEDUCTION_RULES.COMMUTATIVITY]: commutativityHelper,
   [DEDUCTION_RULES.CONJUNCTION]: (target, sources) =>
     target.proposition.operands.includes(
