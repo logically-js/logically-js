@@ -7,28 +7,13 @@
   "scripts": {
     "build": "tsc",
     "lint": "eslint src/ --ext .ts,.tsx,.js,.jsx",
-    "test": "nyc mocha src/**/*.test.ts --require @babel/register --require ts-node/register",
+    "test": "nyc mocha src/**/*.test.ts --require ts-node/register",
     "precommit": "npm run lint && npm run test",
     "prettier": "./node_modules/.bin/prettier src/**/*.ts --write"
   },
   "keywords": [
     "logic"
   ],
-  "nyc": {
-    "extension": [
-      ".ts",
-      ".tsx"
-    ],
-    "exclude": [
-      "**/*.d.ts"
-    ],
-    "include": [
-      "src/**/*.ts"
-    ],
-    "reporter": [
-      "html", "text"
-    ]
-  },
   "author": "JDR",
   "license": "ISC",
   "dependencies": {},
