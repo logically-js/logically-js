@@ -17,6 +17,82 @@ interface DeductionFunctionsInterface {
   ) => boolean;
 }
 
+interface SimpleDeductionFunctionInterface {
+  (target: Formula, sources: Formula): boolean;
+}
+
+const checkRuleRecursively = (rule: SimpleDeductionFunctionInterface) => (
+  ...args: Formula[]
+): boolean => {
+  const [formula1, formula2] = args;
+  if (rule(formula1, formula2)) return true;
+  // If left operands match, recurse to the right
+  if (formula1.operands[0] === formula2.operands[0]) {
+    if (
+      checkRuleRecursively(rule)(
+        new Formula(formula1.operands[1]),
+        new Formula(formula2.operands[1])
+      )
+    ) {
+      return true;
+    }
+  }
+  // If right operands match, recurse to the left
+  if (formula1.operands[1] === formula2.operands[1]) {
+    if (
+      checkRuleRecursively(rule)(
+        new Formula(formula1.operands[0]),
+        new Formula(formula2.operands[0])
+      )
+    ) {
+      return true;
+    }
+  }
+  return false;
+};
+
+/** **************** COMMUTATIVITY ******************* */
+
+const topLevelCommutativity = (t: Formula, s: Formula): boolean =>
+  t.operator === s.operator &&
+  t.operator.match(/[V&]/) &&
+  t.operands[0] === s.operands[1] &&
+  t.operands[1] === s.operands[0];
+
+const commutativity = (target: Formula, source: Formula) => {
+  if (topLevelCommutativity(target, source)) return true;
+  if (target.operands[0] === source.operands[0]) {
+    if (
+      commutativity(
+        new Formula(target.operands[1]),
+        new Formula(source.operands[1])
+      )
+    ) {
+      return true;
+    }
+  }
+  if (target.operands[1] === source.operands[1]) {
+    if (
+      commutativity(
+        new Formula(target.operands[0]),
+        new Formula(source.operands[0])
+      )
+    ) {
+      return true;
+    }
+  }
+  return false;
+};
+
+const commutativityHelper = (
+  target: LineOfProof,
+  sources: LineOfProof[]
+): boolean =>
+  checkRuleRecursively(commutativity)(
+    target.proposition,
+    sources[0].proposition
+  );
+
 // TODO: Some of these rules have to work for subformulas
 export const DEDUCTION_FUNCTIONS = <DeductionFunctionsInterface>{
   [DEDUCTION_RULES.ADDITION]: (target, sources) =>
@@ -56,12 +132,8 @@ export const DEDUCTION_FUNCTIONS = <DeductionFunctionsInterface>{
       }
     }
     return false;
-  },
-  [DEDUCTION_RULES.COMMUTATIVITY]: (target, sources) =>
-    target.proposition.operator === sources[0].proposition.operator &&
-    target.proposition.operator.match(/[V&]/) &&
-    target.proposition.operands[0] === sources[0].proposition.operands[1] &&
-    target.proposition.operands[1] === sources[0].proposition.operands[0],
+  }, // p & (q & r)   (q & r) & p
+  [DEDUCTION_RULES.COMMUTATIVITY]: commutativityHelper,
   [DEDUCTION_RULES.CONJUNCTION]: (target, sources) =>
     target.proposition.operands.includes(
       sources[0].proposition.cleansedFormula

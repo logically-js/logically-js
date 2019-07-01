@@ -18,6 +18,12 @@
   - ['(s V (p & q)) V r', 'Addition', [3]]
   - ['t V ((s V (p & q)) V r)', 'Addition', [4]]
 
+# COMMUTATIVITY
+-
+  - ['(p & q) V (r -> s)', 'Premise', []]
+  - ['(r -> s) V (p & q)', 'Commutativity', [1]]
+  - ['(r -> s) V (q & p)', 'Commutativity', [2]]
+
 -
   - ['p & (q & r)', 'Premise', []]
   - ['(p & q) & r', 'Associativity', [1]]
