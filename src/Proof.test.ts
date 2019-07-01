@@ -1,6 +1,6 @@
-const yaml = require('js-yaml');
-const fs = require('fs');
-const path = require('path');
+import { safeLoad } from 'js-yaml';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 import { assert } from 'chai';
 import { inspect } from 'util';
 
@@ -10,10 +10,9 @@ import { LineOfProof, Proof } from './Proof';
 describe('Proof', function() {
   let mockProofs: [][];
   try {
-    mockProofs = yaml.safeLoad(
-      fs.readFileSync(path.resolve(__dirname, './mocks/proofs.yaml'), 'utf8')
+    mockProofs = safeLoad(
+      readFileSync(resolve(__dirname, './mocks/proofs.yaml'), 'utf8')
     );
-    console.log('!@*Y#&*!@^$^@!&$^)', mockProofs);
   } catch (e) {
     console.log(e);
   }
