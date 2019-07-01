@@ -105,5 +105,10 @@ export const DEDUCTION_FUNCTIONS = <DeductionFunctionsInterface>{
   [DEDUCTION_RULES.SIMPLIFICATION]: (target, sources) => (
     sources[0].proposition.operands.includes(target.proposition.cleansedFormula)
     && sources[0].proposition.operator === '&'
+  ),
+  [DEDUCTION_RULES.TAUTOLOGY]: (target, sources) => (
+    sources[0].proposition.operator === '&' &&
+    sources[0].proposition.operands[0] === sources[0].proposition.operands[1] &&
+    sources[0].proposition.operands[0] === target.proposition.cleansedFormula
   )
 };
