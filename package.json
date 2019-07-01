@@ -16,9 +16,7 @@
   ],
   "author": "JDR",
   "license": "ISC",
-  "dependencies": {
-    "@types/node": "^12.0.10"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.2.2",
@@ -29,6 +27,7 @@
     "@types/chai": "^4.1.7",
     "@types/js-yaml": "^3.12.1",
     "@types/mocha": "^5.2.7",
+    "@types/node": "^12.0.10",
     "@typescript-eslint/parser": "^1.11.0",
     "chai": "^4.2.0",
     "eslint": "^5.12.1",
