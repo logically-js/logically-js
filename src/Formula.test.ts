@@ -4,7 +4,7 @@ import { inspect } from 'util';
 import translateEnglishToSymbolic from './Formula.translate';
 import { arrayEquals } from './utils';
 
-import { Formula } from './Formula';
+import { AssignmentInterface, Formula } from './Formula';
 
 describe('Formula', function() {
   it('should be imported correctly', function() {
@@ -242,9 +242,14 @@ describe('Formula', function() {
     });
   });
 
+  interface TestCaseInterface {
+    input: [string, AssignmentInterface],
+    output: boolean | null
+  }
+
   describe('evaluateFormulaString()', function() {
     describe('should correctly evaluate atomic formulas', function() {
-      const testCases = [
+      const testCases: TestCaseInterface[] = [
         { input: ['p', { p: true }], output: true },
         { input: ['p', { p: false }], output: false },
         { input: ['pq', { p: false, q: true }], output: null }
@@ -263,7 +268,7 @@ describe('Formula', function() {
     });
 
     describe('should correctly evaluate the basic connectives', function() {
-      const testCases = [
+      const testCases: TestCaseInterface[] = [
         // NEGATION
         { input: ['~p', { p: true }], output: false },
         { input: ['~p', { p: false }], output: true },
@@ -306,7 +311,7 @@ describe('Formula', function() {
     });
 
     describe('should correctly evaluate more complex formulas', function() {
-      const testCases = [
+      const testCases: TestCaseInterface[] = [
         { input: ['p -> (q -> p)', { p: true, q: true }], output: true },
         { input: ['p -> (q -> p)', { p: true, q: false }], output: true },
         { input: ['p -> (q -> p)', { p: false, q: true }], output: true },

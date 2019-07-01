@@ -10,7 +10,7 @@ interface ParsedInterface {
   operands: string[];
 }
 
-interface AssignmentInterface {
+export interface AssignmentInterface {
   [variable: string]: boolean
 }
 
@@ -27,7 +27,7 @@ export class Formula implements FormulaInterface {
    * Class constructor
    * @param {string} formulaString - A logical formula in string format.
    */
-  constructor(formulaString: string) {
+  constructor(formulaString?: string) {
     console.log('CONSTRUCTOR', formulaString);
     this.operator = null;
     this.operands = [];

@@ -16,7 +16,7 @@ describe('Custom util functions', function() {
       it(`should return ${test.output} for ${inspect(
         test.input[0]
       )} and ${inspect(test.input[1])}`, function() {
-        assert.equal(arrayEquals(...test.input), test.output);
+        assert.equal(arrayEquals(test.input[0], test.input[1]), test.output);
       });
     }
   });
