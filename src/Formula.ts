@@ -49,16 +49,19 @@ export class Formula implements FormulaInterface {
    */
   isAtomicString = (string: string): boolean => {
     return RE.atomicVariable.test(string);
-  }
+  };
 
   isEqual = (
     formula: Formula | string,
     formula2?: Formula | string
   ): boolean => {
+    console.log('ISEQUAL', formula, formula2);
+    console.log('formula', formula, typeof formula, formula instanceof Formula);
+    console.log('formula2', formula2, typeof formula2, formula2 instanceof Formula);
     formula = formula instanceof Formula ? formula : new Formula(formula);
     const otherFormula = formula2 ? formula2 instanceof Formula ? formula2 : new Formula(formula2) : this;
     return formula.cleansedFormula === otherFormula.cleansedFormula;
-  }
+  };
 
   /**
    * Takes a formula and recursively removes any "extra"
@@ -89,7 +92,7 @@ export class Formula implements FormulaInterface {
       }
     }
     return this.trimParens(formulaString.slice(1, length - 1));
-  }
+  };
 
   /**
    * Remove all whitespace from a string.
@@ -98,7 +101,7 @@ export class Formula implements FormulaInterface {
    */
   removeWhiteSpace = (string: string): string => {
     return string.replace(/\s/g, '');
-  }
+  };
 
   /**
    * Find the index of the main binary operator in a formula string,
@@ -128,7 +131,7 @@ export class Formula implements FormulaInterface {
       count -= Number(suffix[0] === ')');
     }
     return -1; // no main binary operator found.
-  }
+  };
 
   isNegation = (
     formula: Formula | string,
@@ -140,7 +143,7 @@ export class Formula implements FormulaInterface {
            formula.cleansedFormula === compareFormula.operands[0]) ||
            (formula.operator === '~' &&
             compareFormula.cleansedFormula === formula.operands[0]);
-  }
+  };
 
   cleanseFormula = (formula?: string): string | undefined => {
     if (!formula) return;
@@ -160,7 +163,7 @@ export class Formula implements FormulaInterface {
       result = operator + op1;
     }
     return this.trimParens(this.removeWhiteSpace(result));
-  }
+  };
 
   /**
    * Takes a formula string and returns an object with
@@ -181,7 +184,7 @@ export class Formula implements FormulaInterface {
         operator: null,
         operands: [formulaString]
       };
-    }
+    };
 
     // Check for main binary operator first.
     // We have to do this before checking for negation, because
@@ -229,7 +232,7 @@ export class Formula implements FormulaInterface {
 
     // Unable to parse the formula.
     return null;
-  }
+  };
 
   /**
    * Returns true iff the `formulaString` is a well-formed formula (wff).
@@ -246,7 +249,7 @@ export class Formula implements FormulaInterface {
     if (!RE.operator.test(formula.operator)) return false; // illegal operator
     // Every operand must also be a wff.
     return formula.operands.every(operand => this.isWFFString(operand));
-  }
+  };
 
   // TODO: Reconsider the treatment of `undefined` return values.
   // Ex. `p V q` where `{ p: true }` (and `q` is `undefined`).
@@ -288,7 +291,7 @@ export class Formula implements FormulaInterface {
     });
     // Apply the corresponding truth function with the values.
     return TRUTH_FUNCTIONS[parsed.operator](...values);
-  }
+  };
 
   /**
    * Generate the headers for the truth table
@@ -322,7 +325,7 @@ export class Formula implements FormulaInterface {
       else if (a.length > b.length) return 1;
       else return a < b ? -1 : b < a ? 1 : 0;
     });
-  }
+  };
 
   /**
    * Returns a sorted list of the atomic variables.
@@ -337,7 +340,7 @@ export class Formula implements FormulaInterface {
       }
     }
     return Array.from(result).sort();
-  }
+  };
 
   /**
    * Generate a complete truth table with values filled in if partail = true.
@@ -373,7 +376,7 @@ export class Formula implements FormulaInterface {
     }
     return result;
   }
-}
+};
 
 interface REInterface {
   [operatorName: string]: RegExp

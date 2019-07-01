@@ -1,4 +1,5 @@
 import { Formula } from './Formula';
 import { LineOfProof, Proof } from './Proof';
+import { DEDUCTION_RULES } from './constants';
 
-export { Formula, LineOfProof, Proof };
+export { DEDUCTION_RULES, Formula, LineOfProof, Proof };

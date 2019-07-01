@@ -5,19 +5,12 @@ import { CITED_LINES_COUNT, DEDUCTION_RULES } from './constants';
 export const evaluateMove = (
   move: LineOfProof,
   proof: Proof
-): boolean => {
-  console.log('evaluateMove', proof, move, CITED_LINES_COUNT[move.rule], move.citedLines.length, move.citedLines.map(
+): boolean => (
+  CITED_LINES_COUNT[move.rule] === move.citedLines.length &&
+  DEDUCTION_FUNCTIONS[move.rule](move, move.citedLines.map(
     line => proof.lines[line - 1]
-  ), DEDUCTION_FUNCTIONS[move.rule](move, move.citedLines.map(
-    line => proof.lines[line - 1]
-  )));
-  return (
-    CITED_LINES_COUNT[move.rule] === move.citedLines.length &&
-    DEDUCTION_FUNCTIONS[move.rule](move, move.citedLines.map(
-      line => proof.lines[line - 1]
-    ))
-  );
-}
+  ))
+);
 
 interface DeductionFunctionsInterface {
   [deductionRule: string]: (
@@ -31,7 +24,41 @@ export const DEDUCTION_FUNCTIONS = <DeductionFunctionsInterface>{
     target.proposition.operands.includes(sources[0].proposition.cleansedFormula)
     && target.proposition.operator === 'V'
   ),
-  [DEDUCTION_RULES.ASSOCIATIVITY]: (target, sources) => (
+  [DEDUCTION_RULES.ASSOCIATIVITY]: (target, sources) => {
+    const op = target.proposition.operator;
+    if (!(op.match(/[&V]/)) && op === sources[0].proposition.operator) {
+      return false;
+    }
+    // Try associating to the left
+    console.log('LEFT');
+    let operandFormula = new Formula(target.proposition.operands[0]);
+    if (operandFormula.operator === op) {
+      const newFormula = new Formula(
+        `(${operandFormula.operands[0]}) ${op} (${operandFormula.operands[1]} ${op} ${target.proposition.operands[1]})`
+      );
+      if (
+        // TODO: Should utilize the `isEqual` method
+        newFormula.cleansedFormula === sources[0].proposition.cleansedFormula
+      ) {
+        return true;
+      }
+    }
+    // Try associating to the right
+    console.log('RIGHT');
+    operandFormula = new Formula(target.proposition.operands[1]);
+    if (operandFormula.operator === op) {
+      const newFormula = new Formula(
+        `(${target.proposition.operands[0]} ${op} ${operandFormula.operands[0]}) ${op} (${operandFormula.operands[1]})`
+      );
+      if (
+        newFormula.cleansedFormula === sources[0].proposition.cleansedFormula
+      ) {
+        return true;
+      }
+    }
+    return false;
+  },
+  [DEDUCTION_RULES.COMMUTATIVITY]: (target, sources) => (
     target.proposition.operator === sources[0].proposition.operator &&
     target.proposition.operator.match(/[V&]/) &&
     target.proposition.operands[0] === sources[0].proposition.operands[1] &&
