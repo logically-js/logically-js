@@ -1,8 +1,22 @@
+# SIMPLIFICATION
+
+-
+  - ['((p -> q) & q) & (r & (s & t))', 'Premise', []]
+  - ['r & (s & t)', 'Simplification', [1]]
+  - ['s & t', 'Simplification', [2]]
+  - ['s', 'Simplification', [3]]
+  - ['r', 'Simplification', [2]]
+  - ['((p -> q) & q)', 'Simplification', [1]]
+  - ['p -> q', 'Simplification', [6]]
+  - ['q', 'Simplification', [6]]
+
+# ADDITION
 -
   - ['p & q', 'Premise', []]
-  - ['q -> r', 'Premise', []]
-  - ['q', 'Simplification', [1]]
-  - ['r', 'Modus Ponens', [2, 3]]
+  - ['(p & q) V r', 'Addition', [1]]
+  - ['s V (p & q)', 'Addition', [1]]
+  - ['(s V (p & q)) V r', 'Addition', [3]]
+  - ['t V ((s V (p & q)) V r)', 'Addition', [4]]
 
 -
   - ['p & (q & r)', 'Premise', []]
