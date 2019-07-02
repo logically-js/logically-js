@@ -53,6 +53,12 @@
   - ['(~(~p) V q) -> (r -> ~(~s))', 'Double Negation', [2]]
   - ['(~(~p) V q) -> (r -> s)', 'Double Negation', [3]]
   - ['(p V q) -> (r -> s)', 'Double Negation', [4]]
+  - ['~(~((p V q) -> (r -> s)))', 'Double Negation', [5]]
+
+-
+  - ['p V q', 'Premise', []]
+  - ['(~(~p) V q)', 'Double Negation', [1]]
+  - ['(~(~p) V ~(~q))', 'Double Negation', [2]]
 
 
 # MIXED RULES
