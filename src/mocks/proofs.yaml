@@ -15,6 +15,7 @@
   - ['r & s', 'Simplification', [2]]
   - ['s', 'Simplification', [3]]
 
+
 # ADDITION
 -
   - ['p & q', 'Premise', []]
@@ -28,20 +29,30 @@
   - ['p V q', 'Addition', [1]]
   - ['(p V q) V ((s & t) -> (t <-> s))', 'Addition', [2]]
 
+
 # COMMUTATIVITY
 -
   - ['(p & q) V (r -> s)', 'Premise', []]
   - ['(r -> s) V (p & q)', 'Commutativity', [1]]
   - ['(r -> s) V (q & p)', 'Commutativity', [2]]
 
+
 # DOUBLE NEGATION
 -
   - ['~(~p)', 'Premise', []]
   - ['p', 'Double Negation', [1]]
+
 -
   - ['~(~(p -> ~(~q)))', 'Premise', []]
   - ['~(~(p -> q))', 'Double Negation', [1]]
   - ['p -> q', 'Double Negation', [2]]
+
+-
+  - ['(~(~p) V q) -> ~(~(~(~r) -> ~(~s)))', 'Premise', []]
+  - ['(~(~p) V q) -> ~(~(r -> ~(~s)))', 'Double Negation', [1]]
+  - ['(~(~p) V q) -> (r -> ~(~s))', 'Double Negation', [2]]
+  - ['(~(~p) V q) -> (r -> s)', 'Double Negation', [3]]
+  - ['(p V q) -> (r -> s)', 'Double Negation', [4]]
 
 
 # MIXED RULES
