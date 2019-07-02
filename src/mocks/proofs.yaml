@@ -34,6 +34,15 @@
   - ['(r -> s) V (p & q)', 'Commutativity', [1]]
   - ['(r -> s) V (q & p)', 'Commutativity', [2]]
 
+# DOUBLE NEGATION
+-
+  - ['~(~p)', 'Premise', []]
+  - ['p', 'Double Negation', [1]]
+-
+  - ['~(~(p -> ~(~q)))', 'Premise', []]
+  - ['~(~(p -> q))', 'Double Negation', [1]]
+  - ['p -> q', 'Double Negation', [2]]
+
 
 # MIXED RULES
 -

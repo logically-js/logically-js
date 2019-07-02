@@ -86,6 +86,31 @@ const topLevelCommutativity = (t: Formula, s: Formula): boolean =>
   t.operands[1] === s.operands[0];
 
 /**
+ * Function that checks whether Double Negation applies at the top level
+ *
+ * @param {Formula} t - Target formula
+ * @param {Formula} s - Source formula
+ * @return {boolean} - Does Double Negation apply at the top level?
+ */
+const topLevelDoubleNegation = (t: Formula, s: Formula): boolean => {
+  if (t.cleansedFormula.length > s.cleansedFormula.length) {
+    const operandFormula = new Formula(t.operands[0]);
+    return (
+      t.operator === '~' &&
+      operandFormula.operator === '~' &&
+      operandFormula.operands[0] === s.cleansedFormula
+    );
+  } else {
+    const operandFormula = new Formula(s.operands[0]);
+    return (
+      s.operator === '~' &&
+      operandFormula.operator === '~' &&
+      operandFormula.operands[0] === t.cleansedFormula
+    );
+  }
+};
+
+/**
  * Rules of implication are easier to compute because they only apply to the
  * main operator and only go in "one direction."
  *
@@ -157,26 +182,26 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
       sources[1].proposition.cleansedFormula
     ) &&
     target.proposition.operator === '&',
-  [DEDUCTION_RULES.DOUBLE_NEGATION]: (target, sources) => {
-    if (
-      target.proposition.cleansedFormula.length >
-      sources[0].proposition.cleansedFormula.length
-    ) {
-      const operandFormula = new Formula(target.proposition.operands[0]);
-      return (
-        target.proposition.operator === '~' &&
-        operandFormula.operator === '~' &&
-        operandFormula.operands[0] === sources[0].proposition.cleansedFormula
-      );
-    } else {
-      const operandFormula = new Formula(sources[0].proposition.operands[0]);
-      return (
-        sources[0].proposition.operator === '~' &&
-        operandFormula.operator === '~' &&
-        operandFormula.operands[0] === target.proposition.cleansedFormula
-      );
-    }
-  },
+  [DEDUCTION_RULES.DOUBLE_NEGATION]: (target, sources) =>
+    checkRuleRecursively(topLevelDoubleNegation)(
+      target.proposition,
+      sources[0].proposition
+    ),
+  [DEDUCTION_RULES.HYPOTHETICAL_SYLLOGISM]: (target, sources) =>
+    (sources[0].proposition.operands[1] ===
+      sources[1].proposition.operands[0] &&
+      target.proposition.operands[0] === sources[0].proposition.operands[0] &&
+      target.proposition.operands[1] === sources[1].proposition.operands[1] &&
+      sources[0].proposition.operator === '->' &&
+      sources[1].proposition.operator === '->' &&
+      target.proposition.operator === '->') ||
+    (sources[1].proposition.operands[1] ===
+      sources[0].proposition.operands[0] &&
+      target.proposition.operands[0] === sources[1].proposition.operands[0] &&
+      target.proposition.operands[1] === sources[0].proposition.operands[1] &&
+      sources[1].proposition.operator === '->' &&
+      sources[0].proposition.operator === '->' &&
+      target.proposition.operator === '->'),
   [DEDUCTION_RULES.MODUS_PONENS]: (target, sources) =>
     (target.proposition.cleansedFormula ===
       sources[1].proposition.operands[1] &&
