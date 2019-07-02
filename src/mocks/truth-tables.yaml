@@ -1,3 +1,19 @@
+# BASIC TRUTH TABLES
+
+-
+  formula: ~p
+  headers: [p, ~p]
+  table:
+    - [true, false]
+    - [false, true]
+
+-
+  formula: ((  ~ p)) # Spacing/extra parentheses shouldn't matter
+  headers: [p, ~p]
+  table:
+    - [true, false]
+    - [false, true]
+
 -
   formula: p & q
   headers: [p, q, p & q]
@@ -6,6 +22,33 @@
     - [true, false, false]
     - [false, true, false]
     - [false, false, false]
+
+-
+  formula: p V q
+  headers: [p, q, p V q]
+  table:
+    - [true, true, true]
+    - [true, false, true]
+    - [false, true, true]
+    - [false, false, false]
+
+-
+  formula: p -> q
+  headers: [p, q, p -> q]
+  table:
+    - [true, true, true]
+    - [true, false, false]
+    - [false, true, true]
+    - [false, false, true]
+
+-
+  formula: p <-> q
+  headers: [p, q, p <-> q]
+  table:
+    - [true, true, true]
+    - [true, false, false]
+    - [false, true, false]
+    - [false, false, true]
 
 -
   formula: (p & q) V r
