@@ -524,11 +524,6 @@ describe('Formula', function() {
         const generatedTruthTable = formula.generateTruthTable(
           truthTable.formula
         );
-        console.log(
-          'XXXXXXXXXXXXXXXXXXXXXXXX',
-          generatedTruthTable,
-          truthTable.table
-        );
         assert.isTrue(arrayEquals(truthTable.table, generatedTruthTable));
       });
     });
