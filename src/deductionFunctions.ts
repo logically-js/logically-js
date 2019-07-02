@@ -70,8 +70,6 @@ const checkRuleRecursively = (
   return false;
 };
 
-/** **************** COMMUTATIVITY ******************* */
-
 /**
  * Function that checks whether Commutativity applies at the top level
  *
@@ -84,6 +82,47 @@ const topLevelCommutativity = (t: Formula, s: Formula): boolean =>
   t.operator.match(/[V&]/) &&
   t.operands[0] === s.operands[1] &&
   t.operands[1] === s.operands[0];
+
+/**
+ * Checks for the application of Associativity at the top level.
+ *
+ * @param {Formula} t - target proposition
+ * @param {Formula} s - source proposition
+ * @return {boolean} - Can you go from target to source with Associativity?
+ */
+const topLevelAssociativity: SimpleDeductionRuleInterface = (t, s) => {
+  const op = t.operator;
+  if (!(op.match(/[&V]/) && op === s.operator)) {
+    return false;
+  }
+  // Try associating to one side
+  console.log('LEFT');
+  let operandFormula = new Formula(t.operands[0]);
+  if (operandFormula.operator === op) {
+    const newFormula = new Formula(
+      `(${operandFormula.operands[0]}) ${op} (${operandFormula.operands[1]} ${op} ${t.operands[1]})`
+    );
+    if (
+      // TODO: Should utilize the `isEqual` method
+      newFormula.cleansedFormula === s.cleansedFormula
+    ) {
+      return true;
+    }
+  }
+
+  // Try associating to the other direction
+  console.log('RIGHT');
+  operandFormula = new Formula(t.operands[1]);
+  if (operandFormula.operator === op) {
+    const newFormula = new Formula(
+      `(${t.operands[0]} ${op} ${operandFormula.operands[0]}) ${op} (${operandFormula.operands[1]})`
+    );
+    if (newFormula.cleansedFormula === s.cleansedFormula) {
+      return true;
+    }
+    return false;
+  }
+};
 
 /**
  * Function that checks whether Double Negation applies at the top level
@@ -135,40 +174,11 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
     target.proposition.operands.includes(
       sources[0].proposition.cleansedFormula
     ) && target.proposition.operator === 'V',
-  [DEDUCTION_RULES.ASSOCIATIVITY]: (target, sources) => {
-    const op = target.proposition.operator;
-    if (!op.match(/[&V]/) && op === sources[0].proposition.operator) {
-      return false;
-    }
-    // Try associating to the left
-    console.log('LEFT');
-    let operandFormula = new Formula(target.proposition.operands[0]);
-    if (operandFormula.operator === op) {
-      const newFormula = new Formula(
-        `(${operandFormula.operands[0]}) ${op} (${operandFormula.operands[1]} ${op} ${target.proposition.operands[1]})`
-      );
-      if (
-        // TODO: Should utilize the `isEqual` method
-        newFormula.cleansedFormula === sources[0].proposition.cleansedFormula
-      ) {
-        return true;
-      }
-    }
-    // Try associating to the right
-    console.log('RIGHT');
-    operandFormula = new Formula(target.proposition.operands[1]);
-    if (operandFormula.operator === op) {
-      const newFormula = new Formula(
-        `(${target.proposition.operands[0]} ${op} ${operandFormula.operands[0]}) ${op} (${operandFormula.operands[1]})`
-      );
-      if (
-        newFormula.cleansedFormula === sources[0].proposition.cleansedFormula
-      ) {
-        return true;
-      }
-    }
-    return false;
-  },
+  [DEDUCTION_RULES.ASSOCIATIVITY]: (target, sources) =>
+    checkRuleRecursively(topLevelAssociativity)(
+      target.proposition,
+      sources[0].proposition
+    ),
   [DEDUCTION_RULES.COMMUTATIVITY]: (target, sources) =>
     checkRuleRecursively(topLevelCommutativity)(
       target.proposition,
