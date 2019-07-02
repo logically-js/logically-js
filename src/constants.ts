@@ -31,3 +31,35 @@ export const CITED_LINES_COUNT = <CitedLinesCount>{
   [DEDUCTION_RULES.SIMPLIFICATION]: 1,
   [DEDUCTION_RULES.TAUTOLOGY]: 1
 };
+
+interface REInterface {
+  [operatorName: string]: RegExp;
+}
+
+/**
+ * Enum of regular expressions for testing various logical patterns.
+ */
+export const RE = <REInterface>{
+  // Any lowercase alphabetic letter is an atomic variable.
+  atomicVariable: /^([a-z])$/,
+  // Operators are ~, V, &, ->, and <->.
+  binaryOperator: /^(V|&|->|<->)/,
+  operator: /^(~|V|&|->|<->)/,
+  unaryOperator: /^(~)/
+};
+
+interface TruthFunctionInterface {
+  (...args: boolean[]): boolean;
+}
+
+interface TruthFunctionDictInterface {
+  [operator: string]: TruthFunctionInterface;
+}
+
+export const TRUTH_FUNCTIONS = <TruthFunctionDictInterface>{
+  '~': (p: boolean): boolean => p === false,
+  '&': (p: boolean, q: boolean): boolean => p === true && q === true,
+  V: (p: boolean, q: boolean): boolean => p === true || q === true,
+  '->': (p: boolean, q: boolean): boolean => p === false || q === true,
+  '<->': (p: boolean, q: boolean): boolean => p === q && typeof p === 'boolean'
+};

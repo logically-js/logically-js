@@ -1,4 +1,12 @@
+import { RE, TRUTH_FUNCTIONS } from './constants';
+
 interface FormulaInterface {
+  /**
+   * cleansedFormula is the canonical string representation of
+   * the formula. It is stripped of whitespace and any extra parens.
+   * This can be used for checking equality of two formulas.
+   */
+  cleansedFormula: string;
   operator: string;
   operands: string[];
   formula: ParsedInterface;
@@ -47,7 +55,7 @@ export class Formula implements FormulaInterface {
    * @param  {string}  string - The string to test
    * @return {boolean}        - Is the input string atomic?
    */
-  isAtomicString = (string: string): boolean => {
+  isAtomicString = (string = this.formulaString): boolean => {
     return RE.atomicVariable.test(string);
   };
 
@@ -55,7 +63,7 @@ export class Formula implements FormulaInterface {
    * Compares two formulas for equality.
    * @param {Formula | string} formula - formula to be compared
    * @param {Formula | string} formula2 - other formula to be compared
-                                    (if absent, compares with current formula)
+                                    (if absent, compares with `this` formula)
    * @return {boolean}
    */
   isEqual = (
@@ -116,7 +124,7 @@ export class Formula implements FormulaInterface {
    * @param  {string} string - String to be trimmed.
    * @return {string}        - String with whitespace removed.
    */
-  removeWhiteSpace = (string: string): string => {
+  removeWhiteSpace = (string = this.formulaString): string => {
     return string.replace(/\s/g, '');
   };
 
@@ -428,35 +436,6 @@ export class Formula implements FormulaInterface {
         result[j][i] = this.evaluateFormulaString(headers[i], assignment);
       }
     }
-    console.log('RESULT!!!!', result);
     return result;
   };
 }
-
-interface REInterface {
-  [operatorName: string]: RegExp;
-}
-
-/**
- * Enum of regular expressions for testing various logical patterns.
- */
-const RE = <REInterface>{
-  // Any lowercase alphabetic letter is an atomic variable.
-  atomicVariable: /^([a-z])$/,
-  // Operators are ~, V, &, ->, and <->.
-  binaryOperator: /^(V|&|->|<->)/,
-  operator: /^(~|V|&|->|<->)/,
-  unaryOperator: /^(~)/
-};
-
-interface TruthFunctionInterface {
-  [operator: string]: (...args: boolean[]) => boolean;
-}
-
-const TRUTH_FUNCTIONS = <TruthFunctionInterface>{
-  '~': (p: boolean): boolean => p === false,
-  '&': (p: boolean, q: boolean): boolean => p === true && q === true,
-  V: (p: boolean, q: boolean): boolean => p === true || q === true,
-  '->': (p: boolean, q: boolean): boolean => p === false || q === true,
-  '<->': (p: boolean, q: boolean): boolean => p === q && typeof p === 'boolean'
-};
