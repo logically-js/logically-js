@@ -344,7 +344,6 @@ export class Formula implements FormulaInterface {
   generateTruthTableHeaders = (
     formulaString = this.formulaString
   ): string[] => {
-    formulaString = formulaString;
     const result: Set<string> = new Set();
     const helper = (formulaString: string): void => {
       result.add(formulaString);

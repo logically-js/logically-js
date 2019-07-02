@@ -3,6 +3,13 @@ import { LineOfProof, Proof } from './Proof';
 import { Formula } from './Formula';
 import { CITED_LINES_COUNT, DEDUCTION_RULES } from './constants';
 
+/**
+ * Takes a line of proof and a proof and determines if the line is a valid move.
+ *
+ * @param {LineOfProof} move - The move currently being considered.
+ * @param {Proof} proof - The proof being considered.
+ * @return {boolean} - Is the move valid?
+ */
 export const evaluateMove = (move: LineOfProof, proof: Proof): boolean =>
   CITED_LINES_COUNT[move.rule] === move.citedLines.length &&
   DEDUCTION_FUNCTIONS[move.rule](
@@ -10,60 +17,38 @@ export const evaluateMove = (move: LineOfProof, proof: Proof): boolean =>
     move.citedLines.map(line => proof.lines[line - 1])
   );
 
-interface DeductionFunctionsInterface {
+interface DeductionRulesDictInterface {
   [deductionRule: string]: (
     target?: LineOfProof,
     sources?: LineOfProof[]
   ) => boolean;
 }
 
-interface SimpleDeductionFunctionInterface {
-  (target: Formula, sources: Formula): boolean;
+/**
+ * Interface for checking a natural deduction rule that has only
+ * one source formula and is only checked at the top level/main operator.
+ */
+interface SimpleDeductionRuleInterface {
+  (target: Formula, source: Formula): boolean;
 }
 
-const checkRuleRecursively = (rule: SimpleDeductionFunctionInterface) => (
-  ...args: Formula[]
-): boolean => {
-  const [formula1, formula2] = args;
-  if (rule(formula1, formula2)) return true;
+/**
+ * Higher-order function that takes a SimpleDeductionRule and converts it to a
+ * function that recursively checks whether it applies to a formula
+ * and its subformulas.
+ *
+ * @param {SimpleDeductionRuleInterface} rule - Top-level rule-checking function
+ * @return {SimpleDeductionRuleInterface} A recursive version of the input
+ */
+const checkRuleRecursively = (
+  rule: SimpleDeductionRuleInterface
+): SimpleDeductionRuleInterface => (...args) => {
+  const [target, source] = args;
+  if (rule(target, source)) return true;
   // If left operands match, recurse to the right
-  if (formula1.operands[0] === formula2.operands[0]) {
-    if (
-      checkRuleRecursively(rule)(
-        new Formula(formula1.operands[1]),
-        new Formula(formula2.operands[1])
-      )
-    ) {
-      return true;
-    }
-  }
-  // If right operands match, recurse to the left
-  if (formula1.operands[1] === formula2.operands[1]) {
-    if (
-      checkRuleRecursively(rule)(
-        new Formula(formula1.operands[0]),
-        new Formula(formula2.operands[0])
-      )
-    ) {
-      return true;
-    }
-  }
-  return false;
-};
-
-/** **************** COMMUTATIVITY ******************* */
-
-const topLevelCommutativity = (t: Formula, s: Formula): boolean =>
-  t.operator === s.operator &&
-  t.operator.match(/[V&]/) &&
-  t.operands[0] === s.operands[1] &&
-  t.operands[1] === s.operands[0];
-
-const commutativity = (target: Formula, source: Formula) => {
-  if (topLevelCommutativity(target, source)) return true;
   if (target.operands[0] === source.operands[0]) {
     if (
-      commutativity(
+      checkRuleRecursively(rule)(
         new Formula(target.operands[1]),
         new Formula(source.operands[1])
       )
@@ -71,9 +56,10 @@ const commutativity = (target: Formula, source: Formula) => {
       return true;
     }
   }
+  // If right operands match, recurse to the left
   if (target.operands[1] === source.operands[1]) {
     if (
-      commutativity(
+      checkRuleRecursively(rule)(
         new Formula(target.operands[0]),
         new Formula(source.operands[0])
       )
@@ -84,14 +70,20 @@ const commutativity = (target: Formula, source: Formula) => {
   return false;
 };
 
-const commutativityHelper = (
-  target: LineOfProof,
-  sources: LineOfProof[]
-): boolean =>
-  checkRuleRecursively(commutativity)(
-    target.proposition,
-    sources[0].proposition
-  );
+/** **************** COMMUTATIVITY ******************* */
+
+/**
+ * Function that checks whether Commutativity applies at the top level
+ *
+ * @param {Formula} t - Target formula
+ * @param {Formula} s - Source formula
+ * @return {boolean} - Does Commutativity apply at the top level?
+ */
+const topLevelCommutativity = (t: Formula, s: Formula): boolean =>
+  t.operator === s.operator &&
+  t.operator.match(/[V&]/) &&
+  t.operands[0] === s.operands[1] &&
+  t.operands[1] === s.operands[0];
 
 /**
  * Rules of implication are easier to compute because they only apply to the
@@ -113,7 +105,7 @@ const commutativityHelper = (
  * that function and apply a higher-order-function that performs the DFS
  * with that function/rule recursively on the formula.
  */
-export const DEDUCTION_FUNCTIONS = <DeductionFunctionsInterface>{
+export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
   [DEDUCTION_RULES.ADDITION]: (target, sources) =>
     target.proposition.operands.includes(
       sources[0].proposition.cleansedFormula
@@ -152,7 +144,11 @@ export const DEDUCTION_FUNCTIONS = <DeductionFunctionsInterface>{
     }
     return false;
   },
-  [DEDUCTION_RULES.COMMUTATIVITY]: commutativityHelper,
+  [DEDUCTION_RULES.COMMUTATIVITY]: (target, sources) =>
+    checkRuleRecursively(topLevelCommutativity)(
+      target.proposition,
+      sources[0].proposition
+    ),
   [DEDUCTION_RULES.CONJUNCTION]: (target, sources) =>
     target.proposition.operands.includes(
       sources[0].proposition.cleansedFormula
