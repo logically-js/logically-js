@@ -97,12 +97,10 @@ export class Proof implements ProofInterface {
   addLineToProof = (
     newLine: LineOfProof | SimpleAddLineToProofInterface
   ): void => {
-    console.log('addLineToProof', newLine, newLine instanceof LineOfProof);
     if (newLine instanceof LineOfProof) {
       this.lines.push(newLine);
     } else {
       const proposition: Formula = new Formula(newLine.proposition);
-      console.log('new LINE', proposition);
       const { citedLines, rule } = newLine;
       const newLineOfProof: LineOfProof = new LineOfProof({
         citedLines,
@@ -140,7 +138,6 @@ export class Proof implements ProofInterface {
     }
     const incorrectMoves: boolean[] = new Array(this.lines.length).fill(false);
     this.lines.forEach((line, index) => {
-      console.log('LINE!', line, index);
       const isValidMove = evaluateMove(line, this);
       incorrectMoves[index] = !isValidMove;
       hasWrongMoves = Boolean(

@@ -16,6 +16,7 @@ describe('Proof', function() {
   } catch (e) {
     console.log(e);
   }
+
   it('Should load properly', () => {
     const proof = new Proof();
     assert.exists(proof);

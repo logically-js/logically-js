@@ -1,11 +1,20 @@
 import { assert } from 'chai';
 import { inspect } from 'util';
+import { safeLoad } from 'js-yaml';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 
 import translateEnglishToSymbolic from './Formula.translate';
 import { arrayEquals } from './utils';
 
 /* eslint-disable-next-line */
 import { AssignmentInterface, Formula } from './Formula';
+
+interface MockTruthTableInterface {
+  formula: string;
+  headers: string[];
+  table: boolean[][];
+}
 
 describe('Formula', function() {
   it('should be imported correctly', function() {
@@ -494,9 +503,34 @@ describe('Formula', function() {
   });
 
   describe('Truth Tables', function() {
-    // TODO: Make tests for truth tables.
-    // const formula = new Formula('p & q');
-    // console.log('HELLLOOO!', formula.generateTruthTableHeaders('p & q'));
-    // console.log('HIIII', formula.generateTruthTable('p & q'));
+    let mockTruthTables: MockTruthTableInterface[];
+    try {
+      mockTruthTables = safeLoad(
+        readFileSync(resolve(__dirname, './mocks/truth-tables.yaml'), 'utf8')
+      );
+    } catch (e) {
+      console.log(e);
+    }
+    mockTruthTables.forEach(truthTable => {
+      const formula = new Formula(truthTable.formula);
+      it(`should generate the correct truth table headers for the proposition ${truthTable.formula}`, () => {
+        const generatedTableHeaders = formula.generateTruthTableHeaders(
+          truthTable.formula
+        );
+        assert.isTrue(arrayEquals(truthTable.headers, generatedTableHeaders));
+      });
+
+      it(`should generate the correct truth table for the proposition ${truthTable.formula}`, () => {
+        const generatedTruthTable = formula.generateTruthTable(
+          truthTable.formula
+        );
+        console.log(
+          'XXXXXXXXXXXXXXXXXXXXXXXX',
+          generatedTruthTable,
+          truthTable.table
+        );
+        assert.isTrue(arrayEquals(truthTable.table, generatedTruthTable));
+      });
+    });
   });
 });

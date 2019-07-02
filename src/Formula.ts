@@ -330,10 +330,13 @@ export class Formula implements FormulaInterface {
 
   /**
    * Generate the headers for the truth table
-   * @param  {[type]} formulaString [description]
-   * @return {void}               [description]
+   * @param  {string} formulaString - Optional formulaString argument
+   * @return {string[]}  Truth table headers sorted alphabetically and by length
    */
-  generateTruthTableHeaders = (formulaString: string): string[] => {
+  generateTruthTableHeaders = (
+    formulaString = this.formulaString
+  ): string[] => {
+    formulaString = formulaString;
     const result: Set<string> = new Set();
     const helper = (formulaString: string): void => {
       result.add(formulaString);
@@ -355,12 +358,28 @@ export class Formula implements FormulaInterface {
       });
     };
     helper(formulaString);
-    return Array.from(result).sort((a, b) => {
-      if (a.length < b.length) return -1;
-      else if (a.length > b.length) return 1;
-      else return a < b ? -1 : b < a ? 1 : 0;
-    });
+    return Array.from(result)
+      .sort((a, b) => {
+        if (a.length < b.length) return -1;
+        else if (a.length > b.length) return 1;
+        else return a < b ? -1 : b < a ? 1 : 0;
+      })
+      .map(this.prettyFormula);
   };
+
+  /**
+   * Takes a formulaString and returns a pretty, normalized formatting
+   * with a single space between arguments and operators.
+   * @param  {string} formulaString - The formula to be prettified
+   * @return {string} - Prettified formula
+   */
+  prettyFormula = (formulaString = this.formulaString): string =>
+    this.trimParens(formulaString)
+      .replace(/\s+/g, '') // Remove all whitespace
+      .replace(/([a-zV&^(-(?>:>))])/g, (_, x) => x + ' ') // Add spaces
+      .replace(/\(\s+/g, '(') // Remove spaces after `(`
+      .replace(/\s+\)/g, ')') // Remove spaces before ')'
+      .replace(/\s+$/g, ''); // Remove possible extra space at end
 
   /**
    * Returns a sorted list of the atomic variables.
@@ -409,6 +428,7 @@ export class Formula implements FormulaInterface {
         result[j][i] = this.evaluateFormulaString(headers[i], assignment);
       }
     }
+    console.log('RESULT!!!!', result);
     return result;
   };
 }

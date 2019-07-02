@@ -10,7 +10,9 @@ export const arrayEquals = (arr1: any[], arr2: any[]): boolean => {
     return false;
   }
   for (let i = 0; i < arr1.length; i++) {
-    if (arr1[i] !== arr2[i]) {
+    if (Array.isArray(arr1[i]) && Array.isArray(arr2[i])) {
+      if (!arrayEquals(arr1[i], arr2[i])) return false;
+    } else if (arr1[i] !== arr2[i]) {
       return false;
     }
   }

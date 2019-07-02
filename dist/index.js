@@ -7,3 +7,4 @@ exports.LineOfProof = Proof_1.LineOfProof;
 exports.Proof = Proof_1.Proof;
 const constants_1 = require("./constants");
 exports.DEDUCTION_RULES = constants_1.DEDUCTION_RULES;
+//# sourceMappingURL=index.js.map
