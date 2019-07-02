@@ -50,6 +50,28 @@
     - [false, true, false]
     - [false, false, true]
 
+
+
+# MORE COMPLEX PROPOSITIONS
+
+-
+  formula: (p & q) -> p
+  headers: [p, q, p & q, (p & q) -> p]
+  table:
+    - [true, true, true, true]
+    - [true, false, false, true]
+    - [false, true, false, true]
+    - [false, false, false, true]
+
+-
+  formula: (p V q) <-> (q -> ~p)
+  headers: [p, q, ~p, p V q, q -> ~p, (p V q) <-> (q -> ~p)]
+  table:
+    - [true, true, false, true, false, false]
+    - [true, false, false, true, true, true]
+    - [false, true, true, true, true, true]
+    - [false, false, true, false, true, false]
+
 -
   formula: (p & q) V r
   headers: [p, q, r, p & q, (p & q) V r]
