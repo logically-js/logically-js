@@ -134,7 +134,7 @@ const topLevelAssociativity: SimpleDeductionRuleInterface = (t, s) => {
 const topLevelDoubleNegation = (t: Formula, s: Formula): boolean => {
   // We can identify which argument is the one that had
   // the double negation by its length
-  if (t.cleansedFormula.length > s.cleansedFormula.length) {
+  if (t.cleansedFormulaString.length > s.cleansedFormulaString.length) {
     const operandFormula = new Formula(t.operands[0]);
     return (
       t.operator === '~' &&
@@ -174,7 +174,7 @@ const topLevelDoubleNegation = (t: Formula, s: Formula): boolean => {
 export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
   [DEDUCTION_RULES.ADDITION]: (target, sources) =>
     target.proposition.operands.includes(
-      sources[0].proposition.cleansedFormula
+      sources[0].proposition.cleansedFormulaString
     ) && target.proposition.operator === 'V',
   [DEDUCTION_RULES.ASSOCIATIVITY]: (target, sources) =>
     checkRuleRecursively(topLevelAssociativity)(
@@ -188,10 +188,10 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
     ),
   [DEDUCTION_RULES.CONJUNCTION]: (target, sources) =>
     target.proposition.operands.includes(
-      sources[0].proposition.cleansedFormula
+      sources[0].proposition.cleansedFormulaString
     ) &&
     target.proposition.operands.includes(
-      sources[1].proposition.cleansedFormula
+      sources[1].proposition.cleansedFormulaString
     ) &&
     target.proposition.operator === '&',
   [DEDUCTION_RULES.DOUBLE_NEGATION]: (target, sources) =>
@@ -215,23 +215,24 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
       sources[0].proposition.operator === '->' &&
       target.proposition.operator === '->'),
   [DEDUCTION_RULES.MODUS_PONENS]: (target, sources) =>
-    (target.proposition.cleansedFormula ===
+    (target.proposition.cleansedFormulaString ===
       sources[1].proposition.operands[1] &&
-      sources[0].proposition.cleansedFormula ===
+      sources[0].proposition.cleansedFormulaString ===
         sources[1].proposition.operands[0] &&
       sources[1].proposition.operator === '->') ||
-    (target.proposition.cleansedFormula ===
+    (target.proposition.cleansedFormulaString ===
       sources[0].proposition.operands[1] &&
-      sources[1].proposition.cleansedFormula ===
+      sources[1].proposition.cleansedFormulaString ===
         sources[0].proposition.operands[0] &&
       sources[0].proposition.operator === '->'),
   [DEDUCTION_RULES.PREMISE]: () => true,
   [DEDUCTION_RULES.SIMPLIFICATION]: (target, sources) =>
     sources[0].proposition.operands.includes(
-      target.proposition.cleansedFormula
+      target.proposition.cleansedFormulaString
     ) && sources[0].proposition.operator === '&',
   [DEDUCTION_RULES.TAUTOLOGY]: (target, sources) =>
     sources[0].proposition.operator === '&' &&
     sources[0].proposition.operands[0] === sources[0].proposition.operands[1] &&
-    sources[0].proposition.operands[0] === target.proposition.cleansedFormula
+    sources[0].proposition.operands[0] ===
+      target.proposition.cleansedFormulaString
 };

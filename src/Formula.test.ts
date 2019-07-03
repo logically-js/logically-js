@@ -80,7 +80,7 @@ describe('Formula', function() {
     }
   });
 
-  describe('cleanseFormula()', function() {
+  describe('cleanseFormulaString()', function() {
     const testCases = [
       { input: 'p & q', output: 'p&q' },
       { input: '(p & q)', output: 'p&q' },
@@ -96,7 +96,7 @@ describe('Formula', function() {
     for (const test of testCases) {
       it(`should return '${test.output}' for the formula '${test.input}'`, function() {
         const formula = new Formula();
-        assert.equal(formula.cleanseFormula(test.input), test.output);
+        assert.equal(formula.cleanseFormulaString(test.input), test.output);
       });
     }
   });

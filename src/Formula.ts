@@ -2,11 +2,12 @@ import { RE, TRUTH_FUNCTIONS } from './constants';
 
 interface FormulaInterface {
   /**
-   * cleansedFormula is the canonical string representation of
+   * cleansedFormulaString is the canonical string representation of
    * the formula. It is stripped of whitespace and any extra parens.
    * This can be used for checking equality of two formulas.
    */
-  cleansedFormula: string;
+  cleansedFormulaString: string;
+  initialFormulaString: string;
   operator: string;
   operands: string[];
   formula: ParsedInterface;
@@ -26,27 +27,27 @@ export interface AssignmentInterface {
  * Class for representing propositional formulas.
  */
 export class Formula implements FormulaInterface {
-  cleansedFormula: string;
+  cleansedFormulaString: string;
+  initialFormulaString: string;
   operator: string | null;
   operands: string[];
   formula: ParsedInterface;
   formulaString: string;
   /**
    * Class constructor
-   * @param {string} formulaString - A logical formula in string format.
+   * @param {string} formulaString - A logical formula in string format
    */
   constructor(formulaString?: string) {
     console.log('CONSTRUCTOR', formulaString);
     this.operator = null;
     this.operands = [];
-    this.formulaString = formulaString;
-    this.cleansedFormula = undefined;
+    this.cleansedFormulaString = undefined;
     if (formulaString) {
       console.log('formulaString exists');
-      this.cleansedFormula = this.cleanseFormula(formulaString);
-      this.formula = this.parseString(this.cleansedFormula);
+      this.cleansedFormulaString = this.cleanseFormulaString(formulaString);
+      this.formula = this.parseString(this.cleansedFormulaString);
       this.operator = this.formula.operator;
-      this.operands = this.formula.operands.map(this.cleanseFormula);
+      this.operands = this.formula.operands.map(this.cleanseFormulaString);
     }
   }
 
@@ -84,7 +85,7 @@ export class Formula implements FormulaInterface {
         ? formula2
         : new Formula(formula2)
       : this;
-    return formula.cleansedFormula === otherFormula.cleansedFormula;
+    return formula.cleansedFormulaString === otherFormula.cleansedFormulaString;
   };
 
   /**
@@ -187,14 +188,14 @@ export class Formula implements FormulaInterface {
    * @param {string} formula - the formula to "cleanse"
    * @return {string} - the cleansed formula
    */
-  cleanseFormula = (formula?: string): string | undefined => {
+  cleanseFormulaString = (formula?: string): string | undefined => {
     if (!formula) return;
     const parsed = this.parseString(formula);
     if (!parsed.operator) {
       return formula && this.trimParens(this.removeWhiteSpace(formula));
     }
-    let op1 = this.cleanseFormula(parsed.operands[0]);
-    let op2 = this.cleanseFormula(parsed.operands[1]);
+    let op1 = this.cleanseFormulaString(parsed.operands[0]);
+    let op2 = this.cleanseFormulaString(parsed.operands[1]);
     const operator = parsed.operator;
     op1 = op1 && (op1.length > 1 ? `(${op1})` : op1);
     op2 = op2 && (op2.length > 1 ? `(${op2})` : op2);
