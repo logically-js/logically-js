@@ -176,9 +176,8 @@ export class Formula implements FormulaInterface {
       : this;
     return (
       (compareFormula.operator === '~' &&
-        formula.cleansedFormula === compareFormula.operands[0]) ||
-      (formula.operator === '~' &&
-        compareFormula.cleansedFormula === formula.operands[0])
+        formula.isEqual(compareFormula.operands[0])) ||
+      (formula.operator === '~' && compareFormula.isEqual(formula.operands[0]))
     );
   };
 

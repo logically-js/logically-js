@@ -104,7 +104,7 @@ const topLevelAssociativity: SimpleDeductionRuleInterface = (t, s) => {
     );
     if (
       // TODO: Should utilize the `isEqual` method
-      newFormula.cleansedFormula === s.cleansedFormula
+      newFormula.isEqual(s)
     ) {
       return true;
     }
@@ -117,7 +117,7 @@ const topLevelAssociativity: SimpleDeductionRuleInterface = (t, s) => {
     const newFormula = new Formula(
       `(${t.operands[0]} ${op} ${operandFormula.operands[0]}) ${op} (${operandFormula.operands[1]})`
     );
-    if (newFormula.cleansedFormula === s.cleansedFormula) {
+    if (newFormula.isEqual(s)) {
       return true;
     }
     return false;
@@ -132,19 +132,21 @@ const topLevelAssociativity: SimpleDeductionRuleInterface = (t, s) => {
  * @return {boolean} - Does Double Negation apply at the top level?
  */
 const topLevelDoubleNegation = (t: Formula, s: Formula): boolean => {
+  // We can identify which argument is the one that had
+  // the double negation by its length
   if (t.cleansedFormula.length > s.cleansedFormula.length) {
     const operandFormula = new Formula(t.operands[0]);
     return (
       t.operator === '~' &&
       operandFormula.operator === '~' &&
-      operandFormula.operands[0] === s.cleansedFormula
+      operandFormula.isEqual(operandFormula.operands[0], s)
     );
   } else {
     const operandFormula = new Formula(s.operands[0]);
     return (
       s.operator === '~' &&
       operandFormula.operator === '~' &&
-      operandFormula.operands[0] === t.cleansedFormula
+      operandFormula.isEqual(operandFormula.operands[0], t)
     );
   }
 };

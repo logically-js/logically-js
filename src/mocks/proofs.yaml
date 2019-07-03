@@ -40,6 +40,14 @@
   - [p & (q & r), Associativity, [1]]
 
 -
+  - [p V (q V r), Premise, []]
+  - [(p V q) V r, Associativity, [1]]
+
+-
+  - [(p V q) V r, Premise, []]
+  - [p V (q V r), Associativity, [1]]
+
+-
   - [(p & (q & r)) & s, Premise, []]
   - [((p & q) & r) & s, Associativity, [1]]
   - [(p & (q & r)) & s, Associativity, [2]]
@@ -92,6 +100,7 @@
   - [(p & q) & r, Associativity, [1]]
   - [r, Simplification, [2]]
 
+
 -
   - [p, Premise, []]
   - [q, Premise, []]
@@ -103,3 +112,9 @@
   - [(p & q) & (r & s), Premise, []]
   - [p & (q & (r & s)), Associativity, [1]]
   - [p, Simplification, [2]]
+
+-
+  - [(p & q) & r, Premise, []]
+  - [p & (q & r), Associativity, [1]]
+  - [(p & (q & r)) V (p V t), Addition, [2]]
+  # - [((p & (q & r)) V p) V t, Associatiity, [3]] # FIXME: This fails
