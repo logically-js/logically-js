@@ -79,6 +79,13 @@
   - [(~(~p) V ~(~q)), Double Negation, [2]]
 
 
+# HYPOTHETICAL_SYLLOGISM
+-
+  - [p -> q, Premise, []]
+  - [q -> r, Premise, []]
+  - [p -> r, Hypothetical Syllogism, [1, 2]]
+
+
 # MIXED RULES
 -
   - [p & (q & r), Premise, []]

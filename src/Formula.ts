@@ -336,6 +336,7 @@ export class Formula implements FormulaInterface {
     return TRUTH_FUNCTIONS[parsed.operator](...values);
   };
 
+  // TODO: This function should probably return an array of Formulas.
   /**
    * Generate the headers for the truth table
    * @param  {string} formulaString - Optional formulaString argument
