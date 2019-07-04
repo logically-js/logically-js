@@ -40,6 +40,8 @@ interface REInterface {
   [operatorName: string]: RegExp;
 }
 
+export type Operator = '~' | '&' | 'V' | '->' | '<->';
+
 /**
  * Enum of regular expressions for testing various logical patterns.
  */

@@ -1,4 +1,9 @@
-import { RE, TRUTH_FUNCTIONS } from './constants';
+import {
+  /* eslint-disable-next-line */ // eslint complains about this as `no-unused-vars`
+  Operator,
+  RE,
+  TRUTH_FUNCTIONS
+} from './constants';
 
 interface FormulaInterface {
   /**
@@ -8,14 +13,14 @@ interface FormulaInterface {
    */
   cleansedFormulaString: string;
   initialFormulaString: string;
-  operator: string;
+  operator: Operator;
   operands: string[];
   formula: ParsedInterface;
   formulaString: string;
 }
 
 interface ParsedInterface {
-  operator: string;
+  operator: Operator;
   operands: string[];
 }
 
@@ -29,7 +34,7 @@ export interface AssignmentInterface {
 export class Formula implements FormulaInterface {
   cleansedFormulaString: string;
   initialFormulaString: string;
-  operator: string | null;
+  operator: Operator | null;
   operands: string[];
   formula: ParsedInterface;
   formulaString: string;
@@ -252,7 +257,7 @@ export class Formula implements FormulaInterface {
       const match = formulaString
         .slice(mainBinaryOperatorIndex)
         .match(RE.binaryOperator);
-      const operator: string = match[0];
+      const operator = match[0] as Operator;
       const operandL: string = formulaString.slice(0, mainBinaryOperatorIndex);
       const operandR: string = formulaString.slice(
         mainBinaryOperatorIndex + operator.length
