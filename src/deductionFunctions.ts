@@ -46,6 +46,7 @@ const checkRuleRecursively = (
   const [target, source] = args;
   if (rule(target, source)) return true;
 
+  // If both formulas start with negation, recurse inwards on both
   if (target.operator === '~' && source.operator === '~') {
     return checkRuleRecursively(rule)(target.operands[0], source.operands[0]);
   }
@@ -235,6 +236,8 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
     ) && sources[0].proposition.operator === '&',
   [DEDUCTION_RULES.TAUTOLOGY]: (target, sources) =>
     sources[0].proposition.operator === '&' &&
-    sources[0].proposition.operands[0] === sources[0].proposition.operands[1] &&
+    sources[0].proposition.operands[0].isEqual(
+      sources[0].proposition.operands[1]
+    ) &&
     sources[0].proposition.operands[0].isEqual(target.proposition)
 };
