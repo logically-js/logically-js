@@ -47,23 +47,13 @@ const checkRuleRecursively = (
   if (rule(target, source)) return true;
   // If left operands match, recurse to the right
   if (target.operands[0] === source.operands[0]) {
-    if (
-      checkRuleRecursively(rule)(
-        new Formula(target.operands[1]),
-        new Formula(source.operands[1])
-      )
-    ) {
+    if (checkRuleRecursively(rule)(target.operands[1], source.operands[1])) {
       return true;
     }
   }
   // If right operands match, recurse to the left
   if (target.operands[1] === source.operands[1]) {
-    if (
-      checkRuleRecursively(rule)(
-        new Formula(target.operands[0]),
-        new Formula(source.operands[0])
-      )
-    ) {
+    if (checkRuleRecursively(rule)(target.operands[0], source.operands[0])) {
       return true;
     }
   }
@@ -96,11 +86,11 @@ const topLevelAssociativity: SimpleDeductionRuleInterface = (t, s) => {
     return false;
   }
   // Try associating to one side
-  console.log('LEFT');
-  let operandFormula = new Formula(t.operands[0]);
+  console.log('LEFT', t, s);
+  let operandFormula = t.operands[0];
   if (operandFormula.operator === op) {
     const newFormula = new Formula(
-      `(${operandFormula.operands[0]}) ${op} (${operandFormula.operands[1]} ${op} ${t.operands[1]})`
+      `(${operandFormula.operands[0].cleansedFormulaString}) ${op} (${operandFormula.operands[1].cleansedFormulaString} ${op} ${t.operands[1].cleansedFormulaString})`
     );
     if (
       // TODO: Should utilize the `isEqual` method
@@ -112,10 +102,10 @@ const topLevelAssociativity: SimpleDeductionRuleInterface = (t, s) => {
 
   // Try associating to the other direction
   console.log('RIGHT');
-  operandFormula = new Formula(t.operands[1]);
+  operandFormula = t.operands[1];
   if (operandFormula.operator === op) {
     const newFormula = new Formula(
-      `(${t.operands[0]} ${op} ${operandFormula.operands[0]}) ${op} (${operandFormula.operands[1]})`
+      `(${t.operands[0].cleansedFormulaString} ${op} ${operandFormula.operands[0].cleansedFormulaString}) ${op} (${operandFormula.operands[1].cleansedFormulaString})`
     );
     if (newFormula.isEqual(s)) {
       return true;
@@ -135,14 +125,14 @@ const topLevelDoubleNegation = (t: Formula, s: Formula): boolean => {
   // We can identify which argument is the one that had
   // the double negation by its length
   if (t.cleansedFormulaString.length > s.cleansedFormulaString.length) {
-    const operandFormula = new Formula(t.operands[0]);
+    const operandFormula = t.operands[0];
     return (
       t.operator === '~' &&
       operandFormula.operator === '~' &&
       operandFormula.isEqual(operandFormula.operands[0], s)
     );
   } else {
-    const operandFormula = new Formula(s.operands[0]);
+    const operandFormula = s.operands[0];
     return (
       s.operator === '~' &&
       operandFormula.operator === '~' &&
@@ -173,8 +163,8 @@ const topLevelDoubleNegation = (t: Formula, s: Formula): boolean => {
  */
 export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
   [DEDUCTION_RULES.ADDITION]: (target, sources) =>
-    target.proposition.operands.includes(
-      sources[0].proposition.cleansedFormulaString
+    target.proposition.operands.some(operand =>
+      operand.isEqual(sources[0].proposition)
     ) && target.proposition.operator === 'V',
   [DEDUCTION_RULES.ASSOCIATIVITY]: (target, sources) =>
     checkRuleRecursively(topLevelAssociativity)(
@@ -187,11 +177,11 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
       sources[0].proposition
     ),
   [DEDUCTION_RULES.CONJUNCTION]: (target, sources) =>
-    target.proposition.operands.includes(
-      sources[0].proposition.cleansedFormulaString
+    target.proposition.operands.some(operand =>
+      operand.isEqual(sources[0].proposition)
     ) &&
-    target.proposition.operands.includes(
-      sources[1].proposition.cleansedFormulaString
+    target.proposition.operands.some(operand =>
+      operand.isEqual(sources[1].proposition)
     ) &&
     target.proposition.operator === '&',
   [DEDUCTION_RULES.DOUBLE_NEGATION]: (target, sources) =>
@@ -200,39 +190,44 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
       sources[0].proposition
     ),
   [DEDUCTION_RULES.HYPOTHETICAL_SYLLOGISM]: (target, sources) =>
-    (sources[0].proposition.operands[1] ===
-      sources[1].proposition.operands[0] &&
-      target.proposition.operands[0] === sources[0].proposition.operands[0] &&
-      target.proposition.operands[1] === sources[1].proposition.operands[1] &&
+    (sources[0].proposition.operands[1].isEqual(
+      sources[1].proposition.operands[0]
+    ) &&
+      target.proposition.operands[0].isEqual(
+        sources[0].proposition.operands[0]
+      ) &&
+      target.proposition.operands[1].isEqual(
+        sources[1].proposition.operands[1]
+      ) &&
       sources[0].proposition.operator === '->' &&
       sources[1].proposition.operator === '->' &&
       target.proposition.operator === '->') ||
-    (sources[1].proposition.operands[1] ===
-      sources[0].proposition.operands[0] &&
-      target.proposition.operands[0] === sources[1].proposition.operands[0] &&
-      target.proposition.operands[1] === sources[0].proposition.operands[1] &&
+    (sources[1].proposition.operands[1].isEqual(
+      sources[0].proposition.operands[0]
+    ) &&
+      target.proposition.operands[0].isEqual(
+        sources[1].proposition.operands[0]
+      ) &&
+      target.proposition.operands[1].isEqual(
+        sources[0].proposition.operands[1]
+      ) &&
       sources[1].proposition.operator === '->' &&
       sources[0].proposition.operator === '->' &&
       target.proposition.operator === '->'),
   [DEDUCTION_RULES.MODUS_PONENS]: (target, sources) =>
-    (target.proposition.cleansedFormulaString ===
-      sources[1].proposition.operands[1] &&
-      sources[0].proposition.cleansedFormulaString ===
-        sources[1].proposition.operands[0] &&
+    (target.proposition.isEqual(sources[1].proposition.operands[1]) &&
+      sources[0].proposition.isEqual(sources[1].proposition.operands[0]) &&
       sources[1].proposition.operator === '->') ||
-    (target.proposition.cleansedFormulaString ===
-      sources[0].proposition.operands[1] &&
-      sources[1].proposition.cleansedFormulaString ===
-        sources[0].proposition.operands[0] &&
+    (target.proposition.isEqual(sources[0].proposition.operands[1]) &&
+      sources[1].proposition.isEqual(sources[0].proposition.operands[0]) &&
       sources[0].proposition.operator === '->'),
   [DEDUCTION_RULES.PREMISE]: () => true,
   [DEDUCTION_RULES.SIMPLIFICATION]: (target, sources) =>
-    sources[0].proposition.operands.includes(
-      target.proposition.cleansedFormulaString
+    sources[0].proposition.operands.some(operand =>
+      operand.isEqual(target.proposition)
     ) && sources[0].proposition.operator === '&',
   [DEDUCTION_RULES.TAUTOLOGY]: (target, sources) =>
     sources[0].proposition.operator === '&' &&
     sources[0].proposition.operands[0] === sources[0].proposition.operands[1] &&
-    sources[0].proposition.operands[0] ===
-      target.proposition.cleansedFormulaString
+    sources[0].proposition.operands[0].isEqual(target.proposition)
 };

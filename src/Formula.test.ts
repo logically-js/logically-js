@@ -18,7 +18,7 @@ interface MockTruthTableInterface {
 
 describe('Formula', function() {
   it('should be imported correctly', function() {
-    const formula = new Formula();
+    const formula = new Formula('p');
     assert.exists(formula);
   });
   describe('findMainBinaryOperatorIndex()', function() {
@@ -33,7 +33,7 @@ describe('Formula', function() {
       ];
       for (const test of testCases) {
         it(`should return ${test.result} for the formula '${test.formula}'`, function() {
-          const formula = new Formula();
+          const formula = new Formula('p');
           assert.equal(
             formula.findMainBinaryOperatorIndex(test.formula),
             test.result
@@ -51,7 +51,7 @@ describe('Formula', function() {
       ];
       for (const test of testCases) {
         it(`should return ${test.result} for the formula '${test.formula}'`, function() {
-          const formula = new Formula();
+          const formula = new Formula('p');
           assert.equal(
             formula.findMainBinaryOperatorIndex(test.formula),
             test.result
@@ -74,7 +74,7 @@ describe('Formula', function() {
     ];
     for (const test of testCases) {
       it(`should return '${test.output}' for the formula '${test.input}'`, function() {
-        const formula = new Formula();
+        const formula = new Formula('p');
         assert.equal(formula.trimParens(test.input), test.output);
       });
     }
@@ -95,7 +95,7 @@ describe('Formula', function() {
     ];
     for (const test of testCases) {
       it(`should return '${test.output}' for the formula '${test.input}'`, function() {
-        const formula = new Formula();
+        const formula = new Formula('p');
         assert.equal(formula.cleanseFormulaString(test.input), test.output);
       });
     }
@@ -118,7 +118,7 @@ describe('Formula', function() {
         }', operands: [${test.output.operands.map(
           p => `'${p}'`
         )}]}\``, function() {
-          const formula = new Formula();
+          const formula = new Formula('p');
           const output = formula.parseString(test.input);
           assert.equal(output.operator, test.output.operator);
           assert.isTrue(arrayEquals(output.operands, test.output.operands));
@@ -157,7 +157,7 @@ describe('Formula', function() {
         }', operands: [${test.output.operands.map(
           p => `'${p}'`
         )}]}\``, function() {
-          const formula = new Formula();
+          const formula = new Formula('p');
           const output = formula.parseString(test.input);
           assert.equal(output.operator, test.output.operator);
           assert.isTrue(arrayEquals(output.operands, test.output.operands));
@@ -191,7 +191,7 @@ describe('Formula', function() {
         }', operands: [${test.output.operands.map(
           p => `'${p}'`
         )}]}\``, function() {
-          const formula = new Formula();
+          const formula = new Formula('p');
           const output = formula.parseString(test.input);
           assert.equal(output.operator, test.output.operator);
           assert.isTrue(arrayEquals(output.operands, test.output.operands));
@@ -217,7 +217,7 @@ describe('Formula', function() {
       ];
       for (const test of testCases) {
         it(`should recognize that the formula '${test.input}' is well-formed`, function() {
-          const formula = new Formula();
+          const formula = new Formula('p');
           const isWFF = formula.isWFFString(test.input);
           assert.equal(isWFF, test.output);
         });
@@ -244,7 +244,7 @@ describe('Formula', function() {
       ];
       for (const test of testCases) {
         it(`should recognize that the formula '${test.input}' is *not* well-formed`, function() {
-          const formula = new Formula();
+          const formula = new Formula('p');
           const isWFF = formula.isWFFString(test.input);
           assert.equal(isWFF, test.output);
         });
@@ -268,7 +268,7 @@ describe('Formula', function() {
         const assignment = inspect(test.input[1]);
         it(`should recognize that the formula '${test.input[0]}'
         is ${test.output} under the assignment ${assignment}`, function() {
-          const formula = new Formula();
+          const formula = new Formula('p');
           assert.equal(
             formula.evaluateFormulaString(...test.input),
             test.output
@@ -311,7 +311,7 @@ describe('Formula', function() {
         const assignment = inspect(test.input[1]);
         it(`should recognize that the formula '${test.input[0]}'
         is ${test.output} under the assignment ${assignment}`, function() {
-          const formula = new Formula();
+          const formula = new Formula('p');
           assert.equal(
             formula.evaluateFormulaString(...test.input),
             test.output
@@ -372,7 +372,7 @@ describe('Formula', function() {
       for (const test of testCases) {
         const assignment = inspect(test.input[1]);
         it(`should recognize that the formula '${test.input[0]}' is ${test.output} under the assignment ${assignment}`, function() {
-          const formula = new Formula();
+          const formula = new Formula('p');
           assert.equal(
             formula.evaluateFormulaString(...test.input),
             test.output

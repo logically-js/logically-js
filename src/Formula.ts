@@ -13,10 +13,8 @@ interface FormulaInterface {
    */
   cleansedFormulaString: string;
   initialFormulaString: string;
-  operator: Operator;
-  operands: string[];
-  formula: ParsedInterface;
-  formulaString: string;
+  operator?: Operator;
+  operands?: Formula[];
 }
 
 interface ParsedInterface {
@@ -34,25 +32,31 @@ export interface AssignmentInterface {
 export class Formula implements FormulaInterface {
   cleansedFormulaString: string;
   initialFormulaString: string;
-  operator: Operator | null;
-  operands: string[];
-  formula: ParsedInterface;
-  formulaString: string;
+  operator?: Operator;
+  operands?: Formula[];
   /**
    * Class constructor
    * @param {string} formulaString - A logical formula in string format
    */
-  constructor(formulaString?: string) {
+  constructor(formulaString: string) {
     console.log('CONSTRUCTOR', formulaString);
     this.operator = null;
     this.operands = [];
     this.cleansedFormulaString = undefined;
     if (formulaString) {
       console.log('formulaString exists');
+      if (this.trimParens(this.removeWhiteSpace(formulaString)).length === 1) {
+        this.cleansedFormulaString = this.trimParens(
+          this.removeWhiteSpace(formulaString)
+        );
+        return;
+      }
       this.cleansedFormulaString = this.cleanseFormulaString(formulaString);
-      this.formula = this.parseString(this.cleansedFormulaString);
-      this.operator = this.formula.operator;
-      this.operands = this.formula.operands.map(this.cleanseFormulaString);
+      const parsedFormula = this.parseString(this.cleansedFormulaString);
+      this.operator = parsedFormula.operator;
+      this.operands = parsedFormula.operands.map(
+        operand => new Formula(operand)
+      );
     }
   }
 

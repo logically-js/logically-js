@@ -35,86 +35,86 @@
   - [p & (q & r), Premise, []]
   - [(p & q) & r, Associativity, [1]]
 
--
-  - [(p & q) & r, Premise, []]
-  - [p & (q & r), Associativity, [1]]
-
--
-  - [p V (q V r), Premise, []]
-  - [(p V q) V r, Associativity, [1]]
-
--
-  - [(p V q) V r, Premise, []]
-  - [p V (q V r), Associativity, [1]]
-
--
-  - [(p & (q & r)) & s, Premise, []]
-  - [((p & q) & r) & s, Associativity, [1]]
-  - [(p & (q & r)) & s, Associativity, [2]]
-  - [p & ((q & r) & s), Associativity, [3]]
-  - [p & (q & (r & s)), Associativity, [4]]
-  - [(p & q) & (r & s), Associativity, [5]]
-
-
-# COMMUTATIVITY
--
-  - [(p & q) V (r -> s), Premise, []]
-  - [(r -> s) V (p & q), Commutativity, [1]]
-  - [(r -> s) V (q & p), Commutativity, [2]]
-
-
-# DOUBLE NEGATION
--
-  - [~(~p), Premise, []]
-  - [p, Double Negation, [1]]
-
--
-  - [~(~(p -> ~(~q))), Premise, []]
-  - [~(~(p -> q)), Double Negation, [1]]
-  - [p -> q, Double Negation, [2]]
-
--
-  - [(~(~p) V q) -> ~(~(~(~r) -> ~(~s))), Premise, []]
-  - [(~(~p) V q) -> ~(~(r -> ~(~s))), Double Negation, [1]]
-  - [(~(~p) V q) -> (r -> ~(~s)), Double Negation, [2]]
-  - [(~(~p) V q) -> (r -> s), Double Negation, [3]]
-  - [(p V q) -> (r -> s), Double Negation, [4]]
-  - [~(~((p V q) -> (r -> s))), Double Negation, [5]]
-
--
-  - [p V q, Premise, []]
-  - [(~(~p) V q), Double Negation, [1]]
-  - [(~(~p) V ~(~q)), Double Negation, [2]]
-
-
-# HYPOTHETICAL_SYLLOGISM
--
-  - [p -> q, Premise, []]
-  - [q -> r, Premise, []]
-  - [p -> r, Hypothetical Syllogism, [1, 2]]
-
-
-# MIXED RULES
--
-  - [p & (q & r), Premise, []]
-  - [(p & q) & r, Associativity, [1]]
-  - [r, Simplification, [2]]
-
-
--
-  - [p, Premise, []]
-  - [q, Premise, []]
-  - [(p & q) -> r, Premise, []]
-  - [p & q, Conjunction, [1, 2]]
-  - [r, Modus Ponens, [3, 4]]
-
--
-  - [(p & q) & (r & s), Premise, []]
-  - [p & (q & (r & s)), Associativity, [1]]
-  - [p, Simplification, [2]]
-
--
-  - [(p & q) & r, Premise, []]
-  - [p & (q & r), Associativity, [1]]
-  - [(p & (q & r)) V (p V t), Addition, [2]]
-  # - [((p & (q & r)) V p) V t, Associatiity, [3]] # FIXME: This fails
+# -
+#   - [(p & q) & r, Premise, []]
+#   - [p & (q & r), Associativity, [1]]
+#
+# -
+#   - [p V (q V r), Premise, []]
+#   - [(p V q) V r, Associativity, [1]]
+#
+# -
+#   - [(p V q) V r, Premise, []]
+#   - [p V (q V r), Associativity, [1]]
+#
+# -
+#   - [(p & (q & r)) & s, Premise, []]
+#   - [((p & q) & r) & s, Associativity, [1]]
+#   - [(p & (q & r)) & s, Associativity, [2]]
+#   - [p & ((q & r) & s), Associativity, [3]]
+#   - [p & (q & (r & s)), Associativity, [4]]
+#   - [(p & q) & (r & s), Associativity, [5]]
+#
+#
+# # COMMUTATIVITY
+# -
+#   - [(p & q) V (r -> s), Premise, []]
+#   - [(r -> s) V (p & q), Commutativity, [1]]
+#   - [(r -> s) V (q & p), Commutativity, [2]]
+#
+#
+# # DOUBLE NEGATION
+# -
+#   - [~(~p), Premise, []]
+#   - [p, Double Negation, [1]]
+#
+# -
+#   - [~(~(p -> ~(~q))), Premise, []]
+#   - [~(~(p -> q)), Double Negation, [1]]
+#   - [p -> q, Double Negation, [2]]
+#
+# -
+#   - [(~(~p) V q) -> ~(~(~(~r) -> ~(~s))), Premise, []]
+#   - [(~(~p) V q) -> ~(~(r -> ~(~s))), Double Negation, [1]]
+#   - [(~(~p) V q) -> (r -> ~(~s)), Double Negation, [2]]
+#   - [(~(~p) V q) -> (r -> s), Double Negation, [3]]
+#   - [(p V q) -> (r -> s), Double Negation, [4]]
+#   - [~(~((p V q) -> (r -> s))), Double Negation, [5]]
+#
+# -
+#   - [p V q, Premise, []]
+#   - [(~(~p) V q), Double Negation, [1]]
+#   - [(~(~p) V ~(~q)), Double Negation, [2]]
+#
+#
+# # HYPOTHETICAL_SYLLOGISM
+# -
+#   - [p -> q, Premise, []]
+#   - [q -> r, Premise, []]
+#   - [p -> r, Hypothetical Syllogism, [1, 2]]
+#
+#
+# # MIXED RULES
+# -
+#   - [p & (q & r), Premise, []]
+#   - [(p & q) & r, Associativity, [1]]
+#   - [r, Simplification, [2]]
+#
+#
+# -
+#   - [p, Premise, []]
+#   - [q, Premise, []]
+#   - [(p & q) -> r, Premise, []]
+#   - [p & q, Conjunction, [1, 2]]
+#   - [r, Modus Ponens, [3, 4]]
+#
+# -
+#   - [(p & q) & (r & s), Premise, []]
+#   - [p & (q & (r & s)), Associativity, [1]]
+#   - [p, Simplification, [2]]
+#
+# -
+#   - [(p & q) & r, Premise, []]
+#   - [p & (q & r), Associativity, [1]]
+#   - [(p & (q & r)) V (p V t), Addition, [2]]
+#   # - [((p & (q & r)) V p) V t, Associatiity, [3]] # FIXME: This fails

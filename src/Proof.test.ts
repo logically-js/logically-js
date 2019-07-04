@@ -25,6 +25,7 @@ describe('Proof', function() {
     for (const mockProof of mockProofs) {
       const proof = new Proof();
       for (const line of mockProof) {
+        console.log('LINE!', line[0]);
         proof.addLineToProof(
           new LineOfProof({
             proposition: new Formula(line[0]),
