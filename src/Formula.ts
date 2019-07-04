@@ -56,7 +56,7 @@ export class Formula implements FormulaInterface {
    * @param  {string}  string - The string to test
    * @return {boolean}        - Is the input string atomic?
    */
-  isAtomicString = (string = this.formulaString): boolean => {
+  isAtomicString = (string = this.cleansedFormulaString): boolean => {
     return RE.atomicVariable.test(string);
   };
 
@@ -125,7 +125,7 @@ export class Formula implements FormulaInterface {
    * @param  {string} string - String to be trimmed.
    * @return {string}        - String with whitespace removed.
    */
-  removeWhiteSpace = (string = this.formulaString): string => {
+  removeWhiteSpace = (string = this.cleansedFormulaString): string => {
     return string.replace(/\s/g, '');
   };
 
@@ -343,7 +343,7 @@ export class Formula implements FormulaInterface {
    * @return {string[]}  Truth table headers sorted alphabetically and by length
    */
   generateTruthTableHeaders = (
-    formulaString = this.formulaString
+    formulaString = this.cleansedFormulaString
   ): string[] => {
     const result: Set<string> = new Set();
     const helper = (formulaString: string): void => {
@@ -381,7 +381,7 @@ export class Formula implements FormulaInterface {
    * @param  {string} formulaString - The formula to be prettified
    * @return {string} - Prettified formula
    */
-  prettyFormula = (formulaString = this.formulaString): string =>
+  prettyFormula = (formulaString = this.cleansedFormulaString): string =>
     this.trimParens(formulaString)
       .replace(/\s+/g, '') // Remove all whitespace
       .replace(/([a-zV&^(-(?>:>))])/g, (_, x) => x + ' ') // Add spaces
@@ -410,7 +410,7 @@ export class Formula implements FormulaInterface {
    * @param  {Boolean} partial=false Should we only fill out the atomic values?
    * @return {Array.Boolean[]}    Truth table as matrix with values filled in.
    */
-  generateTruthTable = (formulaString: string, partial: boolean = false) => {
+  generateTruthTable = (formulaString: string, partial = false) => {
     const headers = this.generateTruthTableHeaders(formulaString);
     const atomicVars: string[] = this.getAtomicVariables(formulaString);
     const nRows: number = Math.pow(2, atomicVars.length);
