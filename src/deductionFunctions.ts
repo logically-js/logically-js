@@ -45,14 +45,26 @@ const checkRuleRecursively = (
 ): SimpleDeductionRuleInterface => (...args) => {
   const [target, source] = args;
   if (rule(target, source)) return true;
-  // If left operands match, recurse to the right
-  if (target.operands[0] === source.operands[0]) {
+
+  if (target.operator === '~' && source.operator === '~') {
+    return checkRuleRecursively(rule)(target.operands[0], source.operands[0]);
+  }
+
+  // If left operands match, recurse to the rights
+  if (
+    target.operands[0].isEqual(source.operands[0]) &&
+    target.operator === source.operator
+  ) {
     if (checkRuleRecursively(rule)(target.operands[1], source.operands[1])) {
       return true;
     }
   }
+
   // If right operands match, recurse to the left
-  if (target.operands[1] === source.operands[1]) {
+  if (
+    target.operands[1].isEqual(source.operands[1]) &&
+    target.operator === source.operator
+  ) {
     if (checkRuleRecursively(rule)(target.operands[0], source.operands[0])) {
       return true;
     }
@@ -70,8 +82,8 @@ const checkRuleRecursively = (
 const topLevelCommutativity = (t: Formula, s: Formula): boolean =>
   t.operator === s.operator &&
   t.operator.match(/[V&]/) &&
-  t.operands[0] === s.operands[1] &&
-  t.operands[1] === s.operands[0];
+  t.operands[0].isEqual(s.operands[1]) &&
+  t.operands[1].isEqual(s.operands[0]);
 
 /**
  * Checks for the application of Associativity at the top level.
@@ -86,22 +98,17 @@ const topLevelAssociativity: SimpleDeductionRuleInterface = (t, s) => {
     return false;
   }
   // Try associating to one side
-  console.log('LEFT', t, s);
   let operandFormula = t.operands[0];
   if (operandFormula.operator === op) {
     const newFormula = new Formula(
       `(${operandFormula.operands[0].cleansedFormulaString}) ${op} (${operandFormula.operands[1].cleansedFormulaString} ${op} ${t.operands[1].cleansedFormulaString})`
     );
-    if (
-      // TODO: Should utilize the `isEqual` method
-      newFormula.isEqual(s)
-    ) {
+    if (newFormula.isEqual(s)) {
       return true;
     }
   }
 
   // Try associating to the other direction
-  console.log('RIGHT');
   operandFormula = t.operands[1];
   if (operandFormula.operator === op) {
     const newFormula = new Formula(
@@ -129,14 +136,14 @@ const topLevelDoubleNegation = (t: Formula, s: Formula): boolean => {
     return (
       t.operator === '~' &&
       operandFormula.operator === '~' &&
-      operandFormula.isEqual(operandFormula.operands[0], s)
+      operandFormula.operands[0].isEqual(s)
     );
   } else {
     const operandFormula = s.operands[0];
     return (
       s.operator === '~' &&
       operandFormula.operator === '~' &&
-      operandFormula.isEqual(operandFormula.operands[0], t)
+      operandFormula.operands[0].isEqual(t)
     );
   }
 };

@@ -44,7 +44,6 @@ export class Formula implements FormulaInterface {
     this.operands = [];
     this.cleansedFormulaString = undefined;
     if (formulaString) {
-      console.log('formulaString exists');
       if (this.trimParens(this.removeWhiteSpace(formulaString)).length === 1) {
         this.cleansedFormulaString = this.trimParens(
           this.removeWhiteSpace(formulaString)
@@ -80,14 +79,6 @@ export class Formula implements FormulaInterface {
     formula: Formula | string,
     formula2?: Formula | string
   ): boolean => {
-    console.log('ISEQUAL', formula, formula2);
-    console.log('formula', formula, typeof formula, formula instanceof Formula);
-    console.log(
-      'formula2',
-      formula2,
-      typeof formula2,
-      formula2 instanceof Formula
-    );
     formula = formula instanceof Formula ? formula : new Formula(formula);
     const otherFormula = formula2
       ? formula2 instanceof Formula
@@ -323,7 +314,6 @@ export class Formula implements FormulaInterface {
     formulaString: string,
     assignment: AssignmentInterface
   ): boolean => {
-    console.log('evaluateFormulaString', formulaString, assignment);
     if (!this.isWFFString(formulaString)) return null;
     // Clean the formula.
     formulaString = this.removeWhiteSpace(formulaString);
