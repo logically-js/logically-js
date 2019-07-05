@@ -204,7 +204,6 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
     ) &&
     target.proposition.operator === '&',
   [DEDUCTION_RULES.CONSTRUCTIVE_DILEMMA]: (target, sources) => {
-    console.log('CONSTRUCTIVE_DILEMMA');
     const [conj, disj] =
       sources[0].proposition.cleansedFormulaString.length >
       sources[1].proposition.cleansedFormulaString.length
@@ -218,16 +217,11 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
       conj.operands[0].operator !== '->' ||
       conj.operands[1].operator !== '->'
     ) {
-      console.log('RETURNING EARLY');
       return false;
     }
 
-    console.log(
-      conj.operands.map(operand => operand.operands[0].cleansedFormulaString)
-    );
-
     // This is a "loose" interpretation of CD, where the order of the
-    // arguments is ignore.
+    // arguments is ignored.
     return conj.operands
       .map(operand => operand.operands[0].cleansedFormulaString)
       .every(op =>
