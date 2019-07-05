@@ -181,8 +181,7 @@ const topLevelDeMorgans: SimpleDeductionRuleInterface = (t, s) => {
 
 const topLevelDistribution: SimpleDeductionRuleInterface = (t, s) => {
   const [longer, shorter] =
-    s.cleansedFormulaString.length >
-    t.cleansedFormulaString.length
+    s.cleansedFormulaString.length > t.cleansedFormulaString.length
       ? [s, t]
       : [t, s];
   if (
@@ -196,24 +195,16 @@ const topLevelDistribution: SimpleDeductionRuleInterface = (t, s) => {
     return false;
   }
   const newDisjunct1 = new Formula(
-    `(${
-      shorter.operands[0].cleansedFormulaString
-    }) ${shorter.operator} (${
-      shorter.operands[1].operands[0].cleansedFormulaString
-    })`
+    `(${shorter.operands[0].cleansedFormulaString}) ${shorter.operator} (${shorter.operands[1].operands[0].cleansedFormulaString})`
   );
   const newDisjunct2 = new Formula(
-    `(${
-      shorter.operands[0].cleansedFormulaString
-    }) ${shorter.operator} (${
-      shorter.operands[1].operands[1].cleansedFormulaString
-    })`
+    `(${shorter.operands[0].cleansedFormulaString}) ${shorter.operator} (${shorter.operands[1].operands[1].cleansedFormulaString})`
   );
   return (
     newDisjunct1.isEqual(longer.operands[0]) &&
     newDisjunct2.isEqual(longer.operands[1])
   );
-}
+};
 
 /**
  * Rules of implication are easier to compute because they only apply to the
