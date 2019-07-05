@@ -194,6 +194,24 @@
   - [p -> r, Hypothetical Syllogism, [1, 2]]
 
 
+
+# MATERIAL IMPLICATION
+-
+  - [p -> q, Premise, []]
+  - [~p V q, Material Implication, [1]]
+
+-
+  - [~p V q, Premise, []]
+  - [p -> q, Material Implication, [1]]
+
+-
+  - [(p -> q) -> (r V s), Premise, []]
+  - [(~p V q) -> (r V s), Material Implication, [1]]
+  - [(~p V q) -> (~r -> s), Material Implication, [2]]
+  - [~(~p V q) V (~r -> s), Material Implication, [3]]
+
+
+
 # MODUS PONENS
 -
   - [p -> q, Premise, []]
