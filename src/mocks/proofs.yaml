@@ -134,6 +134,11 @@
   - [q -> r, Premise, []]
   - [p -> r, Hypothetical Syllogism, [1, 2]]
 
+-
+  - [q -> r, Premise, []]
+  - [p -> q, Premise, []]
+  - [p -> r, Hypothetical Syllogism, [1, 2]]
+
 
 # MODUS PONENS
 -
