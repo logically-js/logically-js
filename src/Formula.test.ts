@@ -1,14 +1,24 @@
 import { assert } from 'chai';
 import { inspect } from 'util';
+import { safeLoad } from 'js-yaml';
+import { readFileSync } from 'fs';
+import { resolve } from 'path';
 
 import translateEnglishToSymbolic from './Formula.translate';
 import { arrayEquals } from './utils';
 
-import { Formula } from './Formula';
+/* eslint-disable-next-line */
+import { AssignmentInterface, Formula } from './Formula';
+
+interface MockTruthTableInterface {
+  formula: string;
+  headers: string[];
+  table: boolean[][];
+}
 
 describe('Formula', function() {
   it('should be imported correctly', function() {
-    const formula = new Formula();
+    const formula = new Formula('p');
     assert.exists(formula);
   });
   describe('findMainBinaryOperatorIndex()', function() {
@@ -23,7 +33,7 @@ describe('Formula', function() {
       ];
       for (const test of testCases) {
         it(`should return ${test.result} for the formula '${test.formula}'`, function() {
-          const formula = new Formula();
+          const formula = new Formula('p');
           assert.equal(
             formula.findMainBinaryOperatorIndex(test.formula),
             test.result
@@ -41,7 +51,7 @@ describe('Formula', function() {
       ];
       for (const test of testCases) {
         it(`should return ${test.result} for the formula '${test.formula}'`, function() {
-          const formula = new Formula();
+          const formula = new Formula('p');
           assert.equal(
             formula.findMainBinaryOperatorIndex(test.formula),
             test.result
@@ -58,12 +68,35 @@ describe('Formula', function() {
       { input: '((p & q))', output: 'p & q' },
       { input: '(p & q) <-> (p V q)', output: '(p & q) <-> (p V q)' },
       { input: '((p & q) <-> (p V q))', output: '(p & q) <-> (p V q)' },
-      { input: '(p & (p -> q))', output: 'p & (p -> q)' }
+      { input: '(p & (p -> q))', output: 'p & (p -> q)' },
+      { input: 'p & (q)', output: 'p & q' },
+      { input: '((p) & ((q)))', output: 'p & q' }
     ];
     for (const test of testCases) {
       it(`should return '${test.output}' for the formula '${test.input}'`, function() {
-        const formula = new Formula();
+        const formula = new Formula('p');
         assert.equal(formula.trimParens(test.input), test.output);
+      });
+    }
+  });
+
+  describe('cleanseFormulaString()', function() {
+    const testCases = [
+      { input: 'p & q', output: 'p&q' },
+      { input: '(p & q)', output: 'p&q' },
+      { input: '((p & q))', output: 'p&q' },
+      { input: '(p & q) <-> (p V q)', output: '(p&q)<->(pVq)' },
+      { input: '((p & q) <-> (p V q))', output: '(p&q)<->(pVq)' },
+      { input: '(p & (p -> q))', output: 'p&(p->q)' },
+      { input: 'p & (q)', output: 'p&q' },
+      { input: '((p) & ((q)))', output: 'p&q' },
+      { input: 'p -> ((q & r))', output: 'p->(q&r)' },
+      { input: '((p) -> (((q) & r)))', output: 'p->(q&r)' }
+    ];
+    for (const test of testCases) {
+      it(`should return '${test.output}' for the formula '${test.input}'`, function() {
+        const formula = new Formula('p');
+        assert.equal(formula.cleanseFormulaString(test.input), test.output);
       });
     }
   });
@@ -85,7 +118,7 @@ describe('Formula', function() {
         }', operands: [${test.output.operands.map(
           p => `'${p}'`
         )}]}\``, function() {
-          const formula = new Formula();
+          const formula = new Formula('p');
           const output = formula.parseString(test.input);
           assert.equal(output.operator, test.output.operator);
           assert.isTrue(arrayEquals(output.operands, test.output.operands));
@@ -124,7 +157,7 @@ describe('Formula', function() {
         }', operands: [${test.output.operands.map(
           p => `'${p}'`
         )}]}\``, function() {
-          const formula = new Formula();
+          const formula = new Formula('p');
           const output = formula.parseString(test.input);
           assert.equal(output.operator, test.output.operator);
           assert.isTrue(arrayEquals(output.operands, test.output.operands));
@@ -158,7 +191,7 @@ describe('Formula', function() {
         }', operands: [${test.output.operands.map(
           p => `'${p}'`
         )}]}\``, function() {
-          const formula = new Formula();
+          const formula = new Formula('p');
           const output = formula.parseString(test.input);
           assert.equal(output.operator, test.output.operator);
           assert.isTrue(arrayEquals(output.operands, test.output.operands));
@@ -184,7 +217,7 @@ describe('Formula', function() {
       ];
       for (const test of testCases) {
         it(`should recognize that the formula '${test.input}' is well-formed`, function() {
-          const formula = new Formula();
+          const formula = new Formula('p');
           const isWFF = formula.isWFFString(test.input);
           assert.equal(isWFF, test.output);
         });
@@ -211,7 +244,7 @@ describe('Formula', function() {
       ];
       for (const test of testCases) {
         it(`should recognize that the formula '${test.input}' is *not* well-formed`, function() {
-          const formula = new Formula();
+          const formula = new Formula('p');
           const isWFF = formula.isWFFString(test.input);
           assert.equal(isWFF, test.output);
         });
@@ -219,9 +252,14 @@ describe('Formula', function() {
     });
   });
 
+  interface TestCaseInterface {
+    input: [string, AssignmentInterface];
+    output: boolean | null;
+  }
+
   describe('evaluateFormulaString()', function() {
     describe('should correctly evaluate atomic formulas', function() {
-      const testCases = [
+      const testCases: TestCaseInterface[] = [
         { input: ['p', { p: true }], output: true },
         { input: ['p', { p: false }], output: false },
         { input: ['pq', { p: false, q: true }], output: null }
@@ -230,7 +268,7 @@ describe('Formula', function() {
         const assignment = inspect(test.input[1]);
         it(`should recognize that the formula '${test.input[0]}'
         is ${test.output} under the assignment ${assignment}`, function() {
-          const formula = new Formula();
+          const formula = new Formula('p');
           assert.equal(
             formula.evaluateFormulaString(...test.input),
             test.output
@@ -240,7 +278,7 @@ describe('Formula', function() {
     });
 
     describe('should correctly evaluate the basic connectives', function() {
-      const testCases = [
+      const testCases: TestCaseInterface[] = [
         // NEGATION
         { input: ['~p', { p: true }], output: false },
         { input: ['~p', { p: false }], output: true },
@@ -273,7 +311,7 @@ describe('Formula', function() {
         const assignment = inspect(test.input[1]);
         it(`should recognize that the formula '${test.input[0]}'
         is ${test.output} under the assignment ${assignment}`, function() {
-          const formula = new Formula();
+          const formula = new Formula('p');
           assert.equal(
             formula.evaluateFormulaString(...test.input),
             test.output
@@ -283,7 +321,7 @@ describe('Formula', function() {
     });
 
     describe('should correctly evaluate more complex formulas', function() {
-      const testCases = [
+      const testCases: TestCaseInterface[] = [
         { input: ['p -> (q -> p)', { p: true, q: true }], output: true },
         { input: ['p -> (q -> p)', { p: true, q: false }], output: true },
         { input: ['p -> (q -> p)', { p: false, q: true }], output: true },
@@ -333,10 +371,8 @@ describe('Formula', function() {
       ];
       for (const test of testCases) {
         const assignment = inspect(test.input[1]);
-        it(`should recognize that the formula '${test.input[0]}' is ${
-          test.output
-        } under the assignment ${assignment}`, function() {
-          const formula = new Formula();
+        it(`should recognize that the formula '${test.input[0]}' is ${test.output} under the assignment ${assignment}`, function() {
+          const formula = new Formula('p');
           assert.equal(
             formula.evaluateFormulaString(...test.input),
             test.output
@@ -344,6 +380,91 @@ describe('Formula', function() {
         });
       }
     });
+  });
+
+  describe('isEqual()', () => {
+    const testCases = [
+      /** POSITIVE CASES */
+      { input: ['p', 'p'], output: true },
+      { input: ['q', 'q'], output: true },
+      { input: ['~p', '~p'], output: true },
+      { input: ['(p & q)', 'p & q'], output: true },
+      { input: ['p -> (q & r)', 'p  ->  (  q & r)'], output: true },
+      {
+        input: ['(p V q) <-> (p & ~q)', '((pVq)  <-> (p & ~q))'],
+        output: true
+      },
+      /** NEGATIVE CASES */
+      { input: ['p', '~q'], output: false },
+      { input: ['p', 'p & p'], output: false },
+      { input: ['~(p & q)', '~p & q'], output: false },
+      { input: ['(p & q)', '~(~(p & q))'], output: false },
+      { input: ['p -> (q & r)', 'p -> ~(q & r)'], output: false },
+      {
+        input: ['(p V q) <-> (p & ~q)', '~((p&q)  <-> (p & ~q))'],
+        output: false
+      }
+    ];
+    for (const test of testCases) {
+      it(`should recognize that the formula ${test.input[0]}
+        is ${test.output ? '' : 'not '}equal to ${test.input[1]}`, function() {
+        const formula = new Formula(test.input[0]);
+        const otherFormula = new Formula(test.input[1]);
+        assert.equal(formula.isEqual(otherFormula), test.output);
+        assert.equal(formula.isEqual(test.input[1]), test.output);
+        assert.equal(formula.isEqual(formula, otherFormula), test.output);
+        assert.equal(formula.isEqual(formula, test.input[1]), test.output);
+        assert.equal(
+          formula.isEqual(test.input[0], test.input[1]),
+          test.output
+        );
+        assert.equal(otherFormula.isEqual(formula), test.output);
+        assert.equal(otherFormula.isEqual(test.input[0]), test.output);
+      });
+    }
+  });
+
+  describe('isNegation()', () => {
+    const testCases = [
+      /** POSITIVE CASES */
+      { input: ['p', '~p'], output: true },
+      { input: ['~p', 'p'], output: true },
+      { input: ['~(p & q)', 'p & q'], output: true },
+      { input: ['(p & q)', '~(p & q)'], output: true },
+      { input: ['p -> (q & r)', '~(p -> (q & r))'], output: true },
+      {
+        input: ['(p V q) <-> (p & ~q)', '~((pVq)  <-> (p & ~q))'],
+        output: true
+      },
+      /** NEGATIVE CASES */
+      { input: ['p', '~q'], output: false },
+      { input: ['p', 'p'], output: false },
+      { input: ['~(p & q)', '~p & q'], output: false },
+      { input: ['(p & q)', '~(~(p & q))'], output: false },
+      { input: ['p -> (q & r)', 'p -> ~(q & r)'], output: false },
+      {
+        input: ['(p V q) <-> (p & ~q)', '~((p&q)  <-> (p & ~q))'],
+        output: false
+      }
+    ];
+    for (const test of testCases) {
+      it(`should recognize that the formula ${test.input[0]} is ${
+        test.output ? '' : 'not '
+      }the negation of ${test.input[1]}`, function() {
+        const formula = new Formula(test.input[0]);
+        const otherFormula = new Formula(test.input[1]);
+        assert.equal(formula.isNegation(otherFormula), test.output);
+        assert.equal(formula.isNegation(test.input[1]), test.output);
+        assert.equal(formula.isNegation(formula, otherFormula), test.output);
+        assert.equal(formula.isNegation(formula, test.input[1]), test.output);
+        assert.equal(
+          formula.isNegation(test.input[0], test.input[1]),
+          test.output
+        );
+        assert.equal(otherFormula.isNegation(formula), test.output);
+        assert.equal(otherFormula.isNegation(test.input[0]), test.output);
+      });
+    }
   });
 
   describe('translateEnglishToSymbolic()', function() {
@@ -382,9 +503,29 @@ describe('Formula', function() {
   });
 
   describe('Truth Tables', function() {
-    // TODO: Make tests for truth tables.
-    // const formula = new Formula('p & q');
-    // console.log('HELLLOOO!', formula.generateTruthTableHeaders('p & q'));
-    // console.log('HIIII', formula.generateTruthTable('p & q'));
+    let mockTruthTables: MockTruthTableInterface[];
+    try {
+      mockTruthTables = safeLoad(
+        readFileSync(resolve(__dirname, './mocks/truth-tables.yaml'), 'utf8')
+      );
+    } catch (e) {
+      console.log(e);
+    }
+    mockTruthTables.forEach(truthTable => {
+      const formula = new Formula(truthTable.formula);
+      it(`should generate the correct truth table headers for the proposition ${truthTable.formula}`, () => {
+        const generatedTableHeaders = formula.generateTruthTableHeaders(
+          truthTable.formula
+        );
+        assert.isTrue(arrayEquals(truthTable.headers, generatedTableHeaders));
+      });
+
+      it(`should generate the correct truth table for the proposition ${truthTable.formula}`, () => {
+        const generatedTruthTable = formula.generateTruthTable(
+          truthTable.formula
+        );
+        assert.isTrue(arrayEquals(truthTable.table, generatedTruthTable));
+      });
+    });
   });
 });

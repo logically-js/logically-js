@@ -6,30 +6,36 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "lint": "eslint src/ --ext .js,.jsx",
-    "test": "nyc --reporter=text mocha src/**/*.test.js --require @babel/register --require ts-node/register",
-    "precommit": "npm run lint && npm run test"
+    "lint": "eslint src/ --ext .ts,.tsx,.js,.jsx",
+    "test": "nyc mocha src/**/*.test.ts --require ts-node/register",
+    "precommit": "npm run prettier && git add -A && npm run lint && npm run test",
+    "prettier": "./node_modules/.bin/prettier src/**/*.ts --write"
   },
   "keywords": [
     "logic"
   ],
   "author": "JDR",
   "license": "ISC",
-  "dependencies": {
-    "@types/node": "^12.0.10"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@babel/cli": "^7.2.3",
     "@babel/core": "^7.2.2",
     "@babel/node": "^7.2.2",
     "@babel/preset-env": "^7.2.3",
+    "@babel/preset-typescript": "^7.3.3",
     "@babel/register": "^7.4.4",
+    "@types/chai": "^4.1.7",
+    "@types/js-yaml": "^3.12.1",
+    "@types/mocha": "^5.2.7",
+    "@types/node": "^12.0.10",
+    "@typescript-eslint/parser": "^1.11.0",
     "chai": "^4.2.0",
     "eslint": "^5.12.1",
     "eslint-config-google": "^0.11.0",
     "eslint-config-prettier": "^3.6.0",
     "eslint-plugin-prettier": "^3.0.1",
     "husky": "^1.3.1",
+    "js-yaml": "^3.13.1",
     "mocha": "^5.2.0",
     "nyc": "^13.1.0",
     "prettier": "^1.16.0",

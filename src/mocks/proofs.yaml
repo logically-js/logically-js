@@ -1,0 +1,325 @@
+# SIMPLIFICATION
+-
+  - [((p -> q) & q) & (r & (s & t)), Premise, []]
+  - [r & (s & t), Simplification, [1]]
+  - [s & t, Simplification, [2]]
+  - [s, Simplification, [3]]
+  - [r, Simplification, [2]]
+  - [((p -> q) & q), Simplification, [1]]
+  - [p -> q, Simplification, [6]]
+  - [q, Simplification, [6]]
+
+-
+  - [p & (q & (r & s)), Premise, []]
+  - [q & (r & s), Simplification, [1]]
+  - [r & s, Simplification, [2]]
+  - [s, Simplification, [3]]
+
+
+# ADDITION
+-
+  - [p & q, Premise, []]
+  - [(p & q) V r, Addition, [1]]
+  - [s V (p & q), Addition, [1]]
+  - [(s V (p & q)) V r, Addition, [3]]
+  - [t V ((s V (p & q)) V r), Addition, [4]]
+
+-
+  - [p, Premise, []]
+  - [p V q, Addition, [1]]
+  - [(p V q) V ((s & t) -> (t <-> s)), Addition, [2]]
+
+
+# ASSOCIATIVITY
+-
+  - [p & (q & r), Premise, []]
+  - [(p & q) & r, Associativity, [1]]
+
+-
+  - [(p & q) & r, Premise, []]
+  - [p & (q & r), Associativity, [1]]
+
+-
+  - [p V (q V r), Premise, []]
+  - [(p V q) V r, Associativity, [1]]
+
+-
+  - [(p V q) V r, Premise, []]
+  - [p V (q V r), Associativity, [1]]
+
+-
+  - [(p & (q & r)) & s, Premise, []]
+  - [((p & q) & r) & s, Associativity, [1]]
+  - [(p & (q & r)) & s, Associativity, [2]]
+  - [p & ((q & r) & s), Associativity, [3]]
+  - [p & (q & (r & s)), Associativity, [4]]
+  - [(p & q) & (r & s), Associativity, [5]]
+
+
+# COMMUTATIVITY
+-
+  - [(p & q) V (r -> s), Premise, []]
+  - [(r -> s) V (p & q), Commutativity, [1]]
+  - [(r -> s) V (q & p), Commutativity, [2]]
+
+
+
+# CONSTRUCTIVE DILEMMA
+-
+  - [(p -> q) & (r -> s), Premise, []]
+  - [p V r, Premise, []]
+  - [q V s, Constructive Dilemma, [1, 2]]
+
+-
+  - [(p -> q) & (r -> s), Premise, []]
+  - [p V r, Premise, []]
+  - [s V q, Constructive Dilemma, [1, 2]]
+
+-
+  - [(p -> q) & (r -> s), Premise, []]
+  - [r V p, Premise, []]
+  - [q V s, Constructive Dilemma, [1, 2]]
+
+
+
+# DEMORGAN'S RULE
+-
+  - [~(p & q), Premise, []]
+  - [~p V ~q, DeMorgan's Rule, [1]]
+
+-
+  - [~p V ~q, Premise, []]
+  - [~(p & q), DeMorgan's Rule, [1]]
+
+-
+  - [~(p V q), Premise, []]
+  - [~p & ~q, DeMorgan's Rule, [1]]
+
+-
+  - [~p & ~q, Premise, []]
+  - [~(p V q), DeMorgan's Rule, [1]]
+
+-
+  - [p -> ~(q & r), Premise, []]
+  - [p -> (~q V ~r), DeMorgan's Rule, [1]]
+  - [p -> ~(q & r), DeMorgan's Rule, [2]]
+
+-
+  - [p -> ~(q V r), Premise, []]
+  - [p -> (~q & ~r), DeMorgan's Rule, [1]]
+  - [p -> ~(q V r), DeMorgan's Rule, [2]]
+
+-
+  - [~(~(p & q) V ~(r V ~s)), Premise, []]
+  - [~((~p V ~q) V ~(r V ~s)), DeMorgan's Rule, [1]]
+  - [~((~p V ~q) V (~r & s)), DeMorgan's Rule, [2]]
+  - [~(~p V ~q) & ~(~r & s), DeMorgan's Rule, [3]]
+  - [~(~p V ~q) & (r V ~s), DeMorgan's Rule, [4]]
+  - [(p & q) & (r V ~s), DeMorgan's Rule, [5]]
+
+
+
+# DISJUNCTIVE SYLLOGISM
+-
+  - [p V q, Premise, []]
+  - [~p, Premise, []]
+  - [q, Disjunctive Syllogism, [1, 2]]
+
+-
+  - [(p -> q) V ((r & s) V (r & t)), Premise, []]
+  - [~(p -> q), Premise, []]
+  - [(r & s) V (r & t),  Disjunctive Syllogism, [1, 2]]
+  - [~(r & t), Premise, []]
+  - [r & s, Disjunctive Syllogism, [3, 4]]
+
+
+
+# DISTRIBUTION
+-
+  - [p & (q V r), Premise, []]
+  - [(p & q) V (p & r), Distribution, [1]]
+
+-
+  - [(p & q) V (p & r), Premise, []]
+  - [p & (q V r), Distribution, [1]]
+
+-
+  - [p & (q V (r & s)), Premise, []]
+  - [p & ((q V r) & (q V s)), Distribution, [1]]
+  - [r V (p & (((q V r) & (q V s)))), Addition, [2]]
+  - [(r V p) & (r V ((q V r) & (q V s))), Distribution, [3]]
+
+
+# DOUBLE NEGATION
+-
+  - [~(~p), Premise, []]
+  - [p, Double Negation, [1]]
+
+-
+  - [p, Premise, []]
+  - [~(~p), Double Negation, [1]]
+
+-
+  - [~(p & q), Premise, []]
+  - [~(q & p), Commutativity, [1]]
+
+-
+  - [~(~(p -> ~(~q))), Premise, []]
+  - [~(~(p -> q)), Double Negation, [1]]
+  - [p -> q, Double Negation, [2]]
+
+-
+  - [(~(~p) V q) -> ~(~(~(~r) -> ~(~s))), Premise, []]
+  - [(~(~p) V q) -> ~(~(r -> ~(~s))), Double Negation, [1]]
+  - [(~(~p) V q) -> (r -> ~(~s)), Double Negation, [2]]
+  - [(~(~p) V q) -> (r -> s), Double Negation, [3]]
+  - [(p V q) -> (r -> s), Double Negation, [4]]
+  - [~(~((p V q) -> (r -> s))), Double Negation, [5]]
+
+-
+  - [p V q, Premise, []]
+  - [(~(~p) V q), Double Negation, [1]]
+  - [(~(~p) V ~(~q)), Double Negation, [2]]
+
+
+
+# EXPORTATION
+-
+  - [(p & q) -> r, Premise, []]
+  - [p -> (q -> r), Exportation, [1]]
+
+-
+  - [p -> (q -> r), Premise, []]
+  - [(p & q) -> r, Exportation, [1]]
+
+-
+  - [p -> (q & ((r & s) -> t)), Premise, []]
+  - [p -> (q & (r -> (s -> t))), Exportation, [1]]
+  - [p -> (q & ((r & s) -> t)), Exportation, [2]]
+
+
+
+# HYPOTHETICAL_SYLLOGISM
+-
+  - [p -> q, Premise, []]
+  - [q -> r, Premise, []]
+  - [p -> r, Hypothetical Syllogism, [1, 2]]
+
+-
+  - [q -> r, Premise, []]
+  - [p -> q, Premise, []]
+  - [p -> r, Hypothetical Syllogism, [1, 2]]
+
+
+
+# MATERIAL EQUIVALENCE
+-
+  - [p <-> q, Premise, []]
+  - [(p & q) V (~p & ~q), Material Equivalence, [1]]
+
+-
+  - [(p & q) V (~p & ~q), Premise, []]
+  - [p <-> q, Material Equivalence, [1]]
+
+-
+  - [p <-> q, Premise, []]
+  - [(p -> q) & (q -> p), Material Equivalence, [1]]
+
+
+
+
+
+# MATERIAL IMPLICATION
+-
+  - [p -> q, Premise, []]
+  - [~p V q, Material Implication, [1]]
+
+-
+  - [~p V q, Premise, []]
+  - [p -> q, Material Implication, [1]]
+
+-
+  - [(p -> q) -> (r V s), Premise, []]
+  - [(~p V q) -> (r V s), Material Implication, [1]]
+  - [(~p V q) -> (~r -> s), Material Implication, [2]]
+  - [~(~p V q) V (~r -> s), Material Implication, [3]]
+
+
+
+# MODUS PONENS
+-
+  - [p -> q, Premise, []]
+  - [p, Premise, []]
+  - [q, Modus Ponens, [1, 2]]
+
+-
+  - [(p -> q) -> (p -> r), Premise, []]
+  - [p -> q, Premise, []]
+  - [p, Premise, []]
+  - [p -> r, Modus Ponens, [1, 2]]
+  - [r, Modus Ponens, [3, 4]]
+
+# MODUS TOLLENS
+-
+  - [p -> ~q, Premise, []]
+  - [q, Premise, []]
+  - [~p, Modus Tollens, [1,2]]
+
+
+# TAUTOLOGY
+-
+  - [p V p, Premise, []]
+  - [p, Tautology, [1]]
+
+-
+  - [(p  V p  ) V (p   V p    ), Premise, []]
+  - [p V ( p V p ), Tautology, [1]]
+  - [p V p, Tautology, [2]]
+  - [p, Tautology, [3]]
+
+-
+  - [p, Premise, []]
+  - [p V p, Tautology, [1]]
+  - [p V ( p V p ), Tautology, [2]]
+  - [(p V p) V (p V p), Tautology, [3]]
+
+
+# TRANSPOSITION
+-
+  - [p -> q, Premise, []]
+  - [~q -> ~p, Transposition, [1]]
+
+-
+  - [~p -> ~q, Premise, []]
+  - [q -> p, Transposition, [1]]
+
+-
+  - [~(~p -> q) -> (p -> ~q), Premise, []]
+  - [~(~q -> p) -> (p -> ~q), Transposition, [1]]
+  # - [~(~p -> q) -> (p -> ~q), Transposition, [2]]
+
+
+# MIXED RULES
+-
+  - [p & (q & r), Premise, []]
+  - [(p & q) & r, Associativity, [1]]
+  - [r, Simplification, [2]]
+
+
+-
+  - [p, Premise, []]
+  - [q, Premise, []]
+  - [(p & q) -> r, Premise, []]
+  - [p & q, Conjunction, [1, 2]]
+  - [r, Modus Ponens, [3, 4]]
+
+-
+  - [(p & q) & (r & s), Premise, []]
+  - [p & (q & (r & s)), Associativity, [1]]
+  - [p, Simplification, [2]]
+
+-
+  - [(p & q) & r, Premise, []]
+  - [p & (q & r), Associativity, [1]]
+  - [(p & (q & r)) V (p V t), Addition, [2]]
+  - [((p & (q & r)) V p) V t, Associativity, [3]]

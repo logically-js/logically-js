@@ -1,38 +1,64 @@
+import {
+  /* eslint-disable-next-line */ // eslint complains about this as `no-unused-vars`
+  Operator,
+  RE,
+  TRUTH_FUNCTIONS
+} from './constants';
+
 interface FormulaInterface {
-  operator: string,
-  operands: string[],
-  formulaString: string
+  /**
+   * cleansedFormulaString is the canonical string representation of
+   * the formula. It is stripped of whitespace and any extra parens.
+   * This can be used for checking equality of two formulas.
+   */
+  cleansedFormulaString: string;
+  conclusion?: Formula;
+  initialFormulaString: string;
+  operator?: Operator;
+  operands?: Formula[];
 }
 
 interface ParsedInterface {
-  operator: string;
+  operator: Operator;
   operands: string[];
 }
 
-interface AssignmentInterface {
-  [variable: string]: boolean
+export interface AssignmentInterface {
+  [variable: string]: boolean;
 }
 
 /**
  * Class for representing propositional formulas.
  */
 export class Formula implements FormulaInterface {
-  operator: string | null;
-  operands: string[];
-  formulaString: string;
+  cleansedFormulaString: string;
+  conclusion?: Formula;
+  initialFormulaString: string;
+  operator?: Operator;
+  operands?: Formula[];
   /**
    * Class constructor
-   * @param {string} formulaString - A logical formula in string format.
+   * @param {string} formulaString - A logical formula in string format
    */
   constructor(formulaString: string) {
+    // console.log('CONSTRUCTOR', formulaString);
     this.operator = null;
     this.operands = [];
-    this.formulaString = formulaString;
-    // if (formulaString) {
-    //   this.formula = this.parseString(formulaString);
-    //   this.operator = this.formula.operator;
-    //   this.operands = this.formula.operands;
-    // }
+    this.cleansedFormulaString = undefined;
+    if (formulaString) {
+      if (this.trimParens(this.removeWhiteSpace(formulaString)).length === 1) {
+        this.cleansedFormulaString = this.trimParens(
+          this.removeWhiteSpace(formulaString)
+        );
+        return;
+      }
+      this.cleansedFormulaString = this.cleanseFormulaString(formulaString);
+      const parsedFormula = this.parseString(this.cleansedFormulaString);
+      this.operator = parsedFormula.operator;
+      this.operands = parsedFormula.operands.map(
+        operand => new Formula(operand)
+      );
+    }
   }
 
   /**
@@ -40,9 +66,29 @@ export class Formula implements FormulaInterface {
    * @param  {string}  string - The string to test
    * @return {boolean}        - Is the input string atomic?
    */
-  isAtomicString(string: string): boolean {
+  isAtomicString = (string = this.cleansedFormulaString): boolean => {
     return RE.atomicVariable.test(string);
-  }
+  };
+
+  /**
+   * Compares two formulas for equality.
+   * @param {Formula | string} formula - formula to be compared
+   * @param {Formula | string} formula2 - other formula to be compared
+                                    (if absent, compares with `this` formula)
+   * @return {boolean}
+   */
+  isEqual = (
+    formula: Formula | string,
+    formula2?: Formula | string
+  ): boolean => {
+    formula = formula instanceof Formula ? formula : new Formula(formula);
+    const otherFormula = formula2
+      ? formula2 instanceof Formula
+        ? formula2
+        : new Formula(formula2)
+      : this;
+    return formula.cleansedFormulaString === otherFormula.cleansedFormulaString;
+  };
 
   /**
    * Takes a formula and recursively removes any "extra"
@@ -51,7 +97,13 @@ export class Formula implements FormulaInterface {
    * @param  {string} formulaString - the string to be trimmed
    * @return {string}               - the trimmed string
    */
-  trimParens(formulaString: string): string {
+  trimParens = (formulaString: string): string => {
+    while (/\([a-z]\)/g.test(formulaString)) {
+      formulaString = formulaString.replace(
+        /(\([a-z]\))/g,
+        (_, group) => group[1]
+      );
+    }
     const length: number = formulaString.length;
     if (formulaString[0] !== '(' || formulaString[length - 1] !== ')') {
       return formulaString; // if no leading/trailing parens, just return;
@@ -68,16 +120,16 @@ export class Formula implements FormulaInterface {
       }
     }
     return this.trimParens(formulaString.slice(1, length - 1));
-  }
+  };
 
   /**
    * Remove all whitespace from a string.
    * @param  {string} string - String to be trimmed.
    * @return {string}        - String with whitespace removed.
    */
-  removeWhiteSpace(string: string): string {
+  removeWhiteSpace = (string = this.cleansedFormulaString): string => {
     return string.replace(/\s/g, '');
-  }
+  };
 
   /**
    * Find the index of the main binary operator in a formula string,
@@ -86,7 +138,7 @@ export class Formula implements FormulaInterface {
    *                  We assume that extra parens have been trimmed.
    * @return {number}                      - The index of the main operator.
    */
-  findMainBinaryOperatorIndex(trimmedFormulaString: string) {
+  findMainBinaryOperatorIndex = (trimmedFormulaString: string): number => {
     /*
      * The main binary operator in a (trimmed) wff is the first binary operator
      * that you see when there are no open parens.
@@ -107,16 +159,81 @@ export class Formula implements FormulaInterface {
       count -= Number(suffix[0] === ')');
     }
     return -1; // no main binary operator found.
-  }
+  };
+
+  /**
+   * Checks whether a formula is the negation of another
+   * @param {Formula|string} formula - formula to compare for negation
+   * @param {Formula|string} formula2 - formula to compare for negation
+   * @return {boolean}
+   */
+  isNegation = (
+    formula: Formula | string,
+    formula2?: Formula | string
+  ): boolean => {
+    formula = formula instanceof Formula ? formula : new Formula(formula);
+    const compareFormula = formula2
+      ? formula2 instanceof Formula
+        ? formula2
+        : new Formula(formula2)
+      : this;
+    return (
+      (compareFormula.operator === '~' &&
+        formula.isEqual(compareFormula.operands[0])) ||
+      (formula.operator === '~' && compareFormula.isEqual(formula.operands[0]))
+    );
+  };
+
+  /**
+   * Generate a new Formula that is the negation of the input formula
+   * (or `this` formula by default)
+   * @param {Formula|string} formula  - The fomrula to be negated
+   * @return {Formula} - The negated formula
+   */
+  negateFormula = (formula?: Formula | string): Formula => {
+    formula =
+      typeof formula === 'string'
+        ? new Formula(formula)
+        : typeof formula === 'undefined'
+        ? this
+        : formula;
+    return new Formula(`'(${formula.cleansedFormulaString})'`);
+  };
+
+  /**
+   * Remove all whitespace and unnecessary parentheses from a formula.
+   * This produces a canonical string representation of a formula.
+   * @param {string} formula - the formula to "cleanse"
+   * @return {string} - the cleansed formula
+   */
+  cleanseFormulaString = (formula?: string): string | undefined => {
+    if (!formula) return;
+    const parsed = this.parseString(formula);
+    if (!parsed.operator) {
+      return formula && this.trimParens(this.removeWhiteSpace(formula));
+    }
+    let op1 = this.cleanseFormulaString(parsed.operands[0]);
+    let op2 = this.cleanseFormulaString(parsed.operands[1]);
+    const operator = parsed.operator;
+    op1 = op1 && (op1.length > 1 ? `(${op1})` : op1);
+    op2 = op2 && (op2.length > 1 ? `(${op2})` : op2);
+    let result;
+    if (op2) {
+      result = `${op1} ${operator} ${op2}`;
+    } else {
+      result = operator + op1;
+    }
+    return this.trimParens(this.removeWhiteSpace(result));
+  };
 
   /**
    * Takes a formula string and returns an object with
-   * the main operator and main operands.
+   * the main operator and main operands in string form.
    * @param  {string} formulaString - Formula string
    *                                  with extra parens removed.
    * @return {object}               - Object with operator and operands.
    */
-  parseString(formulaString: string): ParsedInterface | null {
+  parseString = (formulaString: string): ParsedInterface | null => {
     // Remove whitespace and any unnecessary parens.
     formulaString = this.removeWhiteSpace(formulaString);
     formulaString = this.trimParens(formulaString);
@@ -153,7 +270,7 @@ export class Formula implements FormulaInterface {
       const match = formulaString
         .slice(mainBinaryOperatorIndex)
         .match(RE.binaryOperator);
-      const operator: string = match[0];
+      const operator = match[0] as Operator;
       const operandL: string = formulaString.slice(0, mainBinaryOperatorIndex);
       const operandR: string = formulaString.slice(
         mainBinaryOperatorIndex + operator.length
@@ -176,14 +293,14 @@ export class Formula implements FormulaInterface {
 
     // Unable to parse the formula.
     return null;
-  }
+  };
 
   /**
    * Returns true iff the `formulaString` is a well-formed formula (wff).
    * @param {string} formulaString - The string to be analyzed.
    * @return {boolean}             - Does the string represent a wff?
    */
-  isWFFString(formulaString: string): boolean {
+  isWFFString = (formulaString: string): boolean => {
     formulaString = this.removeWhiteSpace(formulaString);
     formulaString = this.trimParens(formulaString);
     if (formulaString.length === 1) return this.isAtomicString(formulaString);
@@ -193,7 +310,7 @@ export class Formula implements FormulaInterface {
     if (!RE.operator.test(formula.operator)) return false; // illegal operator
     // Every operand must also be a wff.
     return formula.operands.every(operand => this.isWFFString(operand));
-  }
+  };
 
   // TODO: Reconsider the treatment of `undefined` return values.
   // Ex. `p V q` where `{ p: true }` (and `q` is `undefined`).
@@ -211,8 +328,10 @@ export class Formula implements FormulaInterface {
    * @return {boolean|null|undefined} Is the `formulaString` true under the
    *                                  `assignment`?
    */
-  evaluateFormulaString(formulaString: string, assignment: AssignmentInterface): boolean {
-    console.log('evaluateFormulaString', formulaString, assignment);
+  evaluateFormulaString = (
+    formulaString: string,
+    assignment: AssignmentInterface
+  ): boolean => {
     if (!this.isWFFString(formulaString)) return null;
     // Clean the formula.
     formulaString = this.removeWhiteSpace(formulaString);
@@ -232,14 +351,17 @@ export class Formula implements FormulaInterface {
     });
     // Apply the corresponding truth function with the values.
     return TRUTH_FUNCTIONS[parsed.operator](...values);
-  }
+  };
 
+  // TODO: This function should probably return an array of Formulas.
   /**
    * Generate the headers for the truth table
-   * @param  {[type]} formulaString [description]
-   * @return {void}               [description]
+   * @param  {string} formulaString - Optional formulaString argument
+   * @return {string[]}  Truth table headers sorted alphabetically and by length
    */
-  generateTruthTableHeaders(formulaString: string): string[] {
+  generateTruthTableHeaders = (
+    formulaString = this.cleansedFormulaString
+  ): string[] => {
     const result: Set<string> = new Set();
     const helper = (formulaString: string): void => {
       result.add(formulaString);
@@ -261,19 +383,35 @@ export class Formula implements FormulaInterface {
       });
     };
     helper(formulaString);
-    return Array.from(result).sort((a, b) => {
-      if (a.length < b.length) return -1;
-      else if (a.length > b.length) return 1;
-      else return a < b ? -1 : b < a ? 1 : 0;
-    });
-  }
+    return Array.from(result)
+      .sort((a, b) => {
+        if (a.length < b.length) return -1;
+        else if (a.length > b.length) return 1;
+        else return a < b ? -1 : b < a ? 1 : 0;
+      })
+      .map(this.prettyFormula);
+  };
+
+  /**
+   * Takes a formulaString and returns a pretty, normalized formatting
+   * with a single space between arguments and operators.
+   * @param  {string} formulaString - The formula to be prettified
+   * @return {string} - Prettified formula
+   */
+  prettyFormula = (formulaString = this.cleansedFormulaString): string =>
+    this.trimParens(formulaString)
+      .replace(/\s+/g, '') // Remove all whitespace
+      .replace(/([a-zV&^(-(?>:>))])/g, (_, x) => x + ' ') // Add spaces
+      .replace(/\(\s+/g, '(') // Remove spaces after `(`
+      .replace(/\s+\)/g, ')') // Remove spaces before ')'
+      .replace(/\s+$/g, ''); // Remove possible extra space at end
 
   /**
    * Returns a sorted list of the atomic variables.
    * @param  {string} formulaString
    * @return {string[]}
    */
-  getAtomicVariables(formulaString: string): string[] {
+  getAtomicVariables = (formulaString: string): string[] => {
     const result: Set<string> = new Set();
     for (const letter of formulaString) {
       if (/[a-z]/.test(letter)) {
@@ -281,7 +419,7 @@ export class Formula implements FormulaInterface {
       }
     }
     return Array.from(result).sort();
-  }
+  };
 
   /**
    * Generate a complete truth table with values filled in if partail = true.
@@ -289,13 +427,13 @@ export class Formula implements FormulaInterface {
    * @param  {Boolean} partial=false Should we only fill out the atomic values?
    * @return {Array.Boolean[]}    Truth table as matrix with values filled in.
    */
-  generateTruthTable(formulaString: string, partial: boolean = false) {
+  generateTruthTable = (formulaString: string, partial = false) => {
     const headers = this.generateTruthTableHeaders(formulaString);
     const atomicVars: string[] = this.getAtomicVariables(formulaString);
     const nRows: number = Math.pow(2, atomicVars.length);
     const result = new Array(nRows)
       .fill(0)
-      .map(el => new Array(headers.length).fill(null));
+      .map(() => new Array(headers.length).fill(null));
     let i = 0;
     // Set the values for the atomic variables
     for (; i < atomicVars.length; i++) {
@@ -316,34 +454,5 @@ export class Formula implements FormulaInterface {
       }
     }
     return result;
-  }
+  };
 }
-
-interface REInterface {
-  [operatorName: string]: RegExp
-}
-
-/**
- * Enum of regular expressions for testing various logical patterns.
- * @type {Object}
- */
-const RE: REInterface = {
-  // Any lowercase alphabetic letter is an atomic variable.
-  atomicVariable: /^([a-z])$/,
-  // Operators are ~, V, &, ->, and <->.
-  binaryOperator: /^(V|&|->|<->)/,
-  operator: /^(~|V|&|->|<->)/,
-  unaryOperator: /^(~)/
-};
-
-interface TruthFunctionInterface {
-  [operator: string]: (...args:boolean[]) => boolean
-}
-
-const TRUTH_FUNCTIONS: TruthFunctionInterface = {
-  '~': (p: boolean): boolean => p === false,
-  '&': (p: boolean, q: boolean): boolean => p === true && q === true,
-  V: (p: boolean, q: boolean): boolean => p === true || q === true,
-  '->': (p: boolean, q: boolean): boolean => p === false || q === true,
-  '<->': (p: boolean, q: boolean): boolean => p === q && typeof p === 'boolean'
-};
