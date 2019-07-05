@@ -34,7 +34,7 @@ describe('Proof', function() {
         );
       }
       const conclusion = mockProof[mockProof.length - 1][0];
-      console.log('CONCLUSION', conclusion);
+      // console.log('CONCLUSION', conclusion);
       proof.setConclusion(conclusion);
       it(`Should validate the proof:
         ${inspect(mockProof)}

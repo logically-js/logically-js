@@ -203,17 +203,45 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
       operand.isEqual(sources[1].proposition)
     ) &&
     target.proposition.operator === '&',
+  [DEDUCTION_RULES.CONSTRUCTIVE_DILEMMA]: (target, sources) => {
+    console.log('CONSTRUCTIVE_DILEMMA');
+    const [conj, disj] =
+      sources[0].proposition.cleansedFormulaString.length >
+      sources[1].proposition.cleansedFormulaString.length
+        ? [sources[0].proposition, sources[1].proposition]
+        : [sources[1].proposition, sources[0].proposition];
+    console.log(disj.cleansedFormulaString, conj.cleansedFormulaString);
+    if (
+      target.proposition.operator !== 'V' ||
+      conj.operator !== '&' ||
+      disj.operator !== 'V' ||
+      conj.operands[0].operator !== '->' ||
+      conj.operands[1].operator !== '->'
+    ) {
+      console.log('RETURNING EARLY');
+      return false;
+    }
+
+    /* eslint-disable */
+    for (const i in [0, 1]) {
+      for (const j in [1, 0]) {
+        if (conj.operands[i].operands[0].isEqual(disj.operands[i])) {
+          if (conj.operands[j].operands[0].isEqual(disj.operands[i])) {
+            return true;
+          }
+        }
+      }
+    }
+    /* eslint-enable */
+
+    return false;
+  },
   [DEDUCTION_RULES.DISJUNCTIVE_SYLLOGISM]: (target, sources) => {
-    const disj =
+    const [disj, other] =
       sources[0].proposition.cleansedFormulaString.length >
       sources[1].proposition.cleansedFormulaString.length
-        ? sources[0].proposition
-        : sources[1].proposition;
-    const other =
-      sources[0].proposition.cleansedFormulaString.length >
-      sources[1].proposition.cleansedFormulaString.length
-        ? sources[1].proposition
-        : sources[0].proposition;
+        ? [sources[0].proposition, sources[1].proposition]
+        : [sources[1].proposition, sources[0].proposition];
     return (
       disj.operator === 'V' &&
       disj.operands.some(operand => operand.isNegation(other)) &&

@@ -1,5 +1,5 @@
 import { Formula } from './Formula';
-import { DEDUCTION_RULES } from './constants';
+import { DEDUCTION_RULES, CITED_LINES_COUNT } from './constants';
 import { evaluateMove } from './deductionFunctions';
 
 interface LineOfProofInterface {
@@ -128,7 +128,7 @@ export class Proof implements ProofInterface {
    * @return {boolean}
    */
   evaluateProof = (): EvaluateProofInterface => {
-    console.log('evaluateProof');
+    // console.log('evaluateProof');
     let lastLineIsConclusion: boolean = false;
     let hasWrongMoves: boolean = false;
     const lastLine: Formula = this.lines[this.lines.length - 1].proposition;
@@ -140,12 +140,25 @@ export class Proof implements ProofInterface {
     }
     const incorrectMoves: boolean[] = new Array(this.lines.length).fill(false);
     this.lines.forEach((line, index) => {
+      console.log(
+        'line!',
+        CITED_LINES_COUNT[line.rule],
+        line.proposition.cleansedFormulaString
+      );
       const isValidMove = evaluateMove(line, this);
+      console.log('isValidMove =', isValidMove);
       incorrectMoves[index] = !isValidMove;
       hasWrongMoves = Boolean(
         Math.max(Number(hasWrongMoves), Number(!isValidMove))
       );
     });
+    console.log('INCORRECT MOVES', incorrectMoves);
+    if (hasWrongMoves) {
+      console.log(`
+        HAS WRONG MOVES!!!!
+        !@*#6164783
+        &*^$*!@$&*()`);
+    }
     return {
       score: Number(!hasWrongMoves && lastLineIsConclusion),
       responseData: {
