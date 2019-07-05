@@ -150,7 +150,6 @@ const topLevelDoubleNegation: SimpleDeductionRuleInterface = (t, s) => {
 };
 
 const topLevelTautology: SimpleDeductionRuleInterface = (t, s) => {
-  console.log(s.operands[0], t);
   return (
     (s.operator === 'V' &&
       s.operands[0].isEqual(s.operands[1]) &&
