@@ -17,6 +17,15 @@ describe('Proof', function() {
     console.log(e);
   }
 
+  let mockInvalidProofs: [][];
+  try {
+    mockInvalidProofs = safeLoad(
+      readFileSync(resolve(__dirname, './mocks/proofs.invalid.yaml'), 'utf8')
+    );
+  } catch (e) {
+    console.log(e);
+  }
+
   it('Should load properly', () => {
     const proof = new Proof();
     assert.exists(proof);
@@ -42,6 +51,29 @@ describe('Proof', function() {
         const { score } = proof.evaluateProof();
         console.log('SCORE', score);
         assert.isTrue(Boolean(score));
+      });
+    }
+
+    for (const invalidProof of mockInvalidProofs) {
+      const proof = new Proof();
+      for (const line of invalidProof) {
+        proof.addLineToProof(
+          new LineOfProof({
+            proposition: new Formula(line[0]),
+            rule: line[1],
+            citedLines: line[2]
+          })
+        );
+      }
+      const conclusion = invalidProof[invalidProof.length - 1][0];
+      // console.log('CONCLUSION', conclusion);
+      proof.setConclusion(conclusion);
+      it(`Should reject the proof:
+        ${inspect(invalidProof)}
+        `, () => {
+        const { score } = proof.evaluateProof();
+        console.log('SCORE', score);
+        assert.isFalse(Boolean(score));
       });
     }
   });
