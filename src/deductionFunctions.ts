@@ -240,6 +240,36 @@ const topLevelExportation: SimpleDeductionRuleInterface = (t, s) => {
   );
 };
 
+const topLevelMaterialEquivalence: SimpleDeductionRuleInterface = (t, s) => {
+  const [longer, shorter] =
+    t.cleansedFormulaString.length > s.cleansedFormulaString.length
+      ? [t, s]
+      : [s, t];
+  if (longer.operator === '&') {
+    const op0 = longer.operands[0];
+    const op1 = longer.operands[1];
+    return (
+      op0.operator === '->' &&
+      op1.operator === '->' &&
+      op0.operands[0].isEqual(shorter.operands[0]) &&
+      op0.operands[1].isEqual(shorter.operands[1]) &&
+      op1.operands[0].isEqual(shorter.operands[1]) &&
+      op1.operands[1].isEqual(shorter.operands[0])
+    );
+  } else if (longer.operator === 'V') {
+    const op0 = longer.operands[0];
+    const op1 = longer.operands[1];
+    return (
+      op0.operands[0].isEqual(shorter.operands[0]) &&
+      op0.operands[1].isEqual(shorter.operands[1]) &&
+      op1.operands[0].isNegation(shorter.operands[0]) &&
+      op1.operands[1].isNegation(shorter.operands[1])
+    );
+  } else {
+    return false;
+  }
+};
+
 // TODO: DEAL WITH ERRORS. VALIDATING ARGUMENTS FOR DEDUCTION RULES
 
 /**
@@ -370,36 +400,11 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
       sources[1].proposition.operator === '->' &&
       sources[0].proposition.operator === '->' &&
       target.proposition.operator === '->'),
-  [DEDUCTION_RULES.MATERIAL_EQUIVALENCE]: (target, sources) => {
-    const [longer, shorter] =
-      target.proposition.cleansedFormulaString.length >
-      sources[0].proposition.cleansedFormulaString.length
-        ? [target.proposition, sources[0].proposition]
-        : [sources[0].proposition, target.proposition];
-    if (longer.operator === '&') {
-      const op0 = longer.operands[0];
-      const op1 = longer.operands[1];
-      return (
-        op0.operator === '->' &&
-        op1.operator === '->' &&
-        op0.operands[0].isEqual(shorter.operands[0]) &&
-        op0.operands[1].isEqual(shorter.operands[1]) &&
-        op1.operands[0].isEqual(shorter.operands[1]) &&
-        op1.operands[1].isEqual(shorter.operands[0])
-      );
-    } else if (longer.operator === 'V') {
-      const op0 = longer.operands[0];
-      const op1 = longer.operands[1];
-      return (
-        op0.operands[0].isEqual(shorter.operands[0]) &&
-        op0.operands[1].isEqual(shorter.operands[1]) &&
-        op1.operands[0].isNegation(shorter.operands[0]) &&
-        op1.operands[1].isNegation(shorter.operands[1])
-      );
-    } else {
-      return false;
-    }
-  },
+  [DEDUCTION_RULES.MATERIAL_EQUIVALENCE]: (target, sources) =>
+    checkRuleRecursively(topLevelMaterialEquivalence)(
+      target.proposition,
+      sources[0].proposition
+    ),
   [DEDUCTION_RULES.MATERIAL_IMPLICATION]: (target, sources) =>
     checkRuleRecursively(topLevelMaterialImplication)(
       target.proposition,
