@@ -212,6 +212,23 @@
 
 
 
+# MATERIAL EQUIVALENCE
+-
+  - [p <-> q, Premise, []]
+  - [(p & q) V (~p & ~q), Material Equivalence, [1]]
+
+-
+  - [(p & q) V (~p & ~q), Premise, []]
+  - [p <-> q, Material Equivalence, [1]]
+
+-
+  - [p <-> q, Premise, []]
+  - [(p -> q) & (q -> p), Material Equivalence, [1]]
+
+
+
+
+
 # MATERIAL IMPLICATION
 -
   - [p -> q, Premise, []]
