@@ -12,6 +12,7 @@ interface FormulaInterface {
    * This can be used for checking equality of two formulas.
    */
   cleansedFormulaString: string;
+  conclusion?: Formula;
   initialFormulaString: string;
   operator?: Operator;
   operands?: Formula[];
@@ -31,6 +32,7 @@ export interface AssignmentInterface {
  */
 export class Formula implements FormulaInterface {
   cleansedFormulaString: string;
+  conclusion?: Formula;
   initialFormulaString: string;
   operator?: Operator;
   operands?: Formula[];
@@ -183,6 +185,22 @@ export class Formula implements FormulaInterface {
   };
 
   /**
+   * Generate a new Formula that is the negation of the input formula
+   * (or `this` formula by default)
+   * @param {Formula|string} formula  - The fomrula to be negated
+   * @return {Formula} - The negated formula
+   */
+  negateFormula = (formula?: Formula | string): Formula => {
+    formula =
+      typeof formula === 'string'
+        ? new Formula(formula)
+        : typeof formula === 'undefined'
+        ? this
+        : formula;
+    return new Formula(`'(${formula.cleansedFormulaString})'`);
+  };
+
+  /**
    * Remove all whitespace and unnecessary parentheses from a formula.
    * This produces a canonical string representation of a formula.
    * @param {string} formula - the formula to "cleanse"
@@ -210,7 +228,7 @@ export class Formula implements FormulaInterface {
 
   /**
    * Takes a formula string and returns an object with
-   * the main operator and main operands.
+   * the main operator and main operands in string form.
    * @param  {string} formulaString - Formula string
    *                                  with extra parens removed.
    * @return {object}               - Object with operator and operands.

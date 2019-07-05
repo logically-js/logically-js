@@ -61,8 +61,23 @@
   - [(p & q) V (r -> s), Premise, []]
   - [(r -> s) V (p & q), Commutativity, [1]]
   - [(r -> s) V (q & p), Commutativity, [2]]
-#
-#
+
+
+
+# DISJUNCTIVE SYLLOGISM
+-
+  - [p V q, Premise, []]
+  - [~p, Premise, []]
+  - [q, Disjunctive Syllogism, [1, 2]]
+
+-
+  - [(p -> q) V ((r & s) V (r & t)), Premise, []]
+  - [~(p -> q), Premise, []]
+  - [(r & s) V (r & t),  Disjunctive Syllogism, [1, 2]]
+  - [~(r & t), Premise, []]
+  - [r & s, Disjunctive Syllogism, [3, 4]]
+
+
 # DOUBLE NEGATION
 -
   - [~(~p), Premise, []]
@@ -93,13 +108,31 @@
   - [p V q, Premise, []]
   - [(~(~p) V q), Double Negation, [1]]
   - [(~(~p) V ~(~q)), Double Negation, [2]]
-#
-#
+
+
 # HYPOTHETICAL_SYLLOGISM
 -
   - [p -> q, Premise, []]
   - [q -> r, Premise, []]
   - [p -> r, Hypothetical Syllogism, [1, 2]]
+
+
+# TAUTOLOGY
+-
+  - [p V p, Premise, []]
+  - [p, Tautology, [1]]
+
+-
+  - [(p  V p  ) V (p   V p    ), Premise, []]
+  - [p V ( p V p ), Tautology, [1]]
+  - [p V p, Tautology, [2]]
+  - [p, Tautology, [3]]
+
+-
+  - [p, Premise, []]
+  - [p V p, Tautology, [1]]
+  - [p V ( p V p ), Tautology, [2]]
+  - [(p V p) V (p V p), Tautology, [3]]
 
 
 # MIXED RULES

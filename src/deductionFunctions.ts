@@ -80,7 +80,7 @@ const checkRuleRecursively = (
  * @param {Formula} s - Source formula
  * @return {boolean} - Does Commutativity apply at the top level?
  */
-const topLevelCommutativity = (t: Formula, s: Formula): boolean =>
+const topLevelCommutativity: SimpleDeductionRuleInterface = (t, s) =>
   t.operator === s.operator &&
   t.operator.match(/[V&]/) &&
   t.operands[0].isEqual(s.operands[1]) &&
@@ -129,7 +129,7 @@ const topLevelAssociativity: SimpleDeductionRuleInterface = (t, s) => {
  * @param {Formula} s - Source formula
  * @return {boolean} - Does Double Negation apply at the top level?
  */
-const topLevelDoubleNegation = (t: Formula, s: Formula): boolean => {
+const topLevelDoubleNegation: SimpleDeductionRuleInterface = (t, s) => {
   // We can identify which argument is the one that had
   // the double negation by its length
   if (t.cleansedFormulaString.length > s.cleansedFormulaString.length) {
@@ -147,6 +147,18 @@ const topLevelDoubleNegation = (t: Formula, s: Formula): boolean => {
       operandFormula.operands[0].isEqual(t)
     );
   }
+};
+
+const topLevelTautology: SimpleDeductionRuleInterface = (t, s) => {
+  console.log(s.operands[0], t);
+  return (
+    (s.operator === 'V' &&
+      s.operands[0].isEqual(s.operands[1]) &&
+      s.operands[0].isEqual(t)) ||
+    (t.operator === 'V' &&
+      t.operands[0].isEqual(t.operands[1]) &&
+      t.operands[0].isEqual(s))
+  );
 };
 
 /**
@@ -192,6 +204,23 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
       operand.isEqual(sources[1].proposition)
     ) &&
     target.proposition.operator === '&',
+  [DEDUCTION_RULES.DISJUNCTIVE_SYLLOGISM]: (target, sources) => {
+    const disj =
+      sources[0].proposition.cleansedFormulaString.length >
+      sources[1].proposition.cleansedFormulaString.length
+        ? sources[0].proposition
+        : sources[1].proposition;
+    const other =
+      sources[0].proposition.cleansedFormulaString.length >
+      sources[1].proposition.cleansedFormulaString.length
+        ? sources[1].proposition
+        : sources[0].proposition;
+    return (
+      disj.operator === 'V' &&
+      disj.operands.some(operand => operand.isNegation(other)) &&
+      disj.operands.some(operand => operand.isEqual(target.proposition))
+    );
+  },
   [DEDUCTION_RULES.DOUBLE_NEGATION]: (target, sources) =>
     checkRuleRecursively(topLevelDoubleNegation)(
       target.proposition,
@@ -235,9 +264,8 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
       operand.isEqual(target.proposition)
     ) && sources[0].proposition.operator === '&',
   [DEDUCTION_RULES.TAUTOLOGY]: (target, sources) =>
-    sources[0].proposition.operator === '&' &&
-    sources[0].proposition.operands[0].isEqual(
-      sources[0].proposition.operands[1]
-    ) &&
-    sources[0].proposition.operands[0].isEqual(target.proposition)
+    checkRuleRecursively(topLevelTautology)(
+      target.proposition,
+      sources[0].proposition
+    )
 };
