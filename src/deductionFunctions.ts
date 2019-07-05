@@ -222,19 +222,17 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
       return false;
     }
 
-    /* eslint-disable */
-    for (const i in [0, 1]) {
-      for (const j in [1, 0]) {
-        if (conj.operands[i].operands[0].isEqual(disj.operands[i])) {
-          if (conj.operands[j].operands[0].isEqual(disj.operands[i])) {
-            return true;
-          }
-        }
-      }
-    }
-    /* eslint-enable */
+    console.log(
+      conj.operands.map(operand => operand.operands[0].cleansedFormulaString)
+    );
 
-    return false;
+    // This is a "loose" interpretation of CD, where the order of the
+    // arguments is ignore.
+    return conj.operands
+      .map(operand => operand.operands[0].cleansedFormulaString)
+      .every(op =>
+        disj.operands.map(x => x.cleansedFormulaString).includes(op)
+      );
   },
   [DEDUCTION_RULES.DISJUNCTIVE_SYLLOGISM]: (target, sources) => {
     const [disj, other] =

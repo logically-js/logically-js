@@ -74,11 +74,11 @@
   - [(p -> q) & (r -> s), Premise, []]
   - [p V r, Premise, []]
   - [s V q, Constructive Dilemma, [1, 2]]
-# 
-# -
-#   - [(p -> q) & (r -> s), Premise, []]
-#   - [r V p, Premise, []]
-#   - [q V s, Constructive Dilemma, [1, 2]]
+
+-
+  - [(p -> q) & (r -> s), Premise, []]
+  - [r V p, Premise, []]
+  - [q V s, Constructive Dilemma, [1, 2]]
 
 
 
