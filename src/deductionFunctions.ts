@@ -163,10 +163,7 @@ const topLevelTautology: SimpleDeductionRuleInterface = (t, s) => {
 const topLevelDeMorgans: SimpleDeductionRuleInterface = (t, s) => {
   const flipOperator = (operator: string): string =>
     operator === '&' ? 'V' : operator === 'V' ? '&' : operator;
-  const [negatedFormula, otherFormula] =
-    t.operator === '~'
-      ? [t, s]
-      : [s, t];
+  const [negatedFormula, otherFormula] = t.operator === '~' ? [t, s] : [s, t];
   if (!otherFormula.operator.match(/[&V]/)) {
     // the other formula's operator must be a `&` or a `V`
     return false;
@@ -248,12 +245,11 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
         disj.operands.map(x => x.cleansedFormulaString).includes(op)
       );
   },
-  [DEDUCTION_RULES.DEMORGANS]: (target, sources) => (
+  [DEDUCTION_RULES.DEMORGANS]: (target, sources) =>
     checkRuleRecursively(topLevelDeMorgans)(
       target.proposition,
       sources[0].proposition
-    )
-  ),
+    ),
   [DEDUCTION_RULES.DISJUNCTIVE_SYLLOGISM]: (target, sources) => {
     const [disj, other] =
       sources[0].proposition.cleansedFormulaString.length >
