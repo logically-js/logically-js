@@ -7,7 +7,6 @@ import { CITED_LINES_COUNT, DEDUCTION_RULES } from './constants';
 const flipOperator = (operator: string): string =>
   operator === '&' ? 'V' : operator === 'V' ? '&' : operator;
 
-
 /**
  * Takes a line of proof and a proof and determines if the line is a valid move.
  *
@@ -180,6 +179,42 @@ const topLevelDeMorgans: SimpleDeductionRuleInterface = (t, s) => {
   );
 };
 
+const topLevelDistribution: SimpleDeductionRuleInterface = (t, s) => {
+  const [longer, shorter] =
+    s.cleansedFormulaString.length >
+    t.cleansedFormulaString.length
+      ? [s, t]
+      : [t, s];
+  if (
+    !(
+      shorter.operator.match(/[&V]/) &&
+      shorter.operator === flipOperator(shorter.operands[1].operator) &&
+      longer.operator === flipOperator(shorter.operator) &&
+      longer.operands.every(operand => shorter.operator === operand.operator)
+    )
+  ) {
+    return false;
+  }
+  const newDisjunct1 = new Formula(
+    `(${
+      shorter.operands[0].cleansedFormulaString
+    }) ${shorter.operator} (${
+      shorter.operands[1].operands[0].cleansedFormulaString
+    })`
+  );
+  const newDisjunct2 = new Formula(
+    `(${
+      shorter.operands[0].cleansedFormulaString
+    }) ${shorter.operator} (${
+      shorter.operands[1].operands[1].cleansedFormulaString
+    })`
+  );
+  return (
+    newDisjunct1.isEqual(longer.operands[0]) &&
+    newDisjunct2.isEqual(longer.operands[1])
+  );
+}
+
 /**
  * Rules of implication are easier to compute because they only apply to the
  * main operator and only go in "one direction."
@@ -268,27 +303,11 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
   // This assumes a structure like `p & (q V r)` instead of `(q V r) & p`
   // If we wanted to allow the latter, we could define a more permissive
   // version of this that tries to commute the arguments as well
-  [DEDUCTION_RULES.DISTRIBUTION]: (target, sources) => {
-    console.log('DISTRIBUTION', target, sources)
-    const [longer, shorter] =
-      sources[0].proposition.cleansedFormulaString.length >
-      target.proposition.cleansedFormulaString.length
-        ? [sources[0].proposition, target.proposition]
-        : [target.proposition, sources[0].proposition];
-    if (!(
-      shorter.operator.match(/[&V]/) &&
-      shorter.operator === flipOperator(shorter.operands[1].operator) &&
-      longer.operator === flipOperator(shorter.operator) &&
-      longer.operands.every(operand => shorter.operator === operand.operator)
-    )) {
-      console.log('RETURNING EARLY');
-      return false;
-    }
-    const newDisjunct1 = new Formula(`(${shorter.operands[0].cleansedFormulaString}) ${shorter.operator} (${shorter.operands[1].operands[0].cleansedFormulaString})`);
-    const newDisjunct2 = new Formula(`(${shorter.operands[0].cleansedFormulaString}) ${shorter.operator} (${shorter.operands[1].operands[1].cleansedFormulaString})`);
-    console.log('here', newDisjunct1.cleansedFormulaString, newDisjunct2.cleansedFormulaString)
-    return newDisjunct1.isEqual(longer.operands[0]) && newDisjunct2.isEqual(longer.operands[1]);
-  },
+  [DEDUCTION_RULES.DISTRIBUTION]: (target, sources) =>
+    checkRuleRecursively(topLevelDistribution)(
+      target.proposition,
+      sources[0].proposition
+    ),
   [DEDUCTION_RULES.DOUBLE_NEGATION]: (target, sources) =>
     checkRuleRecursively(topLevelDoubleNegation)(
       target.proposition,

@@ -139,6 +139,15 @@
   - [p & (q V r), Premise, []]
   - [(p & q) V (p & r), Distribution, [1]]
 
+-
+  - [(p & q) V (p & r), Premise, []]
+  - [p & (q V r), Distribution, [1]]
+
+-
+  - [p & (q V (r & s)), Premise, []]
+  - [p & ((q V r) & (q V s)), Distribution, [1]]
+  - [r V (p & (((q V r) & (q V s)))), Addition, [2]]
+  - [(r V p) & (r V ((q V r) & (q V s))), Distribution, [3]]
 
 
 # DOUBLE NEGATION
