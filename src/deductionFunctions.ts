@@ -3,6 +3,11 @@ import { LineOfProof, Proof } from './Proof';
 import { Formula } from './Formula';
 import { CITED_LINES_COUNT, DEDUCTION_RULES } from './constants';
 
+// TODO: Put in utils
+const flipOperator = (operator: string): string =>
+  operator === '&' ? 'V' : operator === 'V' ? '&' : operator;
+
+
 /**
  * Takes a line of proof and a proof and determines if the line is a valid move.
  *
@@ -161,8 +166,6 @@ const topLevelTautology: SimpleDeductionRuleInterface = (t, s) => {
 };
 
 const topLevelDeMorgans: SimpleDeductionRuleInterface = (t, s) => {
-  const flipOperator = (operator: string): string =>
-    operator === '&' ? 'V' : operator === 'V' ? '&' : operator;
   const [negatedFormula, otherFormula] = t.operator === '~' ? [t, s] : [s, t];
   if (!otherFormula.operator.match(/[&V]/)) {
     // the other formula's operator must be a `&` or a `V`
@@ -261,6 +264,30 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
       disj.operands.some(operand => operand.isNegation(other)) &&
       disj.operands.some(operand => operand.isEqual(target.proposition))
     );
+  },
+  // This assumes a structure like `p & (q V r)` instead of `(q V r) & p`
+  // If we wanted to allow the latter, we could define a more permissive
+  // version of this that tries to commute the arguments as well
+  [DEDUCTION_RULES.DISTRIBUTION]: (target, sources) => {
+    console.log('DISTRIBUTION', target, sources)
+    const [longer, shorter] =
+      sources[0].proposition.cleansedFormulaString.length >
+      target.proposition.cleansedFormulaString.length
+        ? [sources[0].proposition, target.proposition]
+        : [target.proposition, sources[0].proposition];
+    if (!(
+      shorter.operator.match(/[&V]/) &&
+      shorter.operator === flipOperator(shorter.operands[1].operator) &&
+      longer.operator === flipOperator(shorter.operator) &&
+      longer.operands.every(operand => shorter.operator === operand.operator)
+    )) {
+      console.log('RETURNING EARLY');
+      return false;
+    }
+    const newDisjunct1 = new Formula(`(${shorter.operands[0].cleansedFormulaString}) ${shorter.operator} (${shorter.operands[1].operands[0].cleansedFormulaString})`);
+    const newDisjunct2 = new Formula(`(${shorter.operands[0].cleansedFormulaString}) ${shorter.operator} (${shorter.operands[1].operands[1].cleansedFormulaString})`);
+    console.log('here', newDisjunct1.cleansedFormulaString, newDisjunct2.cleansedFormulaString)
+    return newDisjunct1.isEqual(longer.operands[0]) && newDisjunct2.isEqual(longer.operands[1]);
   },
   [DEDUCTION_RULES.DOUBLE_NEGATION]: (target, sources) =>
     checkRuleRecursively(topLevelDoubleNegation)(

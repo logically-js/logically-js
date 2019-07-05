@@ -133,6 +133,14 @@
   - [r & s, Disjunctive Syllogism, [3, 4]]
 
 
+
+# DISTRIBUTION
+-
+  - [p & (q V r), Premise, []]
+  - [(p & q) V (p & r), Distribution, [1]]
+
+
+
 # DOUBLE NEGATION
 -
   - [~(~p), Premise, []]
