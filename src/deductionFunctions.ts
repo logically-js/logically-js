@@ -224,18 +224,11 @@ const topLevelMaterialImplication: SimpleDeductionRuleInterface = (t, s) => {
 };
 
 const topLevelExportation: SimpleDeductionRuleInterface = (t, s) => {
-  if (
-    !(
-      t.operator === '->' &&
-      s.operator === '->'
-    )
-  ) {
+  if (!(t.operator === '->' && s.operator === '->')) {
     return false;
   }
   const [exported, unexported] =
-    t.operands[1].operator === '->'
-      ? [t, s]
-      : [s, t];
+    t.operands[1].operator === '->' ? [t, s] : [s, t];
   if (exported.operands[1].operator !== '->') return false;
   if (unexported.operands[0].operator !== '&') return false;
   return (
