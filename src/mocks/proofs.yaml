@@ -182,6 +182,18 @@
   - [(~(~p) V ~(~q)), Double Negation, [2]]
 
 
+
+# EXPORTATION
+-
+  - [(p & q) -> r, Premise, []]
+  - [p -> (q -> r), Exportation, [1]]
+
+-
+  - [p -> (q -> r), Premise, []]
+  - [(p & q) -> r, Exportation, [1]]
+
+
+
 # HYPOTHETICAL_SYLLOGISM
 -
   - [p -> q, Premise, []]

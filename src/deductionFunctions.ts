@@ -321,6 +321,29 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
       target.proposition,
       sources[0].proposition
     ),
+  [DEDUCTION_RULES.EXPORTATION]: (target, sources) => {
+    if (
+      !(
+        target.proposition.operator === '->' &&
+        sources[0].proposition.operator === '->'
+      )
+    ) {
+      return false;
+    }
+    const [exported, unexported] =
+      target.proposition.operands[1].operator === '->'
+        ? [target.proposition, sources[0].proposition]
+        : [sources[0].proposition, target.proposition];
+    if (exported.operands[1].operator !== '->') return false;
+    if (unexported.operands[0].operator !== '&') return false;
+    return (
+      exported.operands[0].isEqual(unexported.operands[0].operands[0]) &&
+      exported.operands[1].operands[0].isEqual(
+        unexported.operands[0].operands[1]
+      ) &&
+      exported.operands[1].operands[1].isEqual(unexported.operands[1])
+    );
+  },
   [DEDUCTION_RULES.HYPOTHETICAL_SYLLOGISM]: (target, sources) =>
     (sources[0].proposition.operands[1].isEqual(
       sources[1].proposition.operands[0]
