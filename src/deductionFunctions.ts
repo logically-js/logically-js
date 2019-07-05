@@ -213,21 +213,15 @@ const topLevelTransposition: SimpleDeductionRuleInterface = (t, s) =>
   t.operands[1].isNegation(s.operands[0]);
 
 const topLevelMaterialImplication: SimpleDeductionRuleInterface = (t, s) => {
-  const [conditional, disjunction] = t.operator === '->' ?
-    [t, s] :
-    [s, t];
-  if (!(
-    conditional.operator === '->' &&
-    disjunction.operator === 'V'
-  )) {
+  const [conditional, disjunction] = t.operator === '->' ? [t, s] : [s, t];
+  if (!(conditional.operator === '->' && disjunction.operator === 'V')) {
     return false;
   }
-  return t.operands[0].isNegation(
-    s.operands[0]
-  ) && t.operands[1].isEqual(
-    s.operands[1]
+  return (
+    t.operands[0].isNegation(s.operands[0]) &&
+    t.operands[1].isEqual(s.operands[1])
   );
-}
+};
 
 /**
  * Rules of implication are easier to compute because they only apply to the
