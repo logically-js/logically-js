@@ -135,6 +135,19 @@
   - [p -> r, Hypothetical Syllogism, [1, 2]]
 
 
+# MODUS PONENS
+-
+  - [p -> q, Premise, []]
+  - [p, Premise, []]
+  - [q, Modus Ponens, [1, 2]]
+
+# MODUS TOLLENS
+-
+  - [p -> ~q, Premise, []]
+  - [q, Premise, []]
+  - [~p, Modus Tollens, [1,2]]
+
+
 # TAUTOLOGY
 -
   - [p V p, Premise, []]
