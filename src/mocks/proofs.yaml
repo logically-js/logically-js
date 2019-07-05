@@ -232,6 +232,21 @@
   - [(p V p) V (p V p), Tautology, [3]]
 
 
+# TRANSPOSITION
+-
+  - [p -> q, Premise, []]
+  - [~q -> ~p, Transposition, [1]]
+
+-
+  - [~p -> ~q, Premise, []]
+  - [q -> p, Transposition, [1]]
+
+-
+  - [~(~p -> q) -> (p -> ~q), Premise, []]
+  - [~(~q -> p) -> (p -> ~q), Transposition, [1]]
+  # - [~(~p -> q) -> (p -> ~q), Transposition, [2]]
+
+
 # MIXED RULES
 -
   - [p & (q & r), Premise, []]

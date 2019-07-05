@@ -17,7 +17,8 @@ export const DEDUCTION_RULES = <DeductionRulesInterface>{
   MODUS_TOLLENS: 'Modus Tollens',
   PREMISE: 'Premise',
   SIMPLIFICATION: 'Simplification',
-  TAUTOLOGY: 'Tautology'
+  TAUTOLOGY: 'Tautology',
+  TRANSPOSITION: 'Transposition'
 };
 
 interface CitedLinesCount {
@@ -39,7 +40,8 @@ export const CITED_LINES_COUNT = <CitedLinesCount>{
   [DEDUCTION_RULES.MODUS_TOLLENS]: 2,
   [DEDUCTION_RULES.PREMISE]: 0,
   [DEDUCTION_RULES.SIMPLIFICATION]: 1,
-  [DEDUCTION_RULES.TAUTOLOGY]: 1
+  [DEDUCTION_RULES.TAUTOLOGY]: 1,
+  [DEDUCTION_RULES.TRANSPOSITION]: 1
 };
 
 interface REInterface {

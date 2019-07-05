@@ -206,6 +206,12 @@ const topLevelDistribution: SimpleDeductionRuleInterface = (t, s) => {
   );
 };
 
+const topLevelTransposition: SimpleDeductionRuleInterface = (t, s) =>
+  t.operator === '->' &&
+  s.operator === '->' &&
+  t.operands[0].isNegation(s.operands[1]) &&
+  t.operands[1].isNegation(s.operands[0]);
+
 /**
  * Rules of implication are easier to compute because they only apply to the
  * main operator and only go in "one direction."
@@ -360,6 +366,11 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
     ) && sources[0].proposition.operator === '&',
   [DEDUCTION_RULES.TAUTOLOGY]: (target, sources) =>
     checkRuleRecursively(topLevelTautology)(
+      target.proposition,
+      sources[0].proposition
+    ),
+  [DEDUCTION_RULES.TRANSPOSITION]: (target, sources) =>
+    checkRuleRecursively(topLevelTransposition)(
       target.proposition,
       sources[0].proposition
     )
