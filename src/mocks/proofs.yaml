@@ -141,6 +141,13 @@
   - [p, Premise, []]
   - [q, Modus Ponens, [1, 2]]
 
+-
+  - [(p -> q) -> (p -> r), Premise, []]
+  - [p -> q, Premise, []]
+  - [p, Premise, []]
+  - [p -> r, Modus Ponens, [1, 2]]
+  - [r, Modus Ponens, [3, 4]]
+
 # MODUS TOLLENS
 -
   - [p -> ~q, Premise, []]

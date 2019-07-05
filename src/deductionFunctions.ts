@@ -277,20 +277,28 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
       sources[0].proposition.operator === '->' &&
       target.proposition.operator === '->'),
   [DEDUCTION_RULES.MODUS_PONENS]: (target, sources) => {
-    const [longer, shorter] = sources[0].proposition.cleansedFormulaString.length >
-      sources[1].proposition.cleansedFormulaString.length ?
-        [sources[0].proposition, sources[1].proposition] :
-        [sources[1].proposition, sources[0].proposition];
-    return longer.operator === '->' &&
-           longer.operands[0].isEqual(shorter) &&
-           longer.operands[1].isEqual(target.proposition);
+    const [longer, shorter] =
+      sources[0].proposition.cleansedFormulaString.length >
+      sources[1].proposition.cleansedFormulaString.length
+        ? [sources[0].proposition, sources[1].proposition]
+        : [sources[1].proposition, sources[0].proposition];
+    return (
+      longer.operator === '->' &&
+      longer.operands[0].isEqual(shorter) &&
+      longer.operands[1].isEqual(target.proposition)
+    );
   },
   [DEDUCTION_RULES.MODUS_TOLLENS]: (target, sources) => {
-    const [longer, shorter] = sources[0].proposition.cleansedFormulaString.length >
-      sources[1].proposition.cleansedFormulaString.length ? [sources[0].proposition, sources[1].proposition] : [sources[1].proposition, sources[0].proposition];
-    return longer.operator === '->' &&
-           longer.operands[1].isNegation(shorter) &&
-           longer.operands[0].isNegation(target.proposition);
+    const [longer, shorter] =
+      sources[0].proposition.cleansedFormulaString.length >
+      sources[1].proposition.cleansedFormulaString.length
+        ? [sources[0].proposition, sources[1].proposition]
+        : [sources[1].proposition, sources[0].proposition];
+    return (
+      longer.operator === '->' &&
+      longer.operands[1].isNegation(shorter) &&
+      longer.operands[0].isNegation(target.proposition)
+    );
   },
   [DEDUCTION_RULES.PREMISE]: () => true,
   [DEDUCTION_RULES.SIMPLIFICATION]: (target, sources) =>
