@@ -82,6 +82,24 @@
 
 
 
+# DEMORGAN'S RULE
+-
+  - [~(p & q), Premise, []]
+  - [~p V ~q, DeMorgan's Rule, [1]]
+
+-
+  - [~p V ~q, Premise, []]
+  - [~(p & q), DeMorgan's Rule, [1]]
+
+-
+  - [~(p V q), Premise, []]
+  - [~p & ~q, DeMorgan's Rule, [1]]
+
+-
+  - [~p & ~q, Premise, []]
+  - [~(p V q), DeMorgan's Rule, [1]]
+
+
 # DISJUNCTIVE SYLLOGISM
 -
   - [p V q, Premise, []]

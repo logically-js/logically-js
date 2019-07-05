@@ -228,6 +228,23 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
         disj.operands.map(x => x.cleansedFormulaString).includes(op)
       );
   },
+  [DEDUCTION_RULES.DEMORGANS]: (target, sources) => {
+    const flipOperator = (operator: string): string => (
+      operator === '&' ? 'V' : operator === 'V' ? '&' : operator
+    );
+    const [negatedFormula, otherFormula] = target.proposition.operator === '~' ?
+      [target.proposition, sources[0].proposition] :
+      [sources[0].proposition, target.proposition];
+    if (!otherFormula.operator.match(/[&V]/)) {
+      // the other formula's operator must be a `&` or a `V`
+      return false;
+    }
+    const innerFormula = negatedFormula.operands[0];
+    // Order of arguments must be preserved
+    return innerFormula.operator === flipOperator(otherFormula.operator) &&
+           innerFormula.operands[0].isNegation(otherFormula.operands[0]) &&
+           innerFormula.operands[1].isNegation(otherFormula.operands[1]);
+  },
   [DEDUCTION_RULES.DISJUNCTIVE_SYLLOGISM]: (target, sources) => {
     const [disj, other] =
       sources[0].proposition.cleansedFormulaString.length >
