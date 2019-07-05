@@ -192,6 +192,11 @@
   - [p -> (q -> r), Premise, []]
   - [(p & q) -> r, Exportation, [1]]
 
+-
+  - [p -> (q & ((r & s) -> t)), Premise, []]
+  - [p -> (q & (r -> (s -> t))), Exportation, [1]]
+  - [p -> (q & ((r & s) -> t)), Exportation, [2]]
+
 
 
 # HYPOTHETICAL_SYLLOGISM
