@@ -65,7 +65,7 @@ export class Formula implements FormulaInterface {
    * Getter that prints the "prettified" version of the current formula
    * @return {string} - Prettified formula description
    */
-  get prettifiedFormula() {
+  get prettifiedFormula(): string {
     return this.prettyFormula(this.cleansedFormulaString);
   }
 
