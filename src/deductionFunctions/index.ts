@@ -111,17 +111,6 @@ const topLevelTransposition: SimpleDeductionRuleInterface = (t, s) =>
   t.operands[0].isNegation(s.operands[1]) &&
   t.operands[1].isNegation(s.operands[0]);
 
-const topLevelMaterialImplication: SimpleDeductionRuleInterface = (t, s) => {
-  const [conditional, disjunction] = t.operator === '->' ? [t, s] : [s, t];
-  if (!(conditional.operator === '->' && disjunction.operator === 'V')) {
-    return false;
-  }
-  return (
-    t.operands[0].isNegation(s.operands[0]) &&
-    t.operands[1].isEqual(s.operands[1])
-  );
-};
-
 const topLevelExportation: SimpleDeductionRuleInterface = (t, s) => {
   if (!(t.operator === '->' && s.operator === '->')) {
     return false;
@@ -137,36 +126,6 @@ const topLevelExportation: SimpleDeductionRuleInterface = (t, s) => {
     ) &&
     exported.operands[1].operands[1].isEqual(unexported.operands[1])
   );
-};
-
-const topLevelMaterialEquivalence: SimpleDeductionRuleInterface = (t, s) => {
-  const [longer, shorter] =
-    t.cleansedFormulaString.length > s.cleansedFormulaString.length
-      ? [t, s]
-      : [s, t];
-  if (longer.operator === '&') {
-    const op0 = longer.operands[0];
-    const op1 = longer.operands[1];
-    return (
-      op0.operator === '->' &&
-      op1.operator === '->' &&
-      op0.operands[0].isEqual(shorter.operands[0]) &&
-      op0.operands[1].isEqual(shorter.operands[1]) &&
-      op1.operands[0].isEqual(shorter.operands[1]) &&
-      op1.operands[1].isEqual(shorter.operands[0])
-    );
-  } else if (longer.operator === 'V') {
-    const op0 = longer.operands[0];
-    const op1 = longer.operands[1];
-    return (
-      op0.operands[0].isEqual(shorter.operands[0]) &&
-      op0.operands[1].isEqual(shorter.operands[1]) &&
-      op1.operands[0].isNegation(shorter.operands[0]) &&
-      op1.operands[1].isNegation(shorter.operands[1])
-    );
-  } else {
-    return false;
-  }
 };
 
 // TODO: DEAL WITH ERRORS. VALIDATING ARGUMENTS FOR DEDUCTION RULES
@@ -197,31 +156,10 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
       operand.isEqual(sources[0].proposition)
     ) && target.proposition.operator === 'V',
   [DEDUCTION_RULES.ASSUMPTION]: () => true,
-  [DEDUCTION_RULES.ASSOCIATIVITY]: DeductionFunctions.associativityFunction,
-  [DEDUCTION_RULES.COMMUTATIVITY]: DeductionFunctions.commutativityFunction,
-  [DEDUCTION_RULES.CONDITIONAL_PROOF]: (target, sources) => {
-    const [assumption, goal] =
-      sources[0].rule === DEDUCTION_RULES.ASSUMPTION
-        ? [sources[0], sources[1]]
-        : [sources[1], sources[0]];
-    return (
-      target.proposition.operator === '->' &&
-      target.proposition.operands.some(operand =>
-        operand.isEqual(assumption.proposition)
-      ) &&
-      target.proposition.operands.some(operand =>
-        operand.isEqual(goal.proposition)
-      )
-    );
-  },
-  [DEDUCTION_RULES.CONJUNCTION]: (target, sources) =>
-    target.proposition.operands.some(operand =>
-      operand.isEqual(sources[0].proposition)
-    ) &&
-    target.proposition.operands.some(operand =>
-      operand.isEqual(sources[1].proposition)
-    ) &&
-    target.proposition.operator === '&',
+  [DEDUCTION_RULES.ASSOCIATIVITY]: DeductionFunctions.associativity,
+  [DEDUCTION_RULES.COMMUTATIVITY]: DeductionFunctions.commutativity,
+  [DEDUCTION_RULES.CONDITIONAL_PROOF]: DeductionFunctions.conditionalProof,
+  [DEDUCTION_RULES.CONJUNCTION]: DeductionFunctions.conjunction,
   [DEDUCTION_RULES.CONSTRUCTIVE_DILEMMA]: (target, sources) => {
     const [conj, disj] =
       sources[0].proposition.cleansedFormulaString.length >
@@ -247,7 +185,7 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
         disj.operands.map(x => x.cleansedFormulaString).includes(op)
       );
   },
-  [DEDUCTION_RULES.DEMORGANS]: DeductionFunctions.deMorgansFunction,
+  [DEDUCTION_RULES.DEMORGANS]: DeductionFunctions.deMorgans,
   [DEDUCTION_RULES.DISJUNCTIVE_SYLLOGISM]: (target, sources) => {
     const [disj, other] =
       sources[0].proposition.cleansedFormulaString.length >
@@ -268,37 +206,14 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
       target.proposition,
       sources[0].proposition
     ),
-  [DEDUCTION_RULES.DOUBLE_NEGATION]: DeductionFunctions.doubleNegationFunction,
+  [DEDUCTION_RULES.DOUBLE_NEGATION]: DeductionFunctions.doubleNegation,
   [DEDUCTION_RULES.EXPORTATION]: (target, sources) =>
     checkRuleRecursively(topLevelExportation)(
       target.proposition,
       sources[0].proposition
     ),
-  [DEDUCTION_RULES.HYPOTHETICAL_SYLLOGISM]: (target, sources) =>
-    (sources[0].proposition.operands[1].isEqual(
-      sources[1].proposition.operands[0]
-    ) &&
-      target.proposition.operands[0].isEqual(
-        sources[0].proposition.operands[0]
-      ) &&
-      target.proposition.operands[1].isEqual(
-        sources[1].proposition.operands[1]
-      ) &&
-      sources[0].proposition.operator === '->' &&
-      sources[1].proposition.operator === '->' &&
-      target.proposition.operator === '->') ||
-    (sources[1].proposition.operands[1].isEqual(
-      sources[0].proposition.operands[0]
-    ) &&
-      target.proposition.operands[0].isEqual(
-        sources[1].proposition.operands[0]
-      ) &&
-      target.proposition.operands[1].isEqual(
-        sources[0].proposition.operands[1]
-      ) &&
-      sources[1].proposition.operator === '->' &&
-      sources[0].proposition.operator === '->' &&
-      target.proposition.operator === '->'),
+  [DEDUCTION_RULES.HYPOTHETICAL_SYLLOGISM]:
+    DeductionFunctions.hypotheticalSyllogism,
   [DEDUCTION_RULES.INDIRECT_PROOF]: (target, sources) => {
     const [assumption, contradiction] = sources[0].proposition.isNegation(
       target.proposition
@@ -313,16 +228,10 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
       )
     );
   },
-  [DEDUCTION_RULES.MATERIAL_EQUIVALENCE]: (target, sources) =>
-    checkRuleRecursively(topLevelMaterialEquivalence)(
-      target.proposition,
-      sources[0].proposition
-    ),
-  [DEDUCTION_RULES.MATERIAL_IMPLICATION]: (target, sources) =>
-    checkRuleRecursively(topLevelMaterialImplication)(
-      target.proposition,
-      sources[0].proposition
-    ),
+  [DEDUCTION_RULES.MATERIAL_EQUIVALENCE]:
+    DeductionFunctions.materialEquivalence,
+  [DEDUCTION_RULES.MATERIAL_IMPLICATION]:
+    DeductionFunctions.materialImplication,
   [DEDUCTION_RULES.MODUS_PONENS]: (target, sources) => {
     const [longer, shorter] =
       sources[0].proposition.cleansedFormulaString.length >
@@ -352,7 +261,7 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
     sources[0].proposition.operands.some(operand =>
       operand.isEqual(target.proposition)
     ) && sources[0].proposition.operator === '&',
-  [DEDUCTION_RULES.TAUTOLOGY]: DeductionFunctions.tautologyFunction,
+  [DEDUCTION_RULES.TAUTOLOGY]: DeductionFunctions.tautology,
   [DEDUCTION_RULES.TRANSPOSITION]: (target, sources) =>
     checkRuleRecursively(topLevelTransposition)(
       target.proposition,

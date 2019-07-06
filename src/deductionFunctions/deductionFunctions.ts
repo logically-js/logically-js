@@ -6,6 +6,7 @@ import {
   SimpleDeductionRuleInterface
 } from './index';
 /* eslint-enable */
+import { DEDUCTION_RULES } from '../constants';
 
 import { Formula } from '../Formula';
 
@@ -45,10 +46,7 @@ const simpleAssociativity: SimpleDeductionRuleInterface = (t, s) => {
   }
 };
 
-export const associativityFunction: DeductionRuleInterface = (
-  target,
-  sources
-) =>
+export const associativity: DeductionRuleInterface = (target, sources) =>
   checkRuleRecursively(simpleAssociativity)(
     target.proposition,
     sources[0].proposition
@@ -67,14 +65,36 @@ const simpleCommutativity: SimpleDeductionRuleInterface = (t, s) =>
   t.operands[0].isEqual(s.operands[1]) &&
   t.operands[1].isEqual(s.operands[0]);
 
-export const commutativityFunction: DeductionRuleInterface = (
-  target,
-  sources
-) =>
+export const commutativity: DeductionRuleInterface = (target, sources) =>
   checkRuleRecursively(simpleCommutativity)(
     target.proposition,
     sources[0].proposition
   );
+
+export const conditionalProof: DeductionRuleInterface = (target, sources) => {
+  const [assumption, goal] =
+    sources[0].rule === DEDUCTION_RULES.ASSUMPTION
+      ? [sources[0], sources[1]]
+      : [sources[1], sources[0]];
+  return (
+    target.proposition.operator === '->' &&
+    target.proposition.operands.some(operand =>
+      operand.isEqual(assumption.proposition)
+    ) &&
+    target.proposition.operands.some(operand =>
+      operand.isEqual(goal.proposition)
+    )
+  );
+};
+
+export const conjunction: DeductionRuleInterface = (target, sources) =>
+  target.proposition.operands.some(operand =>
+    operand.isEqual(sources[0].proposition)
+  ) &&
+  target.proposition.operands.some(operand =>
+    operand.isEqual(sources[1].proposition)
+  ) &&
+  target.proposition.operator === '&';
 
 const simpleDeMorgans: SimpleDeductionRuleInterface = (t, s) => {
   const [negatedFormula, otherFormula] = t.operator === '~' ? [t, s] : [s, t];
@@ -91,7 +111,7 @@ const simpleDeMorgans: SimpleDeductionRuleInterface = (t, s) => {
   );
 };
 
-export const deMorgansFunction: DeductionRuleInterface = (target, sources) =>
+export const deMorgans: DeductionRuleInterface = (target, sources) =>
   checkRuleRecursively(simpleDeMorgans)(
     target.proposition,
     sources[0].proposition
@@ -124,11 +144,90 @@ const simpleDoubleNegation: SimpleDeductionRuleInterface = (t, s) => {
   }
 };
 
-export const doubleNegationFunction: DeductionRuleInterface = (
+export const doubleNegation: DeductionRuleInterface = (target, sources) =>
+  checkRuleRecursively(simpleDoubleNegation)(
+    target.proposition,
+    sources[0].proposition
+  );
+
+export const hypotheticalSyllogism: DeductionRuleInterface = (
   target,
   sources
 ) =>
-  checkRuleRecursively(simpleDoubleNegation)(
+  (sources[0].proposition.operands[1].isEqual(
+    sources[1].proposition.operands[0]
+  ) &&
+    target.proposition.operands[0].isEqual(
+      sources[0].proposition.operands[0]
+    ) &&
+    target.proposition.operands[1].isEqual(
+      sources[1].proposition.operands[1]
+    ) &&
+    sources[0].proposition.operator === '->' &&
+    sources[1].proposition.operator === '->' &&
+    target.proposition.operator === '->') ||
+  (sources[1].proposition.operands[1].isEqual(
+    sources[0].proposition.operands[0]
+  ) &&
+    target.proposition.operands[0].isEqual(
+      sources[1].proposition.operands[0]
+    ) &&
+    target.proposition.operands[1].isEqual(
+      sources[0].proposition.operands[1]
+    ) &&
+    sources[1].proposition.operator === '->' &&
+    sources[0].proposition.operator === '->' &&
+    target.proposition.operator === '->');
+
+const simpleMaterialImplication: SimpleDeductionRuleInterface = (t, s) => {
+  const [conditional, disjunction] = t.operator === '->' ? [t, s] : [s, t];
+  if (!(conditional.operator === '->' && disjunction.operator === 'V')) {
+    return false;
+  }
+  return (
+    t.operands[0].isNegation(s.operands[0]) &&
+    t.operands[1].isEqual(s.operands[1])
+  );
+};
+
+const simpleMaterialEquivalence: SimpleDeductionRuleInterface = (t, s) => {
+  const [longer, shorter] =
+    t.cleansedFormulaString.length > s.cleansedFormulaString.length
+      ? [t, s]
+      : [s, t];
+  if (longer.operator === '&') {
+    const op0 = longer.operands[0];
+    const op1 = longer.operands[1];
+    return (
+      op0.operator === '->' &&
+      op1.operator === '->' &&
+      op0.operands[0].isEqual(shorter.operands[0]) &&
+      op0.operands[1].isEqual(shorter.operands[1]) &&
+      op1.operands[0].isEqual(shorter.operands[1]) &&
+      op1.operands[1].isEqual(shorter.operands[0])
+    );
+  } else if (longer.operator === 'V') {
+    const op0 = longer.operands[0];
+    const op1 = longer.operands[1];
+    return (
+      op0.operands[0].isEqual(shorter.operands[0]) &&
+      op0.operands[1].isEqual(shorter.operands[1]) &&
+      op1.operands[0].isNegation(shorter.operands[0]) &&
+      op1.operands[1].isNegation(shorter.operands[1])
+    );
+  } else {
+    return false;
+  }
+};
+
+export const materialEquivalence: DeductionRuleInterface = (target, sources) =>
+  checkRuleRecursively(simpleMaterialEquivalence)(
+    target.proposition,
+    sources[0].proposition
+  );
+
+export const materialImplication: DeductionRuleInterface = (target, sources) =>
+  checkRuleRecursively(simpleMaterialImplication)(
     target.proposition,
     sources[0].proposition
   );
@@ -144,7 +243,7 @@ const simpleTautology: SimpleDeductionRuleInterface = (t, s) => {
   );
 };
 
-export const tautologyFunction: DeductionRuleInterface = (target, sources) =>
+export const tautology: DeductionRuleInterface = (target, sources) =>
   checkRuleRecursively(simpleTautology)(
     target.proposition,
     sources[0].proposition
