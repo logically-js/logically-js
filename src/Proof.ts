@@ -102,18 +102,20 @@ export class Proof implements ProofInterface {
   addLineToProof = (
     newLine: LineOfProof | SimpleAddLineToProofInterface
   ): void => {
+    let newLineOfProof: LineOfProof;
     if (newLine instanceof LineOfProof) {
-      this.lines.push(newLine);
+      newLineOfProof = newLine;
+      // this.lines.push(newLine);
     } else {
       const proposition: Formula = new Formula(newLine.proposition);
       const { citedLines, rule } = newLine;
-      const newLineOfProof: LineOfProof = new LineOfProof({
+      newLineOfProof = new LineOfProof({
         citedLines,
         proposition,
         rule
       });
-      this.lines.push(newLineOfProof);
     }
+    this.lines.push(newLineOfProof);
   };
 
   /**
