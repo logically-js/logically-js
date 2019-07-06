@@ -33,3 +33,9 @@
   - [q & (r & s), Simplification, [1]]
   - [r & s, Simplification, [2]]
   - [s, Simplification, [2]]
+
+-
+  - [p -> q, Premise, []]
+  - [p, Assumption, []]
+  - [q, Modus Ponens, [1, 2]]
+  - [p & q, Conjunction, [2, 3]]

@@ -1,5 +1,5 @@
 import { Formula } from './Formula';
-import { DEDUCTION_RULES, CITED_LINES_COUNT } from './constants';
+import { DEDUCTION_RULES } from './constants';
 import { evaluateMove } from './deductionFunctions';
 
 interface LineOfProofInterface {
@@ -19,6 +19,7 @@ interface ConstructorArgsInterface {
 type ResponseDataType = {
   incorrectMoves: boolean[];
   lastLineIsConclusion: boolean;
+  nonDischargedAssumptions: number[];
 };
 
 interface EvaluateProofInterface {
@@ -185,22 +186,18 @@ export class Proof implements ProofInterface {
   evaluateProof = (): EvaluateProofInterface => {
     // console.log('evaluateProof');
     let lastLineIsConclusion: boolean = false;
+    let nonDischargedAssumptions: number[] = [];
     let hasWrongMoves: boolean = false;
     const lastLine: Formula = this.lines[this.lines.length - 1].proposition;
     if (lastLine.isEqual(this.conclusion)) {
       // Proof reaches the conclusion.
       lastLineIsConclusion = true;
     }
+    if (this.lines[this.lines.length - 1].assumptions.length > 0) {
+      nonDischargedAssumptions = this.lines[this.lines.length - 1].assumptions;
+    }
     const incorrectMoves: boolean[] = new Array(this.lines.length).fill(false);
     this.lines.forEach((line, index) => {
-      if (line.rule === 'Assumption') console.log('$$$$$$$$', line);
-      console.log(
-        'line!',
-        line,
-        CITED_LINES_COUNT[line.rule],
-        line.proposition.cleansedFormulaString
-      );
-      // console.log('ASSUMPTIONS', this.getAssumptions(line));
       const isValidMove = evaluateMove(line, this);
       console.log('isValidMove =', isValidMove);
       incorrectMoves[index] = !isValidMove;
@@ -216,9 +213,14 @@ export class Proof implements ProofInterface {
         &*^$*!@$&*()`);
     }
     return {
-      score: Number(!hasWrongMoves && lastLineIsConclusion),
+      score: Number(
+        !hasWrongMoves &&
+          lastLineIsConclusion &&
+          !nonDischargedAssumptions.length
+      ),
       responseData: {
         incorrectMoves,
+        nonDischargedAssumptions,
         lastLineIsConclusion
       }
     };
