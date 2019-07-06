@@ -1,6 +1,6 @@
 import { Formula } from './Formula';
 import { DEDUCTION_RULES } from './constants';
-import { evaluateMove } from './deductionFunctions';
+import { evaluateMove } from './deductionFunctions/index';
 
 interface LineOfProofInterface {
   assumptions: number[];
