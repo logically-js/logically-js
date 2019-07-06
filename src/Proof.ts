@@ -104,7 +104,6 @@ export class Proof implements ProofInterface {
       citedLines: []
     });
     this.lines.push(newLineOfProof);
-    console.log('addPremiseToProof', newLineOfProof);
   };
 
   /**
@@ -130,9 +129,7 @@ export class Proof implements ProofInterface {
     }
     newLineOfProof.lineNumber = this.lines.length;
     const assumptions = this.getAssumptions(newLineOfProof);
-    console.log('assumptions!!!!!!!!', assumptions);
     newLineOfProof.setAssumptions(assumptions);
-    console.log('NEW LINE', newLineOfProof);
     this.lines.push(newLineOfProof);
   };
 
@@ -177,7 +174,6 @@ export class Proof implements ProofInterface {
    * @return {boolean}
    */
   evaluateProof = (): EvaluateProofInterface => {
-    // console.log('evaluateProof');
     let lastLineIsConclusion: boolean = false;
     let nonDischargedAssumptions: number[] = [];
     let hasWrongMoves: boolean = false;
@@ -192,22 +188,11 @@ export class Proof implements ProofInterface {
     const incorrectMoves: boolean[] = new Array(this.lines.length).fill(false);
     this.lines.forEach((line, index) => {
       const isValidMove = evaluateMove(line, this);
-      console.log('isValidMove =', isValidMove);
       incorrectMoves[index] = !isValidMove;
       hasWrongMoves = Boolean(
         Math.max(Number(hasWrongMoves), Number(!isValidMove))
       );
     });
-    console.log('INCORRECT MOVES', incorrectMoves);
-    console.log('hasWrongMoves', hasWrongMoves);
-    console.log('lastLineIsConclusion', lastLineIsConclusion);
-    console.log('nonDischargedAssumptions', nonDischargedAssumptions);
-    if (hasWrongMoves) {
-      console.log(`
-        HAS WRONG MOVES!!!!
-        !@*#6164783
-        &*^$*!@$&*()`);
-    }
     return {
       score: Number(
         !hasWrongMoves &&
