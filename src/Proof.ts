@@ -216,8 +216,8 @@ export class Proof implements ProofInterface {
       ),
       responseData: {
         incorrectMoves,
-        nonDischargedAssumptions,
-        lastLineIsConclusion
+        lastLineIsConclusion,
+        nonDischargedAssumptions
       }
     };
   };

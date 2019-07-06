@@ -248,6 +248,12 @@
   - [p & ~p, Conjunction, [2, 4]]
   - [r, Indirect Proof, [3, 5]]
 
+-
+  - [p, Premise, []]
+  - [~p, Assumption, []]
+  - [p & ~p, Conjunction, [1, 2]]
+  - [p, Indirect Proof, [2, 3]]
+
 
 
 # MATERIAL EQUIVALENCE
