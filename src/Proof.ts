@@ -146,9 +146,13 @@ export class Proof implements ProofInterface {
       for (const citedLine of l.citedLines) {
         if (
           this.lines[citedLine - 1].rule === DEDUCTION_RULES.ASSUMPTION &&
-          line.rule !== DEDUCTION_RULES.CONDITIONAL_PROOF
+          !(
+            line.rule == DEDUCTION_RULES.CONDITIONAL_PROOF &&
+            line.proposition.operands[0].isEqual(
+              this.lines[citedLine - 1].proposition
+            )
+          )
         ) {
-          //  FIXME: This should check whether the discharged assumption is the assumption
           result.add(citedLine);
         } else if (
           this.lines[citedLine - 1].rule !== DEDUCTION_RULES.CONDITIONAL_PROOF
