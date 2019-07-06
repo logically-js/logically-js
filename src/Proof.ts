@@ -3,12 +3,14 @@ import { DEDUCTION_RULES, CITED_LINES_COUNT } from './constants';
 import { evaluateMove } from './deductionFunctions';
 
 interface LineOfProofInterface {
+  assumptions: LineOfProof[];
+  citedLines: number[];
   proposition: Formula;
   rule: string;
-  citedLines: number[];
 }
 
 interface ConstructorArgsInterface {
+  assumptions?: LineOfProof[];
   proposition: Formula;
   rule: string;
   citedLines: number[];
@@ -28,6 +30,7 @@ interface EvaluateProofInterface {
  * Class representing a line in a natural deduction proof.
  */
 export class LineOfProof implements LineOfProofInterface {
+  assumptions: LineOfProof[];
   proposition: Formula;
   rule: string;
   citedLines: number[];
@@ -37,10 +40,11 @@ export class LineOfProof implements LineOfProofInterface {
    * @param {object} args - { proposition, rule, citedLines }
    */
   constructor(args: ConstructorArgsInterface) {
-    const { proposition, rule, citedLines } = args;
+    const { assumptions, proposition, rule, citedLines } = args;
+    this.assumptions = assumptions;
+    this.citedLines = citedLines;
     this.proposition = proposition;
     this.rule = rule;
-    this.citedLines = citedLines;
   }
 }
 
@@ -69,7 +73,7 @@ export class Proof implements ProofInterface {
    */
   constructor() {
     this.premises = [];
-    this.conclusion = new Formula('');
+    this.conclusion;
     this.lines = [];
   }
 
@@ -83,6 +87,7 @@ export class Proof implements ProofInterface {
     this.premises.push(proposition);
     this.lines.push(
       new LineOfProof({
+        assumptions: [],
         proposition,
         rule,
         citedLines: []
@@ -112,6 +117,25 @@ export class Proof implements ProofInterface {
   };
 
   /**
+   * Get the assumptions that a line of proof relies on. [WIP]
+   * @param {LineOfProof} line
+   * @return {LineOfProof[]}
+   */
+  getAssumptions = (line: LineOfProof): LineOfProof[] => {
+    if (line.citedLines.length === 0) return [];
+    const citedLines = line.citedLines.map(citedLine => this.lines[0]);
+    let result: LineOfProof[] = [];
+    citedLines.map(citedLine => {
+      if (citedLine.rule === 'ASSUMPTION') {
+        result.push(citedLine);
+      } else {
+        result = [...result, this.getAssumptions(citedLine)] as LineOfProof[];
+      }
+    });
+    return result;
+  };
+
+  /**
    * Set the conclusion of the proof
    * @param {Formula|string} conclusion - The conclusion
    */
@@ -132,9 +156,7 @@ export class Proof implements ProofInterface {
     let lastLineIsConclusion: boolean = false;
     let hasWrongMoves: boolean = false;
     const lastLine: Formula = this.lines[this.lines.length - 1].proposition;
-    if (
-      lastLine.cleansedFormulaString === this.conclusion.cleansedFormulaString
-    ) {
+    if (lastLine.isEqual(this.conclusion)) {
       // Proof reaches the conclusion.
       lastLineIsConclusion = true;
     }

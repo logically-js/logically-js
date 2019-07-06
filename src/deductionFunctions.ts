@@ -308,6 +308,21 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
       target.proposition,
       sources[0].proposition
     ),
+  [DEDUCTION_RULES.CONDITIONAL_PROOF]: (target, sources) => {
+    const [assumption, goal] =
+      sources[0].rule === DEDUCTION_RULES.ASSUMPTION
+        ? [sources[0], sources[1]]
+        : [sources[1], sources[0]];
+    return (
+      target.proposition.operator === '->' &&
+      target.proposition.operands.some(operand =>
+        operand.isEqual(assumption.proposition)
+      ) &&
+      target.proposition.operands.some(operand =>
+        operand.isEqual(goal.proposition)
+      )
+    );
+  },
   [DEDUCTION_RULES.CONJUNCTION]: (target, sources) =>
     target.proposition.operands.some(operand =>
       operand.isEqual(sources[0].proposition)

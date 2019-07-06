@@ -64,6 +64,15 @@
 
 
 
+# CONDITIONAL PROOF
+-
+  - [p -> q, Premise, []]
+  - [p, Assumption, []]
+  - [q, Modus Ponens, [1, 2]]
+  - [p -> q, Conditional Proof, [2, 3]]
+
+
+
 # CONSTRUCTIVE DILEMMA
 -
   - [(p -> q) & (r -> s), Premise, []]
