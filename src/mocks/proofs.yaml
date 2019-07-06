@@ -229,6 +229,27 @@
 
 
 
+# INDIRECT PROOF
+-
+  - [(p V q) -> r, Premise, []]
+  - [p, Premise, []]
+  - [~r, Assumption, []]
+  - [~(p V q), Modus Tollens, [1, 3]]
+  - [~p & ~q, DeMorgan's Rule, [4]]
+  - [~p, Simplification, [5]]
+  - [~p & p, Conjunction, [2, 6]]
+  - [r, Indirect Proof, [3, 7]]
+
+-
+  - [p -> r, Premise, []]
+  - [p, Premise, []]
+  - [~r, Assumption, []]
+  - [~p, Modus Tollens, [1, 3]]
+  - [p & ~p, Conjunction, [2, 4]]
+  - [r, Indirect Proof, [3, 5]]
+
+
+
 # MATERIAL EQUIVALENCE
 -
   - [p <-> q, Premise, []]

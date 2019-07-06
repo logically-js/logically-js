@@ -416,6 +416,20 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
       sources[1].proposition.operator === '->' &&
       sources[0].proposition.operator === '->' &&
       target.proposition.operator === '->'),
+  [DEDUCTION_RULES.INDIRECT_PROOF]: (target, sources) => {
+    const [assumption, contradiction] = sources[0].proposition.isNegation(
+      target.proposition
+    )
+      ? [sources[0], sources[1]]
+      : [sources[1], sources[0]];
+    return (
+      target.proposition.isNegation(assumption.proposition) &&
+      contradiction.proposition.operator === '&' &&
+      contradiction.proposition.operands[0].isNegation(
+        contradiction.proposition.operands[1]
+      )
+    );
+  },
   [DEDUCTION_RULES.MATERIAL_EQUIVALENCE]: (target, sources) =>
     checkRuleRecursively(topLevelMaterialEquivalence)(
       target.proposition,

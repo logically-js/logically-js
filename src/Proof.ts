@@ -5,6 +5,7 @@ import { evaluateMove } from './deductionFunctions';
 interface LineOfProofInterface {
   assumptions: number[];
   citedLines: number[];
+  lineNumber: number;
   proposition: Formula;
   rule: string;
 }
@@ -32,6 +33,7 @@ interface EvaluateProofInterface {
  */
 export class LineOfProof implements LineOfProofInterface {
   assumptions: number[];
+  lineNumber: number;
   proposition: Formula;
   rule: string;
   citedLines: number[];
@@ -44,6 +46,7 @@ export class LineOfProof implements LineOfProofInterface {
     const { assumptions = [], proposition, rule, citedLines } = args;
     this.assumptions = assumptions;
     this.citedLines = citedLines;
+    this.lineNumber;
     this.proposition = proposition;
     this.rule = rule;
   }
@@ -125,9 +128,11 @@ export class Proof implements ProofInterface {
       });
       // newLineOfProof.assumptions = assumptions;
     }
+    newLineOfProof.lineNumber = this.lines.length;
     const assumptions = this.getAssumptions(newLineOfProof);
     console.log('assumptions!!!!!!!!', assumptions);
     newLineOfProof.setAssumptions(assumptions);
+    console.log('NEW LINE', newLineOfProof);
     this.lines.push(newLineOfProof);
   };
 
@@ -137,34 +142,37 @@ export class Proof implements ProofInterface {
    * @return {LineOfProof[]}
    */
   getAssumptions = (line: LineOfProof): number[] => {
-    console.log('getAssumptions', line);
-    const result = new Set();
+    console.log('getAssumptions', line.rule, line);
+    const result: number[] = [];
     const helper = (l: LineOfProof): void => {
-      console.log('HELPER', l.proposition.cleansedFormulaString);
-      // if (l.rule === DEDUCTION_RULES.ASSUMPTION) {
-      //   result.add(l);
-      // }
-      for (const citedLine of l.citedLines) {
-        if (
-          this.lines[citedLine - 1].rule === DEDUCTION_RULES.ASSUMPTION &&
-          !(
-            line.rule == DEDUCTION_RULES.CONDITIONAL_PROOF &&
-            line.proposition.operands[0].isEqual(
-              this.lines[citedLine - 1].proposition
-            )
-          )
-        ) {
-          result.add(citedLine);
-        } else if (
-          this.lines[citedLine - 1].rule !== DEDUCTION_RULES.CONDITIONAL_PROOF
-        ) {
-          helper(this.lines[citedLine - 1]);
-        }
+      console.log('HELPER', l, result);
+      if (
+        line.rule === DEDUCTION_RULES.PREMISE ||
+        line.rule === DEDUCTION_RULES.CONDITIONAL_PROOF ||
+        line.rule === DEDUCTION_RULES.INDIRECT_PROOF
+      ) {
+        console.log('RETURN EARLY');
+        return;
       }
-      console.log('RESULT', result);
+      if (line.rule === DEDUCTION_RULES.ASSUMPTION) {
+        result.push(line.lineNumber);
+        return;
+      }
+
+      // if (
+      //   line.rule === DEDUCTION_RULES.CONDITIONAL_PROOF ||
+      //   line.rule === DEDUCTION_RULES.INDIRECT_PROOF
+      // ) {
+      //   return;
+      // }
+      console.log('NOW RESULT', result);
+      for (const citedLine of l.citedLines) {
+        helper(this.lines[citedLine - 1]);
+      }
     };
     helper(line);
-    return Array.from(result) as number[];
+    console.log('FINAL RESULT', result);
+    return Array.from(new Set(result)) as number[];
   };
 
   /**
@@ -206,6 +214,9 @@ export class Proof implements ProofInterface {
       );
     });
     console.log('INCORRECT MOVES', incorrectMoves);
+    console.log('hasWrongMoves', hasWrongMoves);
+    console.log('lastLineIsConclusion', lastLineIsConclusion);
+    console.log('nonDischargedAssumptions', nonDischargedAssumptions);
     if (hasWrongMoves) {
       console.log(`
         HAS WRONG MOVES!!!!
