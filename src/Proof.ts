@@ -188,13 +188,13 @@ export class Proof implements ProofInterface {
     let lastLineIsConclusion: boolean = false;
     let nonDischargedAssumptions: number[] = [];
     let hasWrongMoves: boolean = false;
-    const lastLine: Formula = this.lines[this.lines.length - 1].proposition;
-    if (lastLine.isEqual(this.conclusion)) {
+    const lastLine: LineOfProof = this.lines[this.lines.length - 1];
+    if (lastLine.proposition.isEqual(this.conclusion)) {
       // Proof reaches the conclusion.
       lastLineIsConclusion = true;
     }
-    if (this.lines[this.lines.length - 1].assumptions.length > 0) {
-      nonDischargedAssumptions = this.lines[this.lines.length - 1].assumptions;
+    if (lastLine.assumptions.length > 0) {
+      nonDischargedAssumptions = lastLine.assumptions;
     }
     const incorrectMoves: boolean[] = new Array(this.lines.length).fill(false);
     this.lines.forEach((line, index) => {
