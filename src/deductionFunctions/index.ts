@@ -151,53 +151,17 @@ const topLevelExportation: SimpleDeductionRuleInterface = (t, s) => {
  * with that function/rule recursively on the formula.
  */
 export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
-  [DEDUCTION_RULES.ADDITION]: (target, sources) =>
-    target.proposition.operands.some(operand =>
-      operand.isEqual(sources[0].proposition)
-    ) && target.proposition.operator === 'V',
+  [DEDUCTION_RULES.ADDITION]: DeductionFunctions.addition,
   [DEDUCTION_RULES.ASSUMPTION]: () => true,
   [DEDUCTION_RULES.ASSOCIATIVITY]: DeductionFunctions.associativity,
   [DEDUCTION_RULES.COMMUTATIVITY]: DeductionFunctions.commutativity,
   [DEDUCTION_RULES.CONDITIONAL_PROOF]: DeductionFunctions.conditionalProof,
   [DEDUCTION_RULES.CONJUNCTION]: DeductionFunctions.conjunction,
-  [DEDUCTION_RULES.CONSTRUCTIVE_DILEMMA]: (target, sources) => {
-    const [conj, disj] =
-      sources[0].proposition.cleansedFormulaString.length >
-      sources[1].proposition.cleansedFormulaString.length
-        ? [sources[0].proposition, sources[1].proposition]
-        : [sources[1].proposition, sources[0].proposition];
-    console.log(disj.cleansedFormulaString, conj.cleansedFormulaString);
-    if (
-      target.proposition.operator !== 'V' ||
-      conj.operator !== '&' ||
-      disj.operator !== 'V' ||
-      conj.operands[0].operator !== '->' ||
-      conj.operands[1].operator !== '->'
-    ) {
-      return false;
-    }
-
-    // This is a "loose" interpretation of CD, where the order of the
-    // arguments is ignored.
-    return conj.operands
-      .map(operand => operand.operands[0].cleansedFormulaString)
-      .every(op =>
-        disj.operands.map(x => x.cleansedFormulaString).includes(op)
-      );
-  },
+  [DEDUCTION_RULES.CONSTRUCTIVE_DILEMMA]:
+    DeductionFunctions.constructiveDilemma,
   [DEDUCTION_RULES.DEMORGANS]: DeductionFunctions.deMorgans,
-  [DEDUCTION_RULES.DISJUNCTIVE_SYLLOGISM]: (target, sources) => {
-    const [disj, other] =
-      sources[0].proposition.cleansedFormulaString.length >
-      sources[1].proposition.cleansedFormulaString.length
-        ? [sources[0].proposition, sources[1].proposition]
-        : [sources[1].proposition, sources[0].proposition];
-    return (
-      disj.operator === 'V' &&
-      disj.operands.some(operand => operand.isNegation(other)) &&
-      disj.operands.some(operand => operand.isEqual(target.proposition))
-    );
-  },
+  [DEDUCTION_RULES.DISJUNCTIVE_SYLLOGISM]:
+    DeductionFunctions.disjunctiveSyllogism,
   // This assumes a structure like `p & (q V r)` instead of `(q V r) & p`
   // If we wanted to allow the latter, we could define a more permissive
   // version of this that tries to commute the arguments as well
@@ -214,36 +178,12 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
     ),
   [DEDUCTION_RULES.HYPOTHETICAL_SYLLOGISM]:
     DeductionFunctions.hypotheticalSyllogism,
-  [DEDUCTION_RULES.INDIRECT_PROOF]: (target, sources) => {
-    const [assumption, contradiction] = sources[0].proposition.isNegation(
-      target.proposition
-    )
-      ? [sources[0], sources[1]]
-      : [sources[1], sources[0]];
-    return (
-      target.proposition.isNegation(assumption.proposition) &&
-      contradiction.proposition.operator === '&' &&
-      contradiction.proposition.operands[0].isNegation(
-        contradiction.proposition.operands[1]
-      )
-    );
-  },
+  [DEDUCTION_RULES.INDIRECT_PROOF]: DeductionFunctions.indirectProof,
   [DEDUCTION_RULES.MATERIAL_EQUIVALENCE]:
     DeductionFunctions.materialEquivalence,
   [DEDUCTION_RULES.MATERIAL_IMPLICATION]:
     DeductionFunctions.materialImplication,
-  [DEDUCTION_RULES.MODUS_PONENS]: (target, sources) => {
-    const [longer, shorter] =
-      sources[0].proposition.cleansedFormulaString.length >
-      sources[1].proposition.cleansedFormulaString.length
-        ? [sources[0].proposition, sources[1].proposition]
-        : [sources[1].proposition, sources[0].proposition];
-    return (
-      longer.operator === '->' &&
-      longer.operands[0].isEqual(shorter) &&
-      longer.operands[1].isEqual(target.proposition)
-    );
-  },
+  [DEDUCTION_RULES.MODUS_PONENS]: DeductionFunctions.modusPonens,
   [DEDUCTION_RULES.MODUS_TOLLENS]: (target, sources) => {
     const [longer, shorter] =
       sources[0].proposition.cleansedFormulaString.length >

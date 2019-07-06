@@ -10,6 +10,11 @@ import { DEDUCTION_RULES } from '../constants';
 
 import { Formula } from '../Formula';
 
+export const addition: DeductionRuleInterface = (target, sources) =>
+  target.proposition.operands.some(operand =>
+    operand.isEqual(sources[0].proposition)
+  ) && target.proposition.operator === 'V';
+
 /**
  * Checks for the application of Associativity at the top level.
  *
@@ -96,6 +101,33 @@ export const conjunction: DeductionRuleInterface = (target, sources) =>
   ) &&
   target.proposition.operator === '&';
 
+export const constructiveDilemma: DeductionRuleInterface = (
+  target,
+  sources
+) => {
+  const [conj, disj] =
+    sources[0].proposition.cleansedFormulaString.length >
+    sources[1].proposition.cleansedFormulaString.length
+      ? [sources[0].proposition, sources[1].proposition]
+      : [sources[1].proposition, sources[0].proposition];
+  console.log(disj.cleansedFormulaString, conj.cleansedFormulaString);
+  if (
+    target.proposition.operator !== 'V' ||
+    conj.operator !== '&' ||
+    disj.operator !== 'V' ||
+    conj.operands[0].operator !== '->' ||
+    conj.operands[1].operator !== '->'
+  ) {
+    return false;
+  }
+
+  // This is a "loose" interpretation of CD, where the order of the
+  // arguments is ignored.
+  return conj.operands
+    .map(operand => operand.operands[0].cleansedFormulaString)
+    .every(op => disj.operands.map(x => x.cleansedFormulaString).includes(op));
+};
+
 const simpleDeMorgans: SimpleDeductionRuleInterface = (t, s) => {
   const [negatedFormula, otherFormula] = t.operator === '~' ? [t, s] : [s, t];
   if (!otherFormula.operator.match(/[&V]/)) {
@@ -150,6 +182,22 @@ export const doubleNegation: DeductionRuleInterface = (target, sources) =>
     sources[0].proposition
   );
 
+export const disjunctiveSyllogism: DeductionRuleInterface = (
+  target,
+  sources
+) => {
+  const [disj, other] =
+    sources[0].proposition.cleansedFormulaString.length >
+    sources[1].proposition.cleansedFormulaString.length
+      ? [sources[0].proposition, sources[1].proposition]
+      : [sources[1].proposition, sources[0].proposition];
+  return (
+    disj.operator === 'V' &&
+    disj.operands.some(operand => operand.isNegation(other)) &&
+    disj.operands.some(operand => operand.isEqual(target.proposition))
+  );
+};
+
 export const hypotheticalSyllogism: DeductionRuleInterface = (
   target,
   sources
@@ -178,6 +226,21 @@ export const hypotheticalSyllogism: DeductionRuleInterface = (
     sources[1].proposition.operator === '->' &&
     sources[0].proposition.operator === '->' &&
     target.proposition.operator === '->');
+
+export const indirectProof: DeductionRuleInterface = (target, sources) => {
+  const [assumption, contradiction] = sources[0].proposition.isNegation(
+    target.proposition
+  )
+    ? [sources[0], sources[1]]
+    : [sources[1], sources[0]];
+  return (
+    target.proposition.isNegation(assumption.proposition) &&
+    contradiction.proposition.operator === '&' &&
+    contradiction.proposition.operands[0].isNegation(
+      contradiction.proposition.operands[1]
+    )
+  );
+};
 
 const simpleMaterialImplication: SimpleDeductionRuleInterface = (t, s) => {
   const [conditional, disjunction] = t.operator === '->' ? [t, s] : [s, t];
@@ -231,6 +294,19 @@ export const materialImplication: DeductionRuleInterface = (target, sources) =>
     target.proposition,
     sources[0].proposition
   );
+
+export const modusPonens: DeductionRuleInterface = (target, sources) => {
+  const [longer, shorter] =
+    sources[0].proposition.cleansedFormulaString.length >
+    sources[1].proposition.cleansedFormulaString.length
+      ? [sources[0].proposition, sources[1].proposition]
+      : [sources[1].proposition, sources[0].proposition];
+  return (
+    longer.operator === '->' &&
+    longer.operands[0].isEqual(shorter) &&
+    longer.operands[1].isEqual(target.proposition)
+  );
+};
 
 const simpleTautology: SimpleDeductionRuleInterface = (t, s) => {
   return (
