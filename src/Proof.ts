@@ -137,42 +137,27 @@ export class Proof implements ProofInterface {
   };
 
   /**
-   * Get the assumptions that a line of proof relies on. [WIP]
+   * Get the assumptions that a line of proof assumes
    * @param {LineOfProof} line
-   * @return {LineOfProof[]}
+   * @return {number[]}
    */
   getAssumptions = (line: LineOfProof): number[] => {
-    console.log('getAssumptions', line.rule, line);
-    const result: number[] = [];
-    const helper = (l: LineOfProof): void => {
-      console.log('HELPER', l, result);
-      if (
-        line.rule === DEDUCTION_RULES.PREMISE ||
-        line.rule === DEDUCTION_RULES.CONDITIONAL_PROOF ||
-        line.rule === DEDUCTION_RULES.INDIRECT_PROOF
-      ) {
-        console.log('RETURN EARLY');
-        return;
-      }
-      if (line.rule === DEDUCTION_RULES.ASSUMPTION) {
-        result.push(line.lineNumber);
-        return;
-      }
-
-      // if (
-      //   line.rule === DEDUCTION_RULES.CONDITIONAL_PROOF ||
-      //   line.rule === DEDUCTION_RULES.INDIRECT_PROOF
-      // ) {
-      //   return;
-      // }
-      console.log('NOW RESULT', result);
-      for (const citedLine of l.citedLines) {
-        helper(this.lines[citedLine - 1]);
-      }
-    };
-    helper(line);
-    console.log('FINAL RESULT', result);
-    return Array.from(new Set(result)) as number[];
+    if (line.rule === DEDUCTION_RULES.ASSUMPTION) return [line.lineNumber];
+    if (
+      line.rule === DEDUCTION_RULES.PREMISE ||
+      line.rule === DEDUCTION_RULES.CONDITIONAL_PROOF ||
+      line.rule === DEDUCTION_RULES.INDIRECT_PROOF
+    ) {
+      return [];
+    } else {
+      return Array.from(
+        new Set(
+          line.citedLines
+            .map(l => this.getAssumptions(this.lines[l - 1]))
+            .reduce((acc, arr) => acc.concat(arr))
+        )
+      );
+    }
   };
 
   /**

@@ -35,8 +35,8 @@
   - [s, Simplification, [2]]
 
 # TODO: Reject proos with non-discharged assumptions
-# -
-#   - [p -> q, Premise, []]
-#   - [p, Assumption, []]
-#   - [q, Modus Ponens, [1, 2]]
-#   - [p & q, Conjunction, [2, 3]]
+-
+  - [p -> q, Premise, []]
+  - [p, Assumption, []]
+  - [q, Modus Ponens, [1, 2]]
+  - [p & q, Conjunction, [2, 3]]
