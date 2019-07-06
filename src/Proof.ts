@@ -142,7 +142,7 @@ export class Proof implements ProofInterface {
    * @return {number[]}
    */
   getAssumptions = (line: LineOfProof): number[] => {
-    if (line.rule === DEDUCTION_RULES.ASSUMPTION) return [line.lineNumber];
+    if (line.rule === DEDUCTION_RULES.ASSUMPTION) return [line.lineNumber + 1];
     if (
       line.rule === DEDUCTION_RULES.PREMISE ||
       line.rule === DEDUCTION_RULES.CONDITIONAL_PROOF ||
