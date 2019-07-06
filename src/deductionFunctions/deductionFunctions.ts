@@ -149,6 +149,39 @@ export const deMorgans: DeductionRuleInterface = (target, sources) =>
     sources[0].proposition
   );
 
+const simpleDistribution: SimpleDeductionRuleInterface = (t, s) => {
+  const [longer, shorter] =
+    s.cleansedFormulaString.length > t.cleansedFormulaString.length
+      ? [s, t]
+      : [t, s];
+  if (
+    !(
+      shorter.operator.match(/[&V]/) &&
+      shorter.operator === flipOperator(shorter.operands[1].operator) &&
+      longer.operator === flipOperator(shorter.operator) &&
+      longer.operands.every(operand => shorter.operator === operand.operator)
+    )
+  ) {
+    return false;
+  }
+  const newDisjunct1 = new Formula(
+    `(${shorter.operands[0].cleansedFormulaString}) ${shorter.operator} (${shorter.operands[1].operands[0].cleansedFormulaString})`
+  );
+  const newDisjunct2 = new Formula(
+    `(${shorter.operands[0].cleansedFormulaString}) ${shorter.operator} (${shorter.operands[1].operands[1].cleansedFormulaString})`
+  );
+  return (
+    newDisjunct1.isEqual(longer.operands[0]) &&
+    newDisjunct2.isEqual(longer.operands[1])
+  );
+};
+
+export const distribution: DeductionRuleInterface = (target, sources) =>
+  checkRuleRecursively(simpleDistribution)(
+    target.proposition,
+    sources[0].proposition
+  );
+
 /**
  * Function that checks whether Double Negation applies at the top level
  *
@@ -197,6 +230,29 @@ export const disjunctiveSyllogism: DeductionRuleInterface = (
     disj.operands.some(operand => operand.isEqual(target.proposition))
   );
 };
+
+const simpleExportation: SimpleDeductionRuleInterface = (t, s) => {
+  if (!(t.operator === '->' && s.operator === '->')) {
+    return false;
+  }
+  const [exported, unexported] =
+    t.operands[1].operator === '->' ? [t, s] : [s, t];
+  if (exported.operands[1].operator !== '->') return false;
+  if (unexported.operands[0].operator !== '&') return false;
+  return (
+    exported.operands[0].isEqual(unexported.operands[0].operands[0]) &&
+    exported.operands[1].operands[0].isEqual(
+      unexported.operands[0].operands[1]
+    ) &&
+    exported.operands[1].operands[1].isEqual(unexported.operands[1])
+  );
+};
+
+export const exportation: DeductionRuleInterface = (target, sources) =>
+  checkRuleRecursively(simpleExportation)(
+    target.proposition,
+    sources[0].proposition
+  );
 
 export const hypotheticalSyllogism: DeductionRuleInterface = (
   target,
@@ -307,6 +363,36 @@ export const modusPonens: DeductionRuleInterface = (target, sources) => {
     longer.operands[1].isEqual(target.proposition)
   );
 };
+
+export const modusTollens: DeductionRuleInterface = (target, sources) => {
+  const [longer, shorter] =
+    sources[0].proposition.cleansedFormulaString.length >
+    sources[1].proposition.cleansedFormulaString.length
+      ? [sources[0].proposition, sources[1].proposition]
+      : [sources[1].proposition, sources[0].proposition];
+  return (
+    longer.operator === '->' &&
+    longer.operands[1].isNegation(shorter) &&
+    longer.operands[0].isNegation(target.proposition)
+  );
+};
+
+export const simplification: DeductionRuleInterface = (target, sources) =>
+  sources[0].proposition.operands.some(operand =>
+    operand.isEqual(target.proposition)
+  ) && sources[0].proposition.operator === '&';
+
+const simpleTransposition: SimpleDeductionRuleInterface = (t, s) =>
+  t.operator === '->' &&
+  s.operator === '->' &&
+  t.operands[0].isNegation(s.operands[1]) &&
+  t.operands[1].isNegation(s.operands[0]);
+
+export const transposition: DeductionRuleInterface = (target, sources) =>
+  checkRuleRecursively(simpleTransposition)(
+    target.proposition,
+    sources[0].proposition
+  );
 
 const simpleTautology: SimpleDeductionRuleInterface = (t, s) => {
   return (

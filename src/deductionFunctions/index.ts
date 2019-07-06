@@ -1,8 +1,9 @@
 /* eslint-disable-next-line */
 import { LineOfProof, Proof } from '../Proof';
+/* eslint-disable-next-line */
 import { Formula } from '../Formula';
 import { CITED_LINES_COUNT, DEDUCTION_RULES } from '../constants';
-import * as DeductionFunctions from './deductionFunctions';
+import * as DF from './deductionFunctions';
 // TODO: Put in utils
 export const flipOperator = (operator: string): string =>
   operator === '&' ? 'V' : operator === 'V' ? '&' : operator;
@@ -78,56 +79,6 @@ export const checkRuleRecursively = (
   return false;
 };
 
-const topLevelDistribution: SimpleDeductionRuleInterface = (t, s) => {
-  const [longer, shorter] =
-    s.cleansedFormulaString.length > t.cleansedFormulaString.length
-      ? [s, t]
-      : [t, s];
-  if (
-    !(
-      shorter.operator.match(/[&V]/) &&
-      shorter.operator === flipOperator(shorter.operands[1].operator) &&
-      longer.operator === flipOperator(shorter.operator) &&
-      longer.operands.every(operand => shorter.operator === operand.operator)
-    )
-  ) {
-    return false;
-  }
-  const newDisjunct1 = new Formula(
-    `(${shorter.operands[0].cleansedFormulaString}) ${shorter.operator} (${shorter.operands[1].operands[0].cleansedFormulaString})`
-  );
-  const newDisjunct2 = new Formula(
-    `(${shorter.operands[0].cleansedFormulaString}) ${shorter.operator} (${shorter.operands[1].operands[1].cleansedFormulaString})`
-  );
-  return (
-    newDisjunct1.isEqual(longer.operands[0]) &&
-    newDisjunct2.isEqual(longer.operands[1])
-  );
-};
-
-const topLevelTransposition: SimpleDeductionRuleInterface = (t, s) =>
-  t.operator === '->' &&
-  s.operator === '->' &&
-  t.operands[0].isNegation(s.operands[1]) &&
-  t.operands[1].isNegation(s.operands[0]);
-
-const topLevelExportation: SimpleDeductionRuleInterface = (t, s) => {
-  if (!(t.operator === '->' && s.operator === '->')) {
-    return false;
-  }
-  const [exported, unexported] =
-    t.operands[1].operator === '->' ? [t, s] : [s, t];
-  if (exported.operands[1].operator !== '->') return false;
-  if (unexported.operands[0].operator !== '&') return false;
-  return (
-    exported.operands[0].isEqual(unexported.operands[0].operands[0]) &&
-    exported.operands[1].operands[0].isEqual(
-      unexported.operands[0].operands[1]
-    ) &&
-    exported.operands[1].operands[1].isEqual(unexported.operands[1])
-  );
-};
-
 // TODO: DEAL WITH ERRORS. VALIDATING ARGUMENTS FOR DEDUCTION RULES
 
 /**
@@ -151,60 +102,29 @@ const topLevelExportation: SimpleDeductionRuleInterface = (t, s) => {
  * with that function/rule recursively on the formula.
  */
 export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
-  [DEDUCTION_RULES.ADDITION]: DeductionFunctions.addition,
+  [DEDUCTION_RULES.ADDITION]: DF.addition,
   [DEDUCTION_RULES.ASSUMPTION]: () => true,
-  [DEDUCTION_RULES.ASSOCIATIVITY]: DeductionFunctions.associativity,
-  [DEDUCTION_RULES.COMMUTATIVITY]: DeductionFunctions.commutativity,
-  [DEDUCTION_RULES.CONDITIONAL_PROOF]: DeductionFunctions.conditionalProof,
-  [DEDUCTION_RULES.CONJUNCTION]: DeductionFunctions.conjunction,
-  [DEDUCTION_RULES.CONSTRUCTIVE_DILEMMA]:
-    DeductionFunctions.constructiveDilemma,
-  [DEDUCTION_RULES.DEMORGANS]: DeductionFunctions.deMorgans,
-  [DEDUCTION_RULES.DISJUNCTIVE_SYLLOGISM]:
-    DeductionFunctions.disjunctiveSyllogism,
+  [DEDUCTION_RULES.ASSOCIATIVITY]: DF.associativity,
+  [DEDUCTION_RULES.COMMUTATIVITY]: DF.commutativity,
+  [DEDUCTION_RULES.CONDITIONAL_PROOF]: DF.conditionalProof,
+  [DEDUCTION_RULES.CONJUNCTION]: DF.conjunction,
+  [DEDUCTION_RULES.CONSTRUCTIVE_DILEMMA]: DF.constructiveDilemma,
+  [DEDUCTION_RULES.DEMORGANS]: DF.deMorgans,
+  [DEDUCTION_RULES.DISJUNCTIVE_SYLLOGISM]: DF.disjunctiveSyllogism,
   // This assumes a structure like `p & (q V r)` instead of `(q V r) & p`
   // If we wanted to allow the latter, we could define a more permissive
   // version of this that tries to commute the arguments as well
-  [DEDUCTION_RULES.DISTRIBUTION]: (target, sources) =>
-    checkRuleRecursively(topLevelDistribution)(
-      target.proposition,
-      sources[0].proposition
-    ),
-  [DEDUCTION_RULES.DOUBLE_NEGATION]: DeductionFunctions.doubleNegation,
-  [DEDUCTION_RULES.EXPORTATION]: (target, sources) =>
-    checkRuleRecursively(topLevelExportation)(
-      target.proposition,
-      sources[0].proposition
-    ),
-  [DEDUCTION_RULES.HYPOTHETICAL_SYLLOGISM]:
-    DeductionFunctions.hypotheticalSyllogism,
-  [DEDUCTION_RULES.INDIRECT_PROOF]: DeductionFunctions.indirectProof,
-  [DEDUCTION_RULES.MATERIAL_EQUIVALENCE]:
-    DeductionFunctions.materialEquivalence,
-  [DEDUCTION_RULES.MATERIAL_IMPLICATION]:
-    DeductionFunctions.materialImplication,
-  [DEDUCTION_RULES.MODUS_PONENS]: DeductionFunctions.modusPonens,
-  [DEDUCTION_RULES.MODUS_TOLLENS]: (target, sources) => {
-    const [longer, shorter] =
-      sources[0].proposition.cleansedFormulaString.length >
-      sources[1].proposition.cleansedFormulaString.length
-        ? [sources[0].proposition, sources[1].proposition]
-        : [sources[1].proposition, sources[0].proposition];
-    return (
-      longer.operator === '->' &&
-      longer.operands[1].isNegation(shorter) &&
-      longer.operands[0].isNegation(target.proposition)
-    );
-  },
+  [DEDUCTION_RULES.DISTRIBUTION]: DF.distribution,
+  [DEDUCTION_RULES.DOUBLE_NEGATION]: DF.doubleNegation,
+  [DEDUCTION_RULES.EXPORTATION]: DF.exportation,
+  [DEDUCTION_RULES.HYPOTHETICAL_SYLLOGISM]: DF.hypotheticalSyllogism,
+  [DEDUCTION_RULES.INDIRECT_PROOF]: DF.indirectProof,
+  [DEDUCTION_RULES.MATERIAL_EQUIVALENCE]: DF.materialEquivalence,
+  [DEDUCTION_RULES.MATERIAL_IMPLICATION]: DF.materialImplication,
+  [DEDUCTION_RULES.MODUS_PONENS]: DF.modusPonens,
+  [DEDUCTION_RULES.MODUS_TOLLENS]: DF.modusTollens,
   [DEDUCTION_RULES.PREMISE]: () => true,
-  [DEDUCTION_RULES.SIMPLIFICATION]: (target, sources) =>
-    sources[0].proposition.operands.some(operand =>
-      operand.isEqual(target.proposition)
-    ) && sources[0].proposition.operator === '&',
-  [DEDUCTION_RULES.TAUTOLOGY]: DeductionFunctions.tautology,
-  [DEDUCTION_RULES.TRANSPOSITION]: (target, sources) =>
-    checkRuleRecursively(topLevelTransposition)(
-      target.proposition,
-      sources[0].proposition
-    )
+  [DEDUCTION_RULES.SIMPLIFICATION]: DF.simplification,
+  [DEDUCTION_RULES.TRANSPOSITION]: DF.transposition,
+  [DEDUCTION_RULES.TAUTOLOGY]: DF.tautology
 };
