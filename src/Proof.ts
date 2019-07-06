@@ -187,7 +187,12 @@ export class Proof implements ProofInterface {
     }
     const incorrectMoves: boolean[] = new Array(this.lines.length).fill(false);
     this.lines.forEach((line, index) => {
-      const isValidMove = evaluateMove(line, this);
+      let isValidMove = false;
+      try {
+        isValidMove = evaluateMove(line, this);
+      } catch (e) {
+        console.log('Error processing line of proof: ' + e);
+      }
       incorrectMoves[index] = !isValidMove;
       hasWrongMoves = Boolean(
         Math.max(Number(hasWrongMoves), Number(!isValidMove))
