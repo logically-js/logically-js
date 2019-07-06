@@ -4,7 +4,7 @@ import { Formula } from '../Formula';
 import { CITED_LINES_COUNT, DEDUCTION_RULES } from '../constants';
 import * as DeductionFunctions from './deductionFunctions';
 // TODO: Put in utils
-const flipOperator = (operator: string): string =>
+export const flipOperator = (operator: string): string =>
   operator === '&' ? 'V' : operator === 'V' ? '&' : operator;
 
 /**
@@ -76,21 +76,6 @@ export const checkRuleRecursively = (
     }
   }
   return false;
-};
-
-const topLevelDeMorgans: SimpleDeductionRuleInterface = (t, s) => {
-  const [negatedFormula, otherFormula] = t.operator === '~' ? [t, s] : [s, t];
-  if (!otherFormula.operator.match(/[&V]/)) {
-    // the other formula's operator must be a `&` or a `V`
-    return false;
-  }
-  const innerFormula = negatedFormula.operands[0];
-  // Order of arguments must be preserved
-  return (
-    innerFormula.operator === flipOperator(otherFormula.operator) &&
-    innerFormula.operands[0].isNegation(otherFormula.operands[0]) &&
-    innerFormula.operands[1].isNegation(otherFormula.operands[1])
-  );
 };
 
 const topLevelDistribution: SimpleDeductionRuleInterface = (t, s) => {
@@ -262,11 +247,7 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
         disj.operands.map(x => x.cleansedFormulaString).includes(op)
       );
   },
-  [DEDUCTION_RULES.DEMORGANS]: (target, sources) =>
-    checkRuleRecursively(topLevelDeMorgans)(
-      target.proposition,
-      sources[0].proposition
-    ),
+  [DEDUCTION_RULES.DEMORGANS]: DeductionFunctions.deMorgansFunction,
   [DEDUCTION_RULES.DISJUNCTIVE_SYLLOGISM]: (target, sources) => {
     const [disj, other] =
       sources[0].proposition.cleansedFormulaString.length >
