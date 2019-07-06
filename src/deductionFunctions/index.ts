@@ -78,44 +78,6 @@ export const checkRuleRecursively = (
   return false;
 };
 
-/**
- * Function that checks whether Double Negation applies at the top level
- *
- * @param {Formula} t - Target formula
- * @param {Formula} s - Source formula
- * @return {boolean} - Does Double Negation apply at the top level?
- */
-const topLevelDoubleNegation: SimpleDeductionRuleInterface = (t, s) => {
-  // We can identify which argument is the one that had
-  // the double negation by its length
-  if (t.cleansedFormulaString.length > s.cleansedFormulaString.length) {
-    const operandFormula = t.operands[0];
-    return (
-      t.operator === '~' &&
-      operandFormula.operator === '~' &&
-      operandFormula.operands[0].isEqual(s)
-    );
-  } else {
-    const operandFormula = s.operands[0];
-    return (
-      s.operator === '~' &&
-      operandFormula.operator === '~' &&
-      operandFormula.operands[0].isEqual(t)
-    );
-  }
-};
-
-const topLevelTautology: SimpleDeductionRuleInterface = (t, s) => {
-  return (
-    (s.operator === 'V' &&
-      s.operands[0].isEqual(s.operands[1]) &&
-      s.operands[0].isEqual(t)) ||
-    (t.operator === 'V' &&
-      t.operands[0].isEqual(t.operands[1]) &&
-      t.operands[0].isEqual(s))
-  );
-};
-
 const topLevelDeMorgans: SimpleDeductionRuleInterface = (t, s) => {
   const [negatedFormula, otherFormula] = t.operator === '~' ? [t, s] : [s, t];
   if (!otherFormula.operator.match(/[&V]/)) {
@@ -325,11 +287,7 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
       target.proposition,
       sources[0].proposition
     ),
-  [DEDUCTION_RULES.DOUBLE_NEGATION]: (target, sources) =>
-    checkRuleRecursively(topLevelDoubleNegation)(
-      target.proposition,
-      sources[0].proposition
-    ),
+  [DEDUCTION_RULES.DOUBLE_NEGATION]: DeductionFunctions.doubleNegationFunction,
   [DEDUCTION_RULES.EXPORTATION]: (target, sources) =>
     checkRuleRecursively(topLevelExportation)(
       target.proposition,
@@ -413,11 +371,7 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
     sources[0].proposition.operands.some(operand =>
       operand.isEqual(target.proposition)
     ) && sources[0].proposition.operator === '&',
-  [DEDUCTION_RULES.TAUTOLOGY]: (target, sources) =>
-    checkRuleRecursively(topLevelTautology)(
-      target.proposition,
-      sources[0].proposition
-    ),
+  [DEDUCTION_RULES.TAUTOLOGY]: DeductionFunctions.tautologyFunction,
   [DEDUCTION_RULES.TRANSPOSITION]: (target, sources) =>
     checkRuleRecursively(topLevelTransposition)(
       target.proposition,

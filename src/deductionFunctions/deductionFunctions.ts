@@ -74,3 +74,56 @@ export const commutativityFunction: DeductionRuleInterface = (
     target.proposition,
     sources[0].proposition
   );
+
+/**
+ * Function that checks whether Double Negation applies at the top level
+ *
+ * @param {Formula} t - Target formula
+ * @param {Formula} s - Source formula
+ * @return {boolean} - Does Double Negation apply at the top level?
+ */
+const simpleDoubleNegation: SimpleDeductionRuleInterface = (t, s) => {
+  // We can identify which argument is the one that had
+  // the double negation by its length
+  if (t.cleansedFormulaString.length > s.cleansedFormulaString.length) {
+    const operandFormula = t.operands[0];
+    return (
+      t.operator === '~' &&
+      operandFormula.operator === '~' &&
+      operandFormula.operands[0].isEqual(s)
+    );
+  } else {
+    const operandFormula = s.operands[0];
+    return (
+      s.operator === '~' &&
+      operandFormula.operator === '~' &&
+      operandFormula.operands[0].isEqual(t)
+    );
+  }
+};
+
+export const doubleNegationFunction: DeductionRuleInterface = (
+  target,
+  sources
+) =>
+  checkRuleRecursively(simpleDoubleNegation)(
+    target.proposition,
+    sources[0].proposition
+  );
+
+const simpleTautology: SimpleDeductionRuleInterface = (t, s) => {
+  return (
+    (s.operator === 'V' &&
+      s.operands[0].isEqual(s.operands[1]) &&
+      s.operands[0].isEqual(t)) ||
+    (t.operator === 'V' &&
+      t.operands[0].isEqual(t.operands[1]) &&
+      t.operands[0].isEqual(s))
+  );
+};
+
+export const tautologyFunction: DeductionRuleInterface = (target, sources) =>
+  checkRuleRecursively(simpleTautology)(
+    target.proposition,
+    sources[0].proposition
+  );
