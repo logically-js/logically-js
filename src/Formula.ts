@@ -62,6 +62,14 @@ export class Formula implements FormulaInterface {
   }
 
   /**
+   * Getter that prints the "prettified" version of the current formula
+   * @return {string} - Prettified formula description
+   */
+  get prettifiedFormula() {
+    return this.prettyFormula(this.cleansedFormulaString);
+  }
+
+  /**
    * Returns true iff the formula string represents an atomic proposition.
    * @param  {string}  string - The string to test
    * @return {boolean}        - Is the input string atomic?
