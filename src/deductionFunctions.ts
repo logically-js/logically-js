@@ -297,6 +297,7 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
     target.proposition.operands.some(operand =>
       operand.isEqual(sources[0].proposition)
     ) && target.proposition.operator === 'V',
+  [DEDUCTION_RULES.ASSUMPTION]: () => true,
   [DEDUCTION_RULES.ASSOCIATIVITY]: (target, sources) =>
     checkRuleRecursively(topLevelAssociativity)(
       target.proposition,

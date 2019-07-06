@@ -5,6 +5,7 @@ interface DeductionRulesInterface {
 export const DEDUCTION_RULES = <DeductionRulesInterface>{
   ADDITION: 'Addition',
   ASSOCIATIVITY: 'Associativity',
+  ASSUMPTION: 'Assumption',
   COMMUTATIVITY: 'Commutativity',
   CONJUNCTION: 'Conjunction',
   CONSTRUCTIVE_DILEMMA: 'Constructive Dilemma',
@@ -31,6 +32,7 @@ interface CitedLinesCount {
 export const CITED_LINES_COUNT = <CitedLinesCount>{
   [DEDUCTION_RULES.ADDITION]: 1,
   [DEDUCTION_RULES.ASSOCIATIVITY]: 1,
+  [DEDUCTION_RULES.ASSUMPTION]: 0,
   [DEDUCTION_RULES.COMMUTATIVITY]: 1,
   [DEDUCTION_RULES.CONJUNCTION]: 2,
   [DEDUCTION_RULES.CONSTRUCTIVE_DILEMMA]: 2,
