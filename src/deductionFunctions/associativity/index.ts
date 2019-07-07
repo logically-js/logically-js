@@ -40,6 +40,7 @@ const simpleAssociativity: SimpleDeductionRuleInterface = (t, s) => {
     }
     return false;
   }
+  return false;
 };
 
 export const associativity: DeductionRuleInterface = (target, sources) =>
