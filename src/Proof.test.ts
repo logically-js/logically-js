@@ -49,7 +49,6 @@ describe('Proof', function() {
         ${inspect(mockProof)}
         `, () => {
         const { score } = proof.evaluateProof();
-        console.log('SCORE', score);
         assert.isTrue(Boolean(score));
       });
     }
@@ -72,7 +71,6 @@ describe('Proof', function() {
         ${inspect(invalidProof)}
         `, () => {
         const { score } = proof.evaluateProof();
-        console.log('SCORE', score);
         assert.isFalse(Boolean(score));
       });
     }

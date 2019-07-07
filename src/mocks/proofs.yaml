@@ -79,6 +79,13 @@
   - [r, Modus Ponens, [2, 4]]
   - [q -> r, Conditional Proof, [3, 5]]
 
+-
+  - [p, Assumption, []]
+  - [q, Assumption, []]
+  - [p & q, Conjunction, [1, 2]]
+  - [q -> (p & q), Conditional Proof, [2, 3]]
+  - [p -> (q -> (p & q)), Conditional Proof, [1, 4]]
+
 
 
 # CONSTRUCTIVE DILEMMA
@@ -253,6 +260,12 @@
   - [~p, Assumption, []]
   - [p & ~p, Conjunction, [1, 2]]
   - [p, Indirect Proof, [2, 3]]
+
+# Extra unnecessary assumption
+-
+  - [p & q, Premise, []]
+  - [r, Assumption, []]
+  - [p, Simplification, [1]]
 
 
 
