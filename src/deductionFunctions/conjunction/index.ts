@@ -1,3 +1,4 @@
+/* eslint-disable-next-line */
 import { DeductionRuleInterface } from '../index';
 
 export const conjunction: DeductionRuleInterface = (target, sources) =>

@@ -1,7 +1,13 @@
-import { checkRuleRecursively, flipOperator, DeductionRuleInterface, SimpleDeductionRuleInterface } from '../index';
+/* eslint-disable no-unused-vars */
+import {
+  checkRuleRecursively,
+  flipOperator,
+  DeductionRuleInterface,
+  SimpleDeductionRuleInterface
+} from '../index';
+/* eslint-enable no-unused-vars */
 
-
-const simpleDeMorgansRule: SimpleDeductionRuleInterface = (t, s) => {
+const simpleDeMorgans: SimpleDeductionRuleInterface = (t, s) => {
   const [negatedFormula, otherFormula] = t.operator === '~' ? [t, s] : [s, t];
   if (!otherFormula.operator.match(/[&V]/)) {
     // the other formula's operator must be a `&` or a `V`
@@ -16,8 +22,8 @@ const simpleDeMorgansRule: SimpleDeductionRuleInterface = (t, s) => {
   );
 };
 
-export const deMorgansRule: DeductionRuleInterface = (target, sources) =>
-  checkRuleRecursively(simpleDeMorgansRule)(
+export const deMorgans: DeductionRuleInterface = (target, sources) =>
+  checkRuleRecursively(simpleDeMorgans)(
     target.proposition,
     sources[0].proposition
   );

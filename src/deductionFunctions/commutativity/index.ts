@@ -1,5 +1,10 @@
-/* eslint-disable-next-list */
-import { checkRuleRecursively, DeductionRuleInterface, SimpleDeductionRuleInterface } from '../index';
+/* eslint-disable no-unused-vars */
+import {
+  checkRuleRecursively,
+  DeductionRuleInterface,
+  SimpleDeductionRuleInterface
+} from '../index';
+/* eslint-enable no-unused-vars */
 
 /**
  * Function that checks whether Commutativity applies at the top level

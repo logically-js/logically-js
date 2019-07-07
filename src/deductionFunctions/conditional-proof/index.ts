@@ -1,3 +1,4 @@
+/* eslint-disable-next-line */
 import { DeductionRuleInterface } from '../index';
 import { DEDUCTION_RULES } from '../../constants';
 
