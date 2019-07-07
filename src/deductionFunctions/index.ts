@@ -109,7 +109,7 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
   [DEDUCTION_RULES.CONDITIONAL_PROOF]: DF.conditionalProof,
   [DEDUCTION_RULES.CONJUNCTION]: DF.conjunction,
   [DEDUCTION_RULES.CONSTRUCTIVE_DILEMMA]: DF.constructiveDilemma,
-  [DEDUCTION_RULES.DEMORGANS]: DF.deMorgans,
+  [DEDUCTION_RULES.DEMORGANS]: DF.deMorgansRule,
   [DEDUCTION_RULES.DISJUNCTIVE_SYLLOGISM]: DF.disjunctiveSyllogism,
   // This assumes a structure like `p & (q V r)` instead of `(q V r) & p`
   // If we wanted to allow the latter, we could define a more permissive

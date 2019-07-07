@@ -10,144 +10,20 @@ import { DEDUCTION_RULES } from '../constants';
 
 import { Formula } from '../Formula';
 
-export const addition: DeductionRuleInterface = (target, sources) =>
-  target.proposition.operands.some(operand =>
-    operand.isEqual(sources[0].proposition)
-  ) && target.proposition.operator === 'V';
-
-/**
- * Checks for the application of Associativity at the top level.
- *
- * @param {Formula} t - target proposition
- * @param {Formula} s - source proposition
- * @return {boolean} - Can you go from target to source with Associativity?
- */
-const simpleAssociativity: SimpleDeductionRuleInterface = (t, s) => {
-  const op = t.operator;
-  if (!(op.match(/[&V]/) && op === s.operator)) {
-    return false;
-  }
-  // Try associating to one side
-  let operandFormula = t.operands[0];
-  if (operandFormula.operator === op) {
-    const newFormula = new Formula(
-      `(${operandFormula.operands[0].cleansedFormulaString}) ${op} (${operandFormula.operands[1].cleansedFormulaString} ${op} ${t.operands[1].cleansedFormulaString})`
-    );
-    if (newFormula.isEqual(s)) {
-      return true;
-    }
-  }
-
-  // Try associating to the other direction
-  operandFormula = t.operands[1];
-  if (operandFormula.operator === op) {
-    const newFormula = new Formula(
-      `(${t.operands[0].cleansedFormulaString} ${op} ${operandFormula.operands[0].cleansedFormulaString}) ${op} (${operandFormula.operands[1].cleansedFormulaString})`
-    );
-    if (newFormula.isEqual(s)) {
-      return true;
-    }
-    return false;
-  }
-};
-
-export const associativity: DeductionRuleInterface = (target, sources) =>
-  checkRuleRecursively(simpleAssociativity)(
-    target.proposition,
-    sources[0].proposition
-  );
-
-/**
- * Function that checks whether Commutativity applies at the top level
- *
- * @param {Formula} t - Target formula
- * @param {Formula} s - Source formula
- * @return {boolean} - Does Commutativity apply at the top level?
- */
-const simpleCommutativity: SimpleDeductionRuleInterface = (t, s) =>
-  t.operator === s.operator &&
-  t.operator.match(/[V&]/) &&
-  t.operands[0].isEqual(s.operands[1]) &&
-  t.operands[1].isEqual(s.operands[0]);
-
-export const commutativity: DeductionRuleInterface = (target, sources) =>
-  checkRuleRecursively(simpleCommutativity)(
-    target.proposition,
-    sources[0].proposition
-  );
-
-export const conditionalProof: DeductionRuleInterface = (target, sources) => {
-  const [assumption, goal] =
-    sources[0].rule === DEDUCTION_RULES.ASSUMPTION
-      ? [sources[0], sources[1]]
-      : [sources[1], sources[0]];
-  return (
-    target.proposition.operator === '->' &&
-    target.proposition.operands.some(operand =>
-      operand.isEqual(assumption.proposition)
-    ) &&
-    target.proposition.operands.some(operand =>
-      operand.isEqual(goal.proposition)
-    )
-  );
-};
-
-export const conjunction: DeductionRuleInterface = (target, sources) =>
-  target.proposition.operands.some(operand =>
-    operand.isEqual(sources[0].proposition)
-  ) &&
-  target.proposition.operands.some(operand =>
-    operand.isEqual(sources[1].proposition)
-  ) &&
-  target.proposition.operator === '&';
-
-export const constructiveDilemma: DeductionRuleInterface = (
-  target,
-  sources
-) => {
-  const [conj, disj] =
-    sources[0].proposition.cleansedFormulaString.length >
-    sources[1].proposition.cleansedFormulaString.length
-      ? [sources[0].proposition, sources[1].proposition]
-      : [sources[1].proposition, sources[0].proposition];
-  console.log(disj.cleansedFormulaString, conj.cleansedFormulaString);
-  if (
-    target.proposition.operator !== 'V' ||
-    conj.operator !== '&' ||
-    disj.operator !== 'V' ||
-    conj.operands[0].operator !== '->' ||
-    conj.operands[1].operator !== '->'
-  ) {
-    return false;
-  }
-
-  // This is a "loose" interpretation of CD, where the order of the
-  // arguments is ignored.
-  return conj.operands
-    .map(operand => operand.operands[0].cleansedFormulaString)
-    .every(op => disj.operands.map(x => x.cleansedFormulaString).includes(op));
-};
-
-const simpleDeMorgans: SimpleDeductionRuleInterface = (t, s) => {
-  const [negatedFormula, otherFormula] = t.operator === '~' ? [t, s] : [s, t];
-  if (!otherFormula.operator.match(/[&V]/)) {
-    // the other formula's operator must be a `&` or a `V`
-    return false;
-  }
-  const innerFormula = negatedFormula.operands[0];
-  // Order of arguments must be preserved
-  return (
-    innerFormula.operator === flipOperator(otherFormula.operator) &&
-    innerFormula.operands[0].isNegation(otherFormula.operands[0]) &&
-    innerFormula.operands[1].isNegation(otherFormula.operands[1])
-  );
-};
-
-export const deMorgans: DeductionRuleInterface = (target, sources) =>
-  checkRuleRecursively(simpleDeMorgans)(
-    target.proposition,
-    sources[0].proposition
-  );
+import { addition } from './addition';
+export { addition };
+import { associativity } from './associativity';
+export { associativity };
+import { commutativity } from './commutativity';
+export { commutativity };
+import { conditionalProof } from './conditional-proof';
+export { conditionalProof };
+import { conjunction } from './conjunction';
+export { conjunction };
+import { constructiveDilemma } from './constructive-dilemma';
+export { constructiveDilemma };
+import { deMorgansRule } from './de-morgans';
+export { deMorgansRule };
 
 const simpleDistribution: SimpleDeductionRuleInterface = (t, s) => {
   const [longer, shorter] =
