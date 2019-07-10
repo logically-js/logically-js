@@ -46,7 +46,7 @@ export class Formula implements FormulaInterface {
     this.operands = [];
     this.cleansedFormulaString = undefined;
     if (formulaString) {
-      if (this.trimParens(this.removeWhiteSpace(formulaString)).length === 1) {
+      if (this.isAtomicString(formulaString)) {
         this.cleansedFormulaString = this.trimParens(
           this.removeWhiteSpace(formulaString)
         );
@@ -75,7 +75,8 @@ export class Formula implements FormulaInterface {
    * @return {boolean}        - Is the input string atomic?
    */
   isAtomicString = (string = this.cleansedFormulaString): boolean => {
-    return RE.atomicVariable.test(string);
+    const cleansedString = this.removeWhiteSpace(this.trimParens(string));
+    return RE.atomicVariable.test(cleansedString);
   };
 
   /**
