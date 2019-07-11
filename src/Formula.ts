@@ -200,10 +200,11 @@ export class Formula {
   };
 
   /**
-   * Checks whether a formula is the negation of another
+   * Checks whether a formula is the negation of another.
+   *
    * @param formula - formula to compare for negation
    * @param formula2 - formula to compare for negation
-   * @return - Is [[formula2]] the negation of [[formula]]?
+   * @return - Is `formula2` the negation of `formula`?
    */
   isNegation = (
     formula: Formula | string,
@@ -275,6 +276,7 @@ export class Formula {
    */
   parseString = (formulaString: string): ParsedInterface | null => {
     // TODO: Use this.cleanseFormulaString()?
+    // TODO: Should an atomic proposition just return no operator or operands?
 
     // Remove whitespace and any unnecessary parens.
     formulaString = this.removeWhiteSpace(formulaString);
@@ -367,7 +369,7 @@ export class Formula {
    *
    * @param formulaString - String representing the proposition to evaluate.
    * @param assignment - Assignment of truth values to atomic variables.
-   * @return - Is the [[formulaString]] true under the [[assignment]]?
+   * @return - Is the `formulaString` true under the `assignment`?
    */
   evaluateFormulaString = (
     formulaString: string,
@@ -396,9 +398,10 @@ export class Formula {
 
   // TODO: This function should probably return an array of Formulas.
   /**
-   * Generate the headers for the truth table
-   * @param formulaString - Optional formulaString argument
-   * @return - Truth table headers sorted alphabetically and by length
+   * Generate the headers for the truth table.
+   *
+   * @param formulaString - Optional formulaString argument.
+   * @return - Truth table headers sorted alphabetically and by length.
    */
   generateTruthTableHeaders = (
     formulaString = this.cleansedFormulaString
@@ -436,6 +439,7 @@ export class Formula {
   /**
    * Takes a formulaString and returns a pretty, normalized formatting
    * with a single space between arguments and operators.
+   *
    * @param formulaString - The formula to be prettified.
    * @return - Prettified formula.
    */
@@ -454,7 +458,9 @@ export class Formula {
    * @return - An array with unique atomic variables (lower case letters),
    *           sorted alphabetically.
    */
-  getAtomicVariables = (formulaString = this.formulaString): string[] => {
+  getAtomicVariables = (
+    formulaString = this.cleansedFormulaString
+  ): string[] => {
     const result: Set<string> = new Set();
     for (const letter of formulaString) {
       if (/[a-z]/.test(letter)) {
@@ -465,15 +471,15 @@ export class Formula {
   };
 
   /**
-   * Generate a complete truth table with values filled in if [[partial]]
-   * is true.
+   * Generate a complete truth table with values filled in if
+   * partial is true.
    *
    * @param formulaString
    * @param partial=false - Should we only fill out the atomic values?
    * @return - Truth table as matrix with values filled in.
    */
   generateTruthTable = (
-    formulaString: string,
+    formulaString = this.cleansedFormulaString,
     partial = false
   ): boolean[][] => {
     const headers = this.generateTruthTableHeaders(formulaString);
