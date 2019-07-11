@@ -5,43 +5,62 @@ import {
   TRUTH_FUNCTIONS
 } from './constants';
 
-interface FormulaInterface {
-  /**
-   * cleansedFormulaString is the canonical string representation of
-   * the formula. It is stripped of whitespace and any extra parens.
-   * This can be used for checking equality of two formulas.
-   */
-  cleansedFormulaString: string;
-  conclusion?: Formula;
-  initialFormulaString: string;
-  operator?: Operator;
-  operands?: Formula[];
-}
-
+/**
+ * A semi-parsed formula - a [[Formula.formulaString]] parsed into its
+ * main operator and operands in string format.
+ */
 interface ParsedInterface {
   operator: Operator;
   operands: string[];
 }
 
+/**
+ * An assignment of an atomic propositional variable to a truth value.
+ * Used for evaluating formulas under a particular set of assignments.
+ */
 export interface AssignmentInterface {
   [variable: string]: boolean;
 }
 
 /**
  * Class for representing propositional formulas.
+ *
+ * Formulas have a recursive structure - complex formulas have other formulas
+ * as parts (i.e., operands). The "base case" of this structure is the
+ * atomic proposition. A [[formulaString]] for an atomic proposition can be
+ * identified syntactically as a single lower-case letter after removing any
+ * parentheses and whitespace.
+ *
+ * The class is instantiated with a [[formulaString]], which we want to parse
+ * into its [[Operator]] (simply an enum) and its operands, which ultimately
+ * should be [[Formula]]s as well. We do an initial parse which gets the main
+ * [[Operator]] and [[ParsedInterface.operands]] in string format. We can then
+ * recurse on the operands until we just hit atomic propositions.
+ *
+ * We rely on a canonical string representation of a [[Formula]] to compare the
+ * identity of different [[Formula]]s - i.e., the [[cleansedFormulaString]].
+ * When the class is instantiated, we parse it in the manner described here and
+ * compute and store its "clenased" representation.
  */
-export class Formula implements FormulaInterface {
-  cleansedFormulaString: string;
-  conclusion?: Formula;
-  initialFormulaString: string;
-  operator?: Operator;
-  operands?: Formula[];
+export class Formula {
+  /**
+   * The initial string passed to the constructor.
+   */
+  public readonly formulaString: string;
+  /**
+   * cleansedFormulaString is the canonical string representation of
+   * the formula. It is stripped of whitespace and any extra parens.
+   * This can be used for checking equality of two [[Formula]]s.
+   */
+  public cleansedFormulaString: string;
+  public operator?: Operator;
+  public operands?: Formula[];
   /**
    * Class constructor
    * @param {string} formulaString - A logical formula in string format
    */
   constructor(formulaString: string) {
-    // console.log('CONSTRUCTOR', formulaString);
+    this.formulaString = formulaString;
     this.operator = null;
     this.operands = [];
     this.cleansedFormulaString = undefined;
