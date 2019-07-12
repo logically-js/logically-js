@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { DeductionRuleInterface } from '../index';
 import { Operator } from '../../constants';
+/* eslint-enable no-unused-vars */
 
 /**
  * Function to identify an application of the rule of `Addition`.

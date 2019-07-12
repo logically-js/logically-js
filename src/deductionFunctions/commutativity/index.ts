@@ -7,7 +7,10 @@ import {
 /* eslint-enable no-unused-vars */
 
 /**
- * Function that checks whether Commutativity applies at the top level
+ * Function that checks whether Commutativity applies at the top level.
+ * Commutativity is fairly easy to identify at this level -
+ * the two formulas have the same operators, and the same operands,
+ * but in different order.
  *
  * @param {Formula} t - Target formula
  * @param {Formula} s - Source formula
@@ -19,6 +22,13 @@ const simpleCommutativity: SimpleDeductionRuleInterface = (t, s) =>
   t.operands[0].isEqual(s.operands[1]) &&
   t.operands[1].isEqual(s.operands[0]);
 
+/**
+ * We then apply the `checkRuleRecursively` HOF to [[simpleCommutativity]]
+ * to check commutativity recursively.
+ *
+ * @return - Can we reach the `target` from the `source`
+ * via `Commutativitiy`?
+ */
 export const commutativity: DeductionRuleInterface = (target, sources) =>
   checkRuleRecursively(simpleCommutativity)(
     target.proposition,
