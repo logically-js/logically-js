@@ -38,6 +38,11 @@
   - [r & s, Simplification, [2]]
   - [s, Simplification, [2]]
 
+-
+  - [p V q, Premise, []]
+  - [~p, Premise, []]
+  - [p, Disjunctive Syllogism, [1,2]]
+
 
 # BAD PROOFS WITH ASSUMPTIONS
 -

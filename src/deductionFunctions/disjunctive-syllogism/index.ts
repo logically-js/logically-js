@@ -26,7 +26,18 @@ export const disjunctiveSyllogism: DeductionRuleInterface = (
       : [sources[1].proposition, sources[0].proposition];
   return (
     disj.operator === 'V' &&
-    disj.operands.some(operand => operand.isNegation(other)) &&
-    disj.operands.some(operand => operand.isEqual(target.proposition))
+    someAndOther(
+      disj.operands[0],
+      disj.operands[1],
+      el => el.isNegation(other),
+      el => el.isEqual(target.proposition)
+    )
   );
 };
+
+const someAndOther = (
+  el1: any,
+  el2: any,
+  cb1: (arg: any) => boolean,
+  cb2: (arg: any) => boolean
+) => (cb1(el1) && cb2(el2)) || (cb1(el2) && cb2(el1));
