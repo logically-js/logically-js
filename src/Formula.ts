@@ -86,8 +86,8 @@ export class Formula {
   }
 
   /**
-   * Getter that prints the "prettified" version of the current formula
-   * @return {string} - Prettified formula description
+   * Getter that prints the "prettified" version of the current formula.
+   * (No extra parens; one single space between operators and operands.)
    */
   get prettifiedFormula(): string {
     return this.prettyFormula(this.cleansedFormulaString);
@@ -95,8 +95,9 @@ export class Formula {
 
   /**
    * Returns true iff the formula string represents an atomic proposition.
+   *
    * @param string - The string to test
-   * @return         - Is the input string atomic?
+   * @return - Is the input string atomic?
    */
   isAtomicString = (string = this.cleansedFormulaString): boolean =>
     RE.atomicVariable.test(this.trimParens(this.removeWhiteSpace(string)));
@@ -129,7 +130,8 @@ export class Formula {
    *
    * @note - This does *not* apply recursively.
    * (That would require parsing capabilities, which would make this method
-   * unavailable within the parsing method.)
+   * unavailable within the [[parseString]] method.)
+   * `((p & ((q -> r))))` => `p & ((q -> r))`
    *
    * @param formulaString - the string to be trimmed
    * @return              - the trimmed string
@@ -183,6 +185,7 @@ export class Formula {
      * If there is no main binary operator, the formula must be atomic,
      * or the main operator is negation, or it is not well formed.
      */
+
     const length: number = trimmedFormulaString.length;
     let count: number = 0;
     for (let i = 0; i < length; i++) {
