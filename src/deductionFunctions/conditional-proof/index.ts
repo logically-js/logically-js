@@ -14,7 +14,7 @@ export const conditionalProof: DeductionRuleInterface = (target, sources) => {
    * can be discharged by forming a conditional with the assumption
    * as the antecedent and the goal as the consequent.
    */
-  
+
   const [assumption, goal] =
     sources[0].rule === DEDUCTION_RULES.ASSUMPTION
       ? [sources[0], sources[1]]
