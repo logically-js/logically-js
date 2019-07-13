@@ -4,7 +4,6 @@ import { safeLoad } from 'js-yaml';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
-import translateEnglishToSymbolic from './Formula.translate';
 import { arrayEquals } from './utils';
 
 /* eslint-disable-next-line */
@@ -468,6 +467,7 @@ describe('Formula', function() {
   });
 
   describe('translateEnglishToSymbolic()', function() {
+    const formula = new Formula('p');
     const testCases = [
       { input: 'p and q', output: 'p & q' },
       { input: 'p or q', output: 'p V q' },
@@ -497,7 +497,10 @@ describe('Formula', function() {
     ];
     for (const test of testCases) {
       it(`should translate '${test.input}' to '${test.output}'`, function() {
-        assert.equal(translateEnglishToSymbolic(test.input), test.output);
+        assert.equal(
+          formula.translateEnglishToSymbolic(test.input),
+          test.output
+        );
       });
     }
   });
