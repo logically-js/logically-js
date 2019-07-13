@@ -4,7 +4,6 @@ import { safeLoad } from 'js-yaml';
 import { readFileSync } from 'fs';
 import { resolve } from 'path';
 
-import translateEnglishToSymbolic from './Formula.translate';
 import { arrayEquals } from './utils';
 
 /* eslint-disable-next-line */
@@ -21,7 +20,7 @@ describe('Formula', function() {
     const formula = new Formula('p');
     assert.exists(formula);
   });
-  describe('findMainBinaryOperatorIndex()', function() {
+  describe('findMainBinaryOperatorIndex() - STATIC method', function() {
     describe('is correct for positive test cases', function() {
       const testCases = [
         { formula: 'p & q', result: 2 },
@@ -33,9 +32,8 @@ describe('Formula', function() {
       ];
       for (const test of testCases) {
         it(`should return ${test.result} for the formula '${test.formula}'`, function() {
-          const formula = new Formula('p');
           assert.equal(
-            formula.findMainBinaryOperatorIndex(test.formula),
+            Formula.findMainBinaryOperatorIndex(test.formula),
             test.result
           );
         });
@@ -51,9 +49,8 @@ describe('Formula', function() {
       ];
       for (const test of testCases) {
         it(`should return ${test.result} for the formula '${test.formula}'`, function() {
-          const formula = new Formula('p');
           assert.equal(
-            formula.findMainBinaryOperatorIndex(test.formula),
+            Formula.findMainBinaryOperatorIndex(test.formula),
             test.result
           );
         });
@@ -61,7 +58,7 @@ describe('Formula', function() {
     });
   });
 
-  describe('trimParens()', function() {
+  describe('trimOuterParens() - STATIC method', function() {
     const testCases = [
       { input: 'p & q', output: 'p & q' },
       { input: '(p & q)', output: 'p & q' },
@@ -74,13 +71,37 @@ describe('Formula', function() {
     ];
     for (const test of testCases) {
       it(`should return '${test.output}' for the formula '${test.input}'`, function() {
-        const formula = new Formula('p');
-        assert.equal(formula.trimParens(test.input), test.output);
+        assert.equal(Formula.trimOuterParens(test.input), test.output);
       });
     }
   });
 
-  describe('cleanseFormulaString()', function() {
+  describe('class method trimOuterParens() - CLASS method', function() {
+    const testCases = [
+      { input: 'p & q', output: 'p & q' },
+      { input: '(p & q)', output: 'p & q' },
+      { input: '((p & q))', output: 'p & q' },
+      { input: '(p & q) <-> (p V q)', output: '(p & q) <-> (p V q)' },
+      { input: '((p & q) <-> (p V q))', output: '(p & q) <-> (p V q)' },
+      { input: '(p & (p -> q))', output: 'p & (p -> q)' },
+      { input: 'p & (q)', output: 'p & q' },
+      { input: '((p) & ((q)))', output: 'p & q' }
+    ];
+    for (const test of testCases) {
+      const formula = new Formula('p');
+      it(`should return '${test.output}' for the formula '${test.input}'`, function() {
+        assert.equal(formula.trimOuterParens(test.input), test.output);
+      });
+    }
+  });
+
+  /**
+   * 'cleanseFormulaString' is a private method that is invoked in the
+   * constructor, and the output is stored in `cleansedFormulaString`.
+   * Here, we test `cleanseFormulaString` by creating a new `Function`
+   * and inspecting `cleansedFormulaString`.
+   */
+  describe('cleansedFormulaString', function() {
     const testCases = [
       { input: 'p & q', output: 'p&q' },
       { input: '(p & q)', output: 'p&q' },
@@ -94,14 +115,14 @@ describe('Formula', function() {
       { input: '((p) -> (((q) & r)))', output: 'p->(q&r)' }
     ];
     for (const test of testCases) {
-      it(`should return '${test.output}' for the formula '${test.input}'`, function() {
-        const formula = new Formula('p');
-        assert.equal(formula.cleanseFormulaString(test.input), test.output);
+      const formula = new Formula(test.input);
+      it(`should be '${test.output}' for the formulaString '${test.input}'`, function() {
+        assert.equal(formula.cleansedFormulaString, test.output);
       });
     }
   });
 
-  describe('parseString()', function() {
+  describe('parseStringBasic()', function() {
     describe('handles the basic connectives', function() {
       const testCases = [
         { input: 'p', output: { operator: null, operands: ['p'] } },
@@ -118,8 +139,7 @@ describe('Formula', function() {
         }', operands: [${test.output.operands.map(
           p => `'${p}'`
         )}]}\``, function() {
-          const formula = new Formula('p');
-          const output = formula.parseString(test.input);
+          const output = Formula.parseStringBasic(test.input);
           assert.equal(output.operator, test.output.operator);
           assert.isTrue(arrayEquals(output.operands, test.output.operands));
         });
@@ -157,8 +177,7 @@ describe('Formula', function() {
         }', operands: [${test.output.operands.map(
           p => `'${p}'`
         )}]}\``, function() {
-          const formula = new Formula('p');
-          const output = formula.parseString(test.input);
+          const output = Formula.parseStringBasic(test.input);
           assert.equal(output.operator, test.output.operator);
           assert.isTrue(arrayEquals(output.operands, test.output.operands));
         });
@@ -191,8 +210,7 @@ describe('Formula', function() {
         }', operands: [${test.output.operands.map(
           p => `'${p}'`
         )}]}\``, function() {
-          const formula = new Formula('p');
-          const output = formula.parseString(test.input);
+          const output = Formula.parseStringBasic(test.input);
           assert.equal(output.operator, test.output.operator);
           assert.isTrue(arrayEquals(output.operands, test.output.operands));
         });
@@ -200,7 +218,7 @@ describe('Formula', function() {
     });
   });
 
-  describe('isWFFString()', function() {
+  describe('isWFFString() - STATIC method', function() {
     describe('should validate well-formed formulas', function() {
       const testCases = [
         { input: 'p', output: true },
@@ -217,8 +235,7 @@ describe('Formula', function() {
       ];
       for (const test of testCases) {
         it(`should recognize that the formula '${test.input}' is well-formed`, function() {
-          const formula = new Formula('p');
-          const isWFF = formula.isWFFString(test.input);
+          const isWFF = Formula.isWFFString(test.input);
           assert.equal(isWFF, test.output);
         });
       }
@@ -244,8 +261,7 @@ describe('Formula', function() {
       ];
       for (const test of testCases) {
         it(`should recognize that the formula '${test.input}' is *not* well-formed`, function() {
-          const formula = new Formula('p');
-          const isWFF = formula.isWFFString(test.input);
+          const isWFF = Formula.isWFFString(test.input);
           assert.equal(isWFF, test.output);
         });
       }
@@ -257,7 +273,7 @@ describe('Formula', function() {
     output: boolean | null;
   }
 
-  describe('evaluateFormulaString()', function() {
+  describe('evaluateFormulaString() - STATIC method', function() {
     describe('should correctly evaluate atomic formulas', function() {
       const testCases: TestCaseInterface[] = [
         { input: ['p', { p: true }], output: true },
@@ -268,9 +284,8 @@ describe('Formula', function() {
         const assignment = inspect(test.input[1]);
         it(`should recognize that the formula '${test.input[0]}'
         is ${test.output} under the assignment ${assignment}`, function() {
-          const formula = new Formula('p');
           assert.equal(
-            formula.evaluateFormulaString(...test.input),
+            Formula.evaluateFormulaString(...test.input),
             test.output
           );
         });
@@ -311,9 +326,8 @@ describe('Formula', function() {
         const assignment = inspect(test.input[1]);
         it(`should recognize that the formula '${test.input[0]}'
         is ${test.output} under the assignment ${assignment}`, function() {
-          const formula = new Formula('p');
           assert.equal(
-            formula.evaluateFormulaString(...test.input),
+            Formula.evaluateFormulaString(...test.input),
             test.output
           );
         });
@@ -372,9 +386,8 @@ describe('Formula', function() {
       for (const test of testCases) {
         const assignment = inspect(test.input[1]);
         it(`should recognize that the formula '${test.input[0]}' is ${test.output} under the assignment ${assignment}`, function() {
-          const formula = new Formula('p');
           assert.equal(
-            formula.evaluateFormulaString(...test.input),
+            Formula.evaluateFormulaString(...test.input),
             test.output
           );
         });
@@ -497,7 +510,10 @@ describe('Formula', function() {
     ];
     for (const test of testCases) {
       it(`should translate '${test.input}' to '${test.output}'`, function() {
-        assert.equal(translateEnglishToSymbolic(test.input), test.output);
+        assert.equal(
+          Formula.translateEnglishToSymbolic(test.input),
+          test.output
+        );
       });
     }
   });
@@ -514,16 +530,12 @@ describe('Formula', function() {
     mockTruthTables.forEach(truthTable => {
       const formula = new Formula(truthTable.formula);
       it(`should generate the correct truth table headers for the proposition ${truthTable.formula}`, () => {
-        const generatedTableHeaders = formula.generateTruthTableHeaders(
-          truthTable.formula
-        );
+        const generatedTableHeaders = formula.generateTruthTableHeaders();
         assert.isTrue(arrayEquals(truthTable.headers, generatedTableHeaders));
       });
 
       it(`should generate the correct truth table for the proposition ${truthTable.formula}`, () => {
-        const generatedTruthTable = formula.generateTruthTable(
-          truthTable.formula
-        );
+        const generatedTruthTable = formula.generateTruthTable();
         assert.isTrue(arrayEquals(truthTable.table, generatedTruthTable));
       });
     });

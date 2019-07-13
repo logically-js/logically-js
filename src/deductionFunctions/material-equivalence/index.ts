@@ -6,6 +6,16 @@ import {
 } from '../index';
 /* eslint-enable no-unused-vars */
 
+/**
+ * Function that checks for the application of Material Equivalence.
+ * Material Equivalence has two forms, as you can transform a biconditional
+ * into either a conjunction of conditionals, or a disjunction of conjunctions:
+ * (i) p <-> q; (ii) (p -> q) & (q -> p)
+ * (i) p <-> q; (ii) (p & q) V (~p & ~q)
+ * We validate this rule by first identifying the longer vs. shorter input
+ * proposition. Then we check whether the longer proposition is a `V` case or a
+ * `&` case. Then we check whether the operands have the appropriate relations.
+ */
 const simpleMaterialEquivalence: SimpleDeductionRuleInterface = (t, s) => {
   const [longer, shorter] =
     t.cleansedFormulaString.length > s.cleansedFormulaString.length
@@ -36,6 +46,9 @@ const simpleMaterialEquivalence: SimpleDeductionRuleInterface = (t, s) => {
   }
 };
 
+/**
+ * Function that checks for Material Equivalence recursively.
+ */
 export const materialEquivalence: DeductionRuleInterface = (target, sources) =>
   checkRuleRecursively(simpleMaterialEquivalence)(
     target.proposition,

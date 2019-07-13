@@ -74,6 +74,9 @@ export const RE = <REInterface>{
   unaryOperator: /^(~)/
 };
 
+/**
+ * Interface for a truth-functional operator.
+ */
 interface TruthFunctionInterface {
   (...args: boolean[]): boolean;
 }
@@ -82,6 +85,9 @@ interface TruthFunctionDictInterface {
   [operator: string]: TruthFunctionInterface;
 }
 
+/**
+ * Dictionary which maps symbols for operators to their truth functions.
+ */
 export const TRUTH_FUNCTIONS = <TruthFunctionDictInterface>{
   '~': (p: boolean): boolean => p === false,
   '&': (p: boolean, q: boolean): boolean => p === true && q === true,

@@ -5,7 +5,7 @@ import { evaluateMove } from './deductionFunctions/index';
 interface LineOfProofInterface {
   assumptions: number[];
   citedLines: number[];
-  lineNumber: number;
+  lineNumber?: number;
   proposition: Formula;
   rule: string;
 }
@@ -32,20 +32,35 @@ interface EvaluateProofInterface {
  * Class representing a line in a natural deduction proof.
  */
 export class LineOfProof implements LineOfProofInterface {
-  assumptions: number[];
-  lineNumber: number;
-  proposition: Formula;
-  rule: string;
-  citedLines: number[];
+  /**
+   * Does the current line rely on any other lines which are `Assumptions`
+   * (i.e., statements introduced for indirect/conditional proof)?
+   * Ultimately, in order to check validity, we need to confirm that the
+   * [[Proof.conclusion]] does not rely on any non-discharged assumptions.
+   */
+  public assumptions: number[];
+  /**
+   * The line number of the proof.
+   */
+  public lineNumber?: number;
+  public proposition: Formula;
+  public rule: string;
+  public citedLines: number[];
 
   /**
    * Constructor
-   * @param {object} args - { proposition, rule, citedLines }
+   *
+   * @param args - {
+   *                  proposition - The Formula for the current line,
+   *                  rule - The rule cited to justify for this line,
+   *                  citedLines - The lines cited in the justification
+   *                }
    */
   constructor(args: ConstructorArgsInterface) {
-    const { assumptions = [], proposition, rule, citedLines } = args;
-    this.assumptions = assumptions;
-    this.citedLines = citedLines;
+    const { assumptions, proposition, rule, citedLines } = args;
+
+    this.assumptions = assumptions || [];
+    this.citedLines = citedLines || [];
     this.lineNumber;
     this.proposition = proposition;
     this.rule = rule;
@@ -76,8 +91,13 @@ interface SimpleAddLineToProofInterface {
  * Class representing a natural deduction proof.
  */
 export class Proof implements ProofInterface {
+  /**
+   * The list of premises of the proof.
+   */
   premises: Formula[];
+  /** A conclusion is a single [[Formula]]. */
   conclusion: Formula;
+  /** The actual lines of the proof. */
   lines: LineOfProof[];
 
   /**
@@ -94,21 +114,25 @@ export class Proof implements ProofInterface {
    * @param {string} formulaString - String representation of the premise.
    */
   addPremiseToProof = (formulaString: string): void => {
-    const proposition: Formula = new Formula(formulaString);
-    const rule = DEDUCTION_RULES.PREMISE;
-    this.premises.push(proposition);
-    const newLineOfProof = new LineOfProof({
-      assumptions: [],
-      proposition,
-      rule,
-      citedLines: []
-    });
-    this.lines.push(newLineOfProof);
+    try {
+      const proposition: Formula = new Formula(formulaString);
+      const rule = DEDUCTION_RULES.PREMISE;
+      this.premises.push(proposition);
+      const newLineOfProof = new LineOfProof({
+        assumptions: [],
+        proposition,
+        rule,
+        citedLines: []
+      });
+      this.lines.push(newLineOfProof);
+    } catch (e) {
+      throw new Error('Could not process input formula string.');
+    }
   };
 
   /**
    * Add a LineOfProof to the proof.
-   * @param {LineOfProof | object} newLine - the line to be added
+   * @param newLine - the line to be added
    */
   addLineToProof = (
     newLine: LineOfProof | SimpleAddLineToProofInterface
@@ -134,13 +158,24 @@ export class Proof implements ProofInterface {
   };
 
   /**
-   * Get the assumptions that a line of proof assumes
-   * @param {LineOfProof} line
-   * @return {number[]}
+   * Get the assumptions that a line of proof assumes.
+   *
+   * We search recursively through the cited lines
+   * and look for a line that is justified as an `Assumption`. We store any such
+   * assumptions in an array. If a line refers directly to an `Assumption`,
+   * *but* it correctly applies either `Conditional Proof` or `Indirect Proof`,
+   * then the assumption is "discharged" at that point. The new line would
+   * refer to the assumption as a cited line, but it will not *assume* the
+   * assumptions as one of its non-discharged assumptions.
+   *
+   * @param line - The line to be analyzed.
+   * @return - An array of line numbers representing the non-discharged
+   * assumptions of the input line.
    */
   getAssumptions = (line: LineOfProof): number[] => {
     if (line.rule === DEDUCTION_RULES.ASSUMPTION) return [line.lineNumber + 1];
     if (
+      //
       line.rule === DEDUCTION_RULES.PREMISE ||
       line.rule === DEDUCTION_RULES.CONDITIONAL_PROOF ||
       line.rule === DEDUCTION_RULES.INDIRECT_PROOF
@@ -158,20 +193,27 @@ export class Proof implements ProofInterface {
   };
 
   /**
-   * Set the conclusion of the proof
-   * @param {Formula|string} conclusion - The conclusion
+   * Set the conclusion of the proof.
+   * @param conclusion - The conclusion.
    */
   setConclusion = (conclusion: Formula | string): void => {
     if (typeof conclusion === 'string') {
-      this.conclusion = new Formula(conclusion);
-    } else {
+      try {
+        this.conclusion = new Formula(conclusion);
+      } catch (e) {
+        throw new Error('Could not construct Formula for conclusion.');
+      }
+    } else if (conclusion instanceof Formula) {
       this.conclusion = conclusion;
+    } else {
+      throw new Error('Does not recognize input type.');
     }
   };
 
   /**
    * Check whether all moves are valid and the conclusion is reached.
-   * @return {boolean}
+   *
+   * @return - Are all moves valid and the conclusion has been reached?
    */
   evaluateProof = (): EvaluateProofInterface => {
     let lastLineIsConclusion: boolean = false;

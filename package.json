@@ -10,7 +10,7 @@
     "lint": "eslint src/ --ext .ts,.tsx,.js,.jsx",
     "test": "nyc mocha src/**/*.test.ts --require ts-node/register",
     "precommit": "npm run prettier && git add -A && npm run lint && npm run test",
-    "prettier": "./node_modules/.bin/prettier src/**/*.ts --write"
+    "prettier": "./node_modules/.bin/prettier 'src/**/*.ts' --write"
   },
   "keywords": [
     "logic"
