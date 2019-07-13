@@ -95,7 +95,13 @@ describe('Formula', function() {
     }
   });
 
-  describe('cleanseFormulaString()', function() {
+  /**
+   * 'cleanseFormulaString' is a private method that is invoked in the
+   * constructor, and the output is stored in `cleansedFormulaString`.
+   * Here, we test `cleanseFormulaString` by creating a new `Function`
+   * and inspecting `cleansedFormulaString`.
+   */
+  describe('cleansedFormulaString', function() {
     const testCases = [
       { input: 'p & q', output: 'p&q' },
       { input: '(p & q)', output: 'p&q' },
@@ -109,9 +115,9 @@ describe('Formula', function() {
       { input: '((p) -> (((q) & r)))', output: 'p->(q&r)' }
     ];
     for (const test of testCases) {
-      it(`should return '${test.output}' for the formula '${test.input}'`, function() {
-        const formula = new Formula('p');
-        assert.equal(formula.cleanseFormulaString(test.input), test.output);
+      const formula = new Formula(test.input);
+      it(`should be '${test.output}' for the formulaString '${test.input}'`, function() {
+        assert.equal(formula.cleansedFormulaString, test.output);
       });
     }
   });

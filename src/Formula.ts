@@ -82,7 +82,7 @@ export class Formula {
       );
       return;
     }
-    this.cleansedFormulaString = this.cleanseFormulaString(formulaString);
+    this.cleansedFormulaString = Formula.cleanseFormulaString(formulaString);
     const parsedFormula = Formula.parseStringBasic(this.cleansedFormulaString);
     this.operator = parsedFormula.operator;
     this.operands = parsedFormula.operands.map(operand => new Formula(operand));
@@ -271,7 +271,9 @@ export class Formula {
    * @param formula - the formula to "cleanse"
    * @return - the cleansed formula
    */
-  cleanseFormulaString = (formula?: string): string | undefined => {
+  private static cleanseFormulaString = (
+    formula?: string
+  ): string | undefined => {
     if (!formula) return;
     const parsed = Formula.parseStringBasic(formula);
     if (!parsed.operator) {
@@ -279,8 +281,8 @@ export class Formula {
         formula && Formula.trimOuterParens(Formula.removeWhiteSpace(formula))
       );
     }
-    let op1 = this.cleanseFormulaString(parsed.operands[0]);
-    let op2 = this.cleanseFormulaString(parsed.operands[1]);
+    let op1 = Formula.cleanseFormulaString(parsed.operands[0]);
+    let op2 = Formula.cleanseFormulaString(parsed.operands[1]);
     const operator = parsed.operator;
     op1 = op1 && (op1.length > 1 ? `(${op1})` : op1);
     op2 = op2 && (op2.length > 1 ? `(${op2})` : op2);
