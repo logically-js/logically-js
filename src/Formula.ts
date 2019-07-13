@@ -83,7 +83,7 @@ export class Formula {
       return;
     }
     this.cleansedFormulaString = this.cleanseFormulaString(formulaString);
-    const parsedFormula = this.parseString(this.cleansedFormulaString);
+    const parsedFormula = Formula.parseStringBasic(this.cleansedFormulaString);
     this.operator = parsedFormula.operator;
     this.operands = parsedFormula.operands.map(operand => new Formula(operand));
   }
@@ -140,7 +140,7 @@ export class Formula {
    *
    * @note - This does *not* apply recursively.
    * (That would require parsing capabilities, which would make this method
-   * unavailable within the [[parseString]] method.)
+   * unavailable within the [[parseStringBasic]] method.)
    * `((p & ((q -> r))))` => `p & ((q -> r))`
    *
    * @param formulaString - the string to be trimmed
@@ -191,17 +191,18 @@ export class Formula {
    * if it exists, or `-1` if there is no main binary operator.
    *
    * @param trimmedFormulaString - The string to be analyzed.
-   *        We assume that extra parens have been trimmed.
+   * We assume that extra parens have been trimmed.
    * @return - The index of the main operator.
    */
-  findMainBinaryOperatorIndex = (trimmedFormulaString: string): number => {
+  static findMainBinaryOperatorIndex = (
+    trimmedFormulaString: string
+  ): number => {
     /*
      * The main binary operator in a (trimmed) wff is the first binary operator
      * that you see when there are no open parens.
      * If there is no main binary operator, the formula must be atomic,
      * or the main operator is negation, or it is not well formed.
      */
-
     const length: number = trimmedFormulaString.length;
     let count: number = 0;
     for (let i = 0; i < length; i++) {
@@ -268,7 +269,7 @@ export class Formula {
    */
   cleanseFormulaString = (formula?: string): string | undefined => {
     if (!formula) return;
-    const parsed = this.parseString(formula);
+    const parsed = Formula.parseStringBasic(formula);
     if (!parsed.operator) {
       return (
         formula && Formula.trimOuterParens(Formula.removeWhiteSpace(formula))
@@ -295,7 +296,7 @@ export class Formula {
    * @param formulaString - Formula string with extra parens removed.
    * @return - Object with operator and operands.
    */
-  parseString = (formulaString: string): ParsedInterface | null => {
+  static parseStringBasic = (formulaString: string): ParsedInterface | null => {
     // TODO: Use this.cleanseFormulaString()?
     // TODO: Should an atomic proposition just return no operator or operands?
 
@@ -324,7 +325,7 @@ export class Formula {
     // (By default, we apply right-associativity if there is ambiguity,
     // except for negation.)
 
-    const mainBinaryOperatorIndex = this.findMainBinaryOperatorIndex(
+    const mainBinaryOperatorIndex = Formula.findMainBinaryOperatorIndex(
       formulaString
     );
 
@@ -360,6 +361,10 @@ export class Formula {
     return null;
   };
 
+  parseStringBasic = (
+    formulaString = this.cleansedFormulaString
+  ): ParsedInterface | null => Formula.parseStringBasic(formulaString);
+
   /**
    * Returns true iff the `formulaString` is a well-formed formula (wff).
    * @param formulaString - The string to be analyzed.
@@ -372,7 +377,7 @@ export class Formula {
     if (formulaString.length === 1)
       return Formula.isAtomicString(formulaString);
     // Not an atomic formula, so parse it and continue.
-    const formula = this.parseString(formulaString);
+    const formula = Formula.parseStringBasic(formulaString);
     if (formula === null) return false; // couldn't parse
     if (!RE.operator.test(formula.operator)) return false; // illegal operator
     // Every operand must also be a wff.
@@ -405,7 +410,7 @@ export class Formula {
       // Base case - atomic formula
       return assignment[formulaString];
     }
-    const parsed = this.parseString(formulaString);
+    const parsed = Formula.parseStringBasic(formulaString);
     const values = parsed.operands.map(operand => {
       if (Formula.isAtomicString(operand)) {
         return assignment[operand];
@@ -435,7 +440,7 @@ export class Formula {
         // Base case - atomic formula
         return;
       }
-      const parsed = this.parseString(formulaString);
+      const parsed = Formula.parseStringBasic(formulaString);
       parsed.operands.forEach(operand => {
         if (Formula.isAtomicString(operand)) {
           result.add(operand);

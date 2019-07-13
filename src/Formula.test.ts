@@ -20,7 +20,7 @@ describe('Formula', function() {
     const formula = new Formula('p');
     assert.exists(formula);
   });
-  describe('findMainBinaryOperatorIndex()', function() {
+  describe('findMainBinaryOperatorIndex() - STATIC method', function() {
     describe('is correct for positive test cases', function() {
       const testCases = [
         { formula: 'p & q', result: 2 },
@@ -32,9 +32,8 @@ describe('Formula', function() {
       ];
       for (const test of testCases) {
         it(`should return ${test.result} for the formula '${test.formula}'`, function() {
-          const formula = new Formula('p');
           assert.equal(
-            formula.findMainBinaryOperatorIndex(test.formula),
+            Formula.findMainBinaryOperatorIndex(test.formula),
             test.result
           );
         });
@@ -50,9 +49,8 @@ describe('Formula', function() {
       ];
       for (const test of testCases) {
         it(`should return ${test.result} for the formula '${test.formula}'`, function() {
-          const formula = new Formula('p');
           assert.equal(
-            formula.findMainBinaryOperatorIndex(test.formula),
+            Formula.findMainBinaryOperatorIndex(test.formula),
             test.result
           );
         });
@@ -118,7 +116,7 @@ describe('Formula', function() {
     }
   });
 
-  describe('parseString()', function() {
+  describe('parseStringBasic()', function() {
     describe('handles the basic connectives', function() {
       const testCases = [
         { input: 'p', output: { operator: null, operands: ['p'] } },
@@ -135,8 +133,7 @@ describe('Formula', function() {
         }', operands: [${test.output.operands.map(
           p => `'${p}'`
         )}]}\``, function() {
-          const formula = new Formula('p');
-          const output = formula.parseString(test.input);
+          const output = Formula.parseStringBasic(test.input);
           assert.equal(output.operator, test.output.operator);
           assert.isTrue(arrayEquals(output.operands, test.output.operands));
         });
@@ -174,8 +171,7 @@ describe('Formula', function() {
         }', operands: [${test.output.operands.map(
           p => `'${p}'`
         )}]}\``, function() {
-          const formula = new Formula('p');
-          const output = formula.parseString(test.input);
+          const output = Formula.parseStringBasic(test.input);
           assert.equal(output.operator, test.output.operator);
           assert.isTrue(arrayEquals(output.operands, test.output.operands));
         });
@@ -208,8 +204,7 @@ describe('Formula', function() {
         }', operands: [${test.output.operands.map(
           p => `'${p}'`
         )}]}\``, function() {
-          const formula = new Formula('p');
-          const output = formula.parseString(test.input);
+          const output = Formula.parseStringBasic(test.input);
           assert.equal(output.operator, test.output.operator);
           assert.isTrue(arrayEquals(output.operands, test.output.operands));
         });
