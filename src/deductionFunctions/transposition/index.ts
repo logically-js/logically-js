@@ -10,7 +10,8 @@ import {
  * Transposition involves "flipping the arguments" of a conditional around, as
  * well as "inverting their sign," i.e., negating them. So, to verify
  * this rule at the top level, we just check that both propositions are
- * conditionals,
+ * conditionals, and that the second operand of one is the negation of the
+ * first operand of the other, and vice versa.
  */
 const simpleTransposition: SimpleDeductionRuleInterface = (t, s) =>
   t.operator === '->' &&

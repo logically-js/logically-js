@@ -11,12 +11,12 @@ import { DeductionRuleInterface } from '../index';
  * This is then the Assumption. Then the person will continue to complete the
  * proof. But if they are able to derive a contradition from the assumption,
  * then we can assert the *negation* of the assumption.
- *
  */
 export const indirectProof: DeductionRuleInterface = (target, sources) => {
+  /** The assumption will end up being the negation of the target */
   const [assumption, contradiction] = sources[0].proposition.isNegation(
-    target.proposition // The assumption will end up being the
-  )                   // negation of the target proposition
+    target.proposition
+  )
     ? [sources[0], sources[1]]
     : [sources[1], sources[0]];
   return (
