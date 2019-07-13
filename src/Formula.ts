@@ -254,15 +254,13 @@ export class Formula {
    * @param formula  - The formula to be negated.
    * @return - The negated formula.
    */
-  negateFormula = (formula?: Formula | string): Formula => {
-    formula =
-      typeof formula === 'string'
-        ? new Formula(formula)
-        : typeof formula === 'undefined'
-        ? this
-        : formula;
+  static negateFormula = (formula?: Formula | string): Formula => {
+    formula = typeof formula === 'string' ? new Formula(formula) : formula;
     return new Formula(`'(${formula.cleansedFormulaString})'`);
   };
+
+  negateFormula = (formula = this as Formula | string): Formula =>
+    Formula.negateFormula(formula);
 
   /**
    * Remove all whitespace and unnecessary parentheses from a formula.
