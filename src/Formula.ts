@@ -457,15 +457,13 @@ export class Formula {
       .replace(/\s+$/g, ''); // Remove possible extra space at end
 
   /**
-   * Returns a sorted list of the atomic variables.
+   * Returns a sorted list of the atomic variables of a `formulaString`.
    *
    * @param formulaString - The formula whose variables will be retrieved.
    * @return - An array with unique atomic variables (lower case letters),
    *           sorted alphabetically.
    */
-  getAtomicVariables = (
-    formulaString = this.cleansedFormulaString
-  ): string[] => {
+  static getAtomicVariables = (formulaString: string): string[] => {
     const result: Set<string> = new Set();
     for (const letter of formulaString) {
       if (/[a-z]/.test(letter)) {
@@ -474,6 +472,14 @@ export class Formula {
     }
     return Array.from(result).sort();
   };
+
+  /**
+   * Class method invoking the static method [[Formula.getAtomicVariables]].
+   */
+  getAtomicVariables = (formulaString?: string): string[] =>
+    Formula.getAtomicVariables(
+      formulaString ? formulaString : this.formulaString
+    );
 
   /**
    * Generate a complete truth table with values filled in if
@@ -488,7 +494,7 @@ export class Formula {
     partial = false
   ): boolean[][] => {
     const headers = this.generateTruthTableHeaders(formulaString);
-    const atomicVars: string[] = this.getAtomicVariables(formulaString);
+    const atomicVars: string[] = Formula.getAtomicVariables(formulaString);
     const nRows: number = Math.pow(2, atomicVars.length);
     const result = new Array(nRows)
       .fill(0)
@@ -515,7 +521,7 @@ export class Formula {
     return result;
   };
 
-  translateEnglishToSymbolic = (formulaString: string): string =>
+  static translateEnglishToSymbolic = (formulaString: string): string =>
     formulaString
       .replace(/\s*\bif and only if\b\s*/g, ' <-> ') // Replace 'if and only if'
       .replace(/\s*\bonly if\b\s*/g, ' -> ') // Replace 'only if'
