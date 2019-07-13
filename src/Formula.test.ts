@@ -60,7 +60,7 @@ describe('Formula', function() {
     });
   });
 
-  describe('trimParens()', function() {
+  describe('trimOuterParens() - STATIC method', function() {
     const testCases = [
       { input: 'p & q', output: 'p & q' },
       { input: '(p & q)', output: 'p & q' },
@@ -73,8 +73,26 @@ describe('Formula', function() {
     ];
     for (const test of testCases) {
       it(`should return '${test.output}' for the formula '${test.input}'`, function() {
-        const formula = new Formula('p');
-        assert.equal(formula.trimParens(test.input), test.output);
+        assert.equal(Formula.trimOuterParens(test.input), test.output);
+      });
+    }
+  });
+
+  describe('class method trimOuterParens() - CLASS method', function() {
+    const testCases = [
+      { input: 'p & q', output: 'p & q' },
+      { input: '(p & q)', output: 'p & q' },
+      { input: '((p & q))', output: 'p & q' },
+      { input: '(p & q) <-> (p V q)', output: '(p & q) <-> (p V q)' },
+      { input: '((p & q) <-> (p V q))', output: '(p & q) <-> (p V q)' },
+      { input: '(p & (p -> q))', output: 'p & (p -> q)' },
+      { input: 'p & (q)', output: 'p & q' },
+      { input: '((p) & ((q)))', output: 'p & q' }
+    ];
+    for (const test of testCases) {
+      const formula = new Formula('p');
+      it(`should return '${test.output}' for the formula '${test.input}'`, function() {
+        assert.equal(formula.trimOuterParens(test.input), test.output);
       });
     }
   });

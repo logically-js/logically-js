@@ -73,8 +73,10 @@ export class Formula {
     this.formulaString = formulaString;
     this.operator = null;
     this.operands = [];
-    if (this.trimParens(this.removeWhiteSpace(formulaString)).length === 1) {
-      this.cleansedFormulaString = this.trimParens(
+    if (
+      Formula.trimOuterParens(this.removeWhiteSpace(formulaString)).length === 1
+    ) {
+      this.cleansedFormulaString = Formula.trimOuterParens(
         this.removeWhiteSpace(formulaString)
       );
       return;
@@ -100,7 +102,9 @@ export class Formula {
    * @return - Is the input string atomic?
    */
   isAtomicString = (string = this.cleansedFormulaString): boolean => {
-    const cleansedString = this.removeWhiteSpace(this.trimParens(string));
+    const cleansedString = this.removeWhiteSpace(
+      Formula.trimOuterParens(string)
+    );
     return RE.atomicVariable.test(cleansedString);
   };
 
@@ -138,7 +142,7 @@ export class Formula {
    * @param formulaString - the string to be trimmed
    * @return              - the trimmed string
    */
-  trimParens = (formulaString: string): string => {
+  static trimOuterParens = (formulaString: string): string => {
     while (/\([a-z]\)/g.test(formulaString)) {
       formulaString = formulaString.replace(
         /(\([a-z]\))/g,
@@ -160,8 +164,11 @@ export class Formula {
         return formulaString;
       }
     }
-    return this.trimParens(formulaString.slice(1, length - 1));
+    return Formula.trimOuterParens(formulaString.slice(1, length - 1));
   };
+
+  trimOuterParens = (formulaString = this.cleansedFormulaString): string =>
+    Formula.trimOuterParens(formulaString);
 
   /**
    * Remove all whitespace from a string.
@@ -256,7 +263,7 @@ export class Formula {
     if (!formula) return;
     const parsed = this.parseString(formula);
     if (!parsed.operator) {
-      return formula && this.trimParens(this.removeWhiteSpace(formula));
+      return formula && Formula.trimOuterParens(this.removeWhiteSpace(formula));
     }
     let op1 = this.cleanseFormulaString(parsed.operands[0]);
     let op2 = this.cleanseFormulaString(parsed.operands[1]);
@@ -269,7 +276,7 @@ export class Formula {
     } else {
       result = operator + op1;
     }
-    return this.trimParens(this.removeWhiteSpace(result));
+    return Formula.trimOuterParens(this.removeWhiteSpace(result));
   };
 
   /**
@@ -285,7 +292,7 @@ export class Formula {
 
     // Remove whitespace and any unnecessary parens.
     formulaString = this.removeWhiteSpace(formulaString);
-    formulaString = this.trimParens(formulaString);
+    formulaString = Formula.trimOuterParens(formulaString);
 
     if (this.isAtomicString(formulaString)) {
       // Atomic formula.
@@ -352,7 +359,7 @@ export class Formula {
   isWFFString = (formulaString: string): boolean => {
     // TODO: this.cleanseFormulaString()?
     formulaString = this.removeWhiteSpace(formulaString);
-    formulaString = this.trimParens(formulaString);
+    formulaString = Formula.trimOuterParens(formulaString);
     if (formulaString.length === 1) return this.isAtomicString(formulaString);
     // Not an atomic formula, so parse it and continue.
     const formula = this.parseString(formulaString);
@@ -383,7 +390,7 @@ export class Formula {
     if (!this.isWFFString(formulaString)) return null;
     // Clean the formula.
     formulaString = this.removeWhiteSpace(formulaString);
-    formulaString = this.trimParens(formulaString);
+    formulaString = Formula.trimOuterParens(formulaString);
     if (this.isAtomicString(formulaString)) {
       // Base case - atomic formula
       return assignment[formulaString];
@@ -449,7 +456,7 @@ export class Formula {
    * @return - Prettified formula.
    */
   prettyFormula = (formulaString = this.cleansedFormulaString): string =>
-    this.trimParens(formulaString)
+    Formula.trimOuterParens(formulaString)
       .replace(/\s+/g, '') // Remove all whitespace
       .replace(/([a-zV&^(-(?>:>))])/g, (_, x) => x + ' ') // Add spaces
       .replace(/\(\s+/g, '(') // Remove spaces after `(`
@@ -476,10 +483,8 @@ export class Formula {
   /**
    * Class method invoking the static method [[Formula.getAtomicVariables]].
    */
-  getAtomicVariables = (formulaString?: string): string[] =>
-    Formula.getAtomicVariables(
-      formulaString ? formulaString : this.formulaString
-    );
+  getAtomicVariables = (formulaString = this.cleansedFormulaString): string[] =>
+    Formula.getAtomicVariables(formulaString);
 
   /**
    * Generate a complete truth table with values filled in if
