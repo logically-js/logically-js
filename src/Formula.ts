@@ -562,8 +562,6 @@ export class Formula {
     formulaString
       .replace(/\s*\bif and only if\b\s*/g, ' <-> ') // Replace 'if and only if'
       .replace(/\s*\bonly if\b\s*/g, ' -> ') // Replace 'only if'
-      // NOTE: Next line should be valid (works in node console)
-      // but won't compile.
       // Replace 'if' with '<-' if it's preceded by a word/letter but *not*
       // preceded by another connective.
       // The assumption is that 'p if q' occurs whenever 'if' follows
