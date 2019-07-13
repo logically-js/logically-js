@@ -530,16 +530,12 @@ describe('Formula', function() {
     mockTruthTables.forEach(truthTable => {
       const formula = new Formula(truthTable.formula);
       it(`should generate the correct truth table headers for the proposition ${truthTable.formula}`, () => {
-        const generatedTableHeaders = formula.generateTruthTableHeaders(
-          truthTable.formula
-        );
+        const generatedTableHeaders = formula.generateTruthTableHeaders();
         assert.isTrue(arrayEquals(truthTable.headers, generatedTableHeaders));
       });
 
       it(`should generate the correct truth table for the proposition ${truthTable.formula}`, () => {
-        const generatedTruthTable = formula.generateTruthTable(
-          truthTable.formula
-        );
+        const generatedTruthTable = formula.generateTruthTable();
         assert.isTrue(arrayEquals(truthTable.table, generatedTruthTable));
       });
     });

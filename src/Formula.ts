@@ -444,9 +444,7 @@ export class Formula {
    * @param formulaString - Optional formulaString argument.
    * @return - Truth table headers sorted alphabetically and by length.
    */
-  generateTruthTableHeaders = (
-    formulaString = this.cleansedFormulaString
-  ): string[] => {
+  static generateTruthTableHeaders = (formulaString: string): string[] => {
     const result: Set<string> = new Set();
     const helper = (formulaString: string): void => {
       result.add(formulaString);
@@ -460,7 +458,7 @@ export class Formula {
           result.add(operand);
         } else {
           // If an operand is complex, recurse on it to get the value.
-          const h = this.generateTruthTableHeaders(operand);
+          const h = Formula.generateTruthTableHeaders(operand);
           for (const x of h) {
             result.add(x);
           }
@@ -476,6 +474,9 @@ export class Formula {
       })
       .map(Formula.prettyFormula);
   };
+
+  generateTruthTableHeaders = (formulaString = this.formulaString): string[] =>
+    Formula.generateTruthTableHeaders(formulaString);
 
   /**
    * Takes a formulaString and returns a pretty, normalized formatting
@@ -526,11 +527,11 @@ export class Formula {
    * @param partial=false - Should we only fill out the atomic values?
    * @return - Truth table as matrix with values filled in.
    */
-  generateTruthTable = (
-    formulaString = this.cleansedFormulaString,
+  static generateTruthTable = (
+    formulaString: string,
     partial = false
   ): boolean[][] => {
-    const headers = this.generateTruthTableHeaders(formulaString);
+    const headers = Formula.generateTruthTableHeaders(formulaString);
     const atomicVars: string[] = Formula.getAtomicVariables(formulaString);
     const nRows: number = Math.pow(2, atomicVars.length);
     const result = new Array(nRows)
@@ -557,6 +558,11 @@ export class Formula {
     }
     return result;
   };
+
+  generateTruthTable = (
+    formulaString = this.cleansedFormulaString,
+    partial = false
+  ): boolean[][] => Formula.generateTruthTable(formulaString, partial);
 
   static translateEnglishToSymbolic = (formulaString: string): string =>
     formulaString
