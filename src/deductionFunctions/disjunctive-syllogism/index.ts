@@ -1,6 +1,7 @@
 /* eslint-disable no-unused-vars */
 import { DeductionRuleInterface } from '../index';
 /* eslint-enable no-unused-vars */
+import { someAndOther } from '../../utils';
 
 /**
  * Checks for the valid application of `Disjunctive Syllogism`.
@@ -34,10 +35,3 @@ export const disjunctiveSyllogism: DeductionRuleInterface = (
     )
   );
 };
-
-const someAndOther = (
-  el1: any,
-  el2: any,
-  cb1: (arg: any) => boolean,
-  cb2: (arg: any) => boolean
-) => (cb1(el1) && cb2(el2)) || (cb1(el2) && cb2(el1));

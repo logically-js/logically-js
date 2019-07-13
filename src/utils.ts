@@ -29,3 +29,21 @@ export const arrayEquals = (arr1: any[], arr2: any[]): boolean => {
   }
   return true;
 };
+
+/**
+ * A function that takes two elements and two functions, and checks if each
+ * function can return true for distinct elements.
+ *
+ * @param  el1 - The first element
+ * @param  el2 - The second element
+ * @param  el1 - The first function
+ * @param  el1 - The second function
+ * @return  - Return true iff there are two pairs of functions and elements
+ * such that both pairs return true.
+ */
+export const someAndOther = (
+  el1: any,
+  el2: any,
+  cb1: (arg: any) => boolean,
+  cb2: (arg: any) => boolean
+) => (cb1(el1) && cb2(el2)) || (cb1(el2) && cb2(el1));
