@@ -93,7 +93,7 @@ export class Formula {
    * (No extra parens; one single space between operators and operands.)
    */
   get prettifiedFormula(): string {
-    return this.prettyFormula(this.cleansedFormulaString);
+    return Formula.prettyFormula(this.cleansedFormulaString);
   }
 
   /**
@@ -120,18 +120,20 @@ export class Formula {
    *                  (if absent, compares with `this` formula).
    * @return - Are the two formulas identical?
    */
-  isEqual = (
+  static isEqual = (
     formula: Formula | string,
-    formula2?: Formula | string
+    formula2: Formula | string
   ): boolean => {
     formula = formula instanceof Formula ? formula : new Formula(formula);
-    const otherFormula = formula2
-      ? formula2 instanceof Formula
-        ? formula2
-        : new Formula(formula2)
-      : this;
+    const otherFormula =
+      formula2 instanceof Formula ? formula2 : new Formula(formula2);
     return formula.cleansedFormulaString === otherFormula.cleansedFormulaString;
   };
+
+  isEqual = (
+    formula: Formula | string,
+    formula2 = this as Formula | string
+  ): boolean => Formula.isEqual(formula, formula2);
 
   /**
    * Takes a formula and recursively removes any "extra"
@@ -226,22 +228,24 @@ export class Formula {
    * @param formula2 - formula to compare for negation
    * @return - Is `formula2` the negation of `formula`?
    */
-  isNegation = (
+  static isNegation = (
     formula: Formula | string,
-    formula2?: Formula | string
+    formula2: Formula | string
   ): boolean => {
     formula = formula instanceof Formula ? formula : new Formula(formula);
-    const compareFormula = formula2
-      ? formula2 instanceof Formula
-        ? formula2
-        : new Formula(formula2)
-      : this;
+    const compareFormula =
+      formula2 instanceof Formula ? formula2 : new Formula(formula2);
     return (
       (compareFormula.operator === '~' &&
         formula.isEqual(compareFormula.operands[0])) ||
       (formula.operator === '~' && compareFormula.isEqual(formula.operands[0]))
     );
   };
+
+  isNegation = (
+    formula: Formula | string,
+    formula2 = this as Formula | string
+  ): boolean => Formula.isNegation(formula, formula2);
 
   /**
    * Generate a new [[Formula]] that is the negation of the input formula
@@ -468,7 +472,7 @@ export class Formula {
         else if (a.length > b.length) return 1;
         else return a < b ? -1 : b < a ? 1 : 0;
       })
-      .map(this.prettyFormula);
+      .map(Formula.prettyFormula);
   };
 
   /**
@@ -478,13 +482,16 @@ export class Formula {
    * @param formulaString - The formula to be prettified.
    * @return - Prettified formula.
    */
-  prettyFormula = (formulaString = this.cleansedFormulaString): string =>
+  static prettyFormula = (formulaString: string): string =>
     Formula.trimOuterParens(formulaString)
       .replace(/\s+/g, '') // Remove all whitespace
       .replace(/([a-zV&^(-(?>:>))])/g, (_, x) => x + ' ') // Add spaces
       .replace(/\(\s+/g, '(') // Remove spaces after `(`
       .replace(/\s+\)/g, ')') // Remove spaces before ')'
       .replace(/\s+$/g, ''); // Remove possible extra space at end
+
+  prettyFormula = (formulaString = this.cleansedFormulaString): string =>
+    Formula.prettyFormula(formulaString);
 
   /**
    * Returns a sorted list of the atomic variables of a `formulaString`.
