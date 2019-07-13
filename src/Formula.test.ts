@@ -212,7 +212,7 @@ describe('Formula', function() {
     });
   });
 
-  describe('isWFFString()', function() {
+  describe('isWFFString() - STATIC method', function() {
     describe('should validate well-formed formulas', function() {
       const testCases = [
         { input: 'p', output: true },
@@ -229,8 +229,7 @@ describe('Formula', function() {
       ];
       for (const test of testCases) {
         it(`should recognize that the formula '${test.input}' is well-formed`, function() {
-          const formula = new Formula('p');
-          const isWFF = formula.isWFFString(test.input);
+          const isWFF = Formula.isWFFString(test.input);
           assert.equal(isWFF, test.output);
         });
       }
@@ -256,8 +255,7 @@ describe('Formula', function() {
       ];
       for (const test of testCases) {
         it(`should recognize that the formula '${test.input}' is *not* well-formed`, function() {
-          const formula = new Formula('p');
-          const isWFF = formula.isWFFString(test.input);
+          const isWFF = Formula.isWFFString(test.input);
           assert.equal(isWFF, test.output);
         });
       }
@@ -269,7 +267,7 @@ describe('Formula', function() {
     output: boolean | null;
   }
 
-  describe('evaluateFormulaString()', function() {
+  describe('evaluateFormulaString() - STATIC method', function() {
     describe('should correctly evaluate atomic formulas', function() {
       const testCases: TestCaseInterface[] = [
         { input: ['p', { p: true }], output: true },
@@ -280,9 +278,8 @@ describe('Formula', function() {
         const assignment = inspect(test.input[1]);
         it(`should recognize that the formula '${test.input[0]}'
         is ${test.output} under the assignment ${assignment}`, function() {
-          const formula = new Formula('p');
           assert.equal(
-            formula.evaluateFormulaString(...test.input),
+            Formula.evaluateFormulaString(...test.input),
             test.output
           );
         });
@@ -323,9 +320,8 @@ describe('Formula', function() {
         const assignment = inspect(test.input[1]);
         it(`should recognize that the formula '${test.input[0]}'
         is ${test.output} under the assignment ${assignment}`, function() {
-          const formula = new Formula('p');
           assert.equal(
-            formula.evaluateFormulaString(...test.input),
+            Formula.evaluateFormulaString(...test.input),
             test.output
           );
         });
@@ -384,9 +380,8 @@ describe('Formula', function() {
       for (const test of testCases) {
         const assignment = inspect(test.input[1]);
         it(`should recognize that the formula '${test.input[0]}' is ${test.output} under the assignment ${assignment}`, function() {
-          const formula = new Formula('p');
           assert.equal(
-            formula.evaluateFormulaString(...test.input),
+            Formula.evaluateFormulaString(...test.input),
             test.output
           );
         });

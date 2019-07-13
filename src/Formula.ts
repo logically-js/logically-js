@@ -370,7 +370,7 @@ export class Formula {
    * @param formulaString - The string to be analyzed.
    * @return - Does the string represent a wff?
    */
-  isWFFString = (formulaString: string): boolean => {
+  static isWFFString = (formulaString: string): boolean => {
     // TODO: this.cleanseFormulaString()?
     formulaString = Formula.removeWhiteSpace(formulaString);
     formulaString = Formula.trimOuterParens(formulaString);
@@ -381,8 +381,11 @@ export class Formula {
     if (formula === null) return false; // couldn't parse
     if (!RE.operator.test(formula.operator)) return false; // illegal operator
     // Every operand must also be a wff.
-    return formula.operands.every(operand => this.isWFFString(operand));
+    return formula.operands.every(operand => Formula.isWFFString(operand));
   };
+
+  isWFFString = (formulaString = this.formulaString): boolean =>
+    Formula.isWFFString(formulaString);
 
   // TODO: Reconsider the treatment of `undefined` return values.
   // Ex. `p V q` where `{ p: true }` (and `q` is `undefined`).
@@ -398,11 +401,11 @@ export class Formula {
    * @param assignment - Assignment of truth values to atomic variables.
    * @return - Is the `formulaString` true under the `assignment`?
    */
-  evaluateFormulaString = (
+  static evaluateFormulaString = (
     formulaString: string,
     assignment: AssignmentInterface
   ): boolean => {
-    if (!this.isWFFString(formulaString)) return null;
+    if (!Formula.isWFFString(formulaString)) return null;
     // Clean the formula.
     formulaString = Formula.removeWhiteSpace(formulaString);
     formulaString = Formula.trimOuterParens(formulaString);
@@ -416,12 +419,17 @@ export class Formula {
         return assignment[operand];
       } else {
         // If an operand is complex, recurse on it to get the value.
-        return this.evaluateFormulaString(operand, assignment);
+        return Formula.evaluateFormulaString(operand, assignment);
       }
     });
     // Apply the corresponding truth function with the values.
     return TRUTH_FUNCTIONS[parsed.operator](...values);
   };
+
+  evaluateFormulaString = (
+    formulaString: string,
+    assignment: AssignmentInterface
+  ): boolean => Formula.evaluateFormulaString(formulaString, assignment);
 
   // TODO: This function should probably return an array of Formulas.
   /**
@@ -535,7 +543,7 @@ export class Formula {
         result[j].slice(0, atomicVars.length).forEach((val, idx) => {
           assignment[atomicVars[idx]] = val;
         });
-        result[j][i] = this.evaluateFormulaString(headers[i], assignment);
+        result[j][i] = Formula.evaluateFormulaString(headers[i], assignment);
       }
     }
     return result;
