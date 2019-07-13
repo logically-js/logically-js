@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-vars */
 import {
   checkRuleRecursively,
-  flipOperator,
   DeductionRuleInterface,
   SimpleDeductionRuleInterface
 } from '../index';
 /* eslint-enable no-unused-vars */
+import { flipOperator } from '../../utils';
 
 /**
  * Function for identifying valid applications of DeMorgan's Rule at the top

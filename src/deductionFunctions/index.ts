@@ -1,19 +1,16 @@
-/* eslint-disable-next-line */
+/* eslint-disable no-unused-vars */
 import { LineOfProof, Proof } from '../Proof';
-/* eslint-disable-next-line */
 import { Formula } from '../Formula';
+/* eslint-enable no-unused-vars */
 import { CITED_LINES_COUNT, DEDUCTION_RULES } from '../constants';
 import * as DF from './deductionFunctions';
-// TODO: Put in utils
-export const flipOperator = (operator: string): string =>
-  operator === '&' ? 'V' : operator === 'V' ? '&' : operator;
 
 /**
  * Takes a line of proof and a proof and determines if the line is a valid move.
  *
- * @param {LineOfProof} move - The move currently being considered.
- * @param {Proof} proof - The proof being considered.
- * @return {boolean} - Is the move valid?
+ * @param move - The move currently being considered.
+ * @param proof - The proof being considered.
+ * @return - Is the move valid?
  */
 export const evaluateMove = (move: LineOfProof, proof: Proof): boolean =>
   CITED_LINES_COUNT[move.rule] === move.citedLines.length &&
@@ -31,7 +28,7 @@ interface DeductionRulesDictInterface {
 }
 
 /**
- * Interface for checking a natural deduction rule that has only
+ * Interface for checking a natural deduction rule of equivalence that has only
  * one source formula and is only checked at the top level/main operator.
  */
 export interface SimpleDeductionRuleInterface {
@@ -43,8 +40,8 @@ export interface SimpleDeductionRuleInterface {
  * function that recursively checks whether it applies to a formula
  * and its subformulas.
  *
- * @param {SimpleDeductionRuleInterface} rule - Top-level rule-checking function
- * @return {SimpleDeductionRuleInterface} A recursive version of the input
+ * @param rule - Top-level rule-checking function
+ * @return - A recursive version of the input
  */
 export const checkRuleRecursively = (
   rule: SimpleDeductionRuleInterface

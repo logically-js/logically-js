@@ -47,3 +47,9 @@ export const someAndOther = (
   cb1: (arg: any) => boolean,
   cb2: (arg: any) => boolean
 ) => (cb1(el1) && cb2(el2)) || (cb1(el2) && cb2(el1));
+
+/**
+ * Function that converts a `V` to a `&` and vice versa.
+ */
+export const flipOperator = (operator: string): string =>
+  operator === '&' ? 'V' : operator === 'V' ? '&' : operator;

@@ -1,11 +1,11 @@
 /* eslint-disable no-unused-vars */
 import {
   checkRuleRecursively,
-  flipOperator,
   DeductionRuleInterface,
   SimpleDeductionRuleInterface
 } from '../index';
 /* eslint-enable no-unused-vars */
+import { flipOperator } from '../../utils';
 
 import { Formula } from '../../Formula';
 
