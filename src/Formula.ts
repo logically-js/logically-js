@@ -74,10 +74,11 @@ export class Formula {
     this.operator = null;
     this.operands = [];
     if (
-      Formula.trimOuterParens(this.removeWhiteSpace(formulaString)).length === 1
+      Formula.trimOuterParens(Formula.removeWhiteSpace(formulaString))
+        .length === 1
     ) {
       this.cleansedFormulaString = Formula.trimOuterParens(
-        this.removeWhiteSpace(formulaString)
+        Formula.removeWhiteSpace(formulaString)
       );
       return;
     }
@@ -101,12 +102,15 @@ export class Formula {
    * @param string - The string to test
    * @return - Is the input string atomic?
    */
-  isAtomicString = (string = this.cleansedFormulaString): boolean => {
-    const cleansedString = this.removeWhiteSpace(
+  static isAtomicString = (string: string): boolean => {
+    const cleansedString = Formula.removeWhiteSpace(
       Formula.trimOuterParens(string)
     );
     return RE.atomicVariable.test(cleansedString);
   };
+
+  isAtomicString = (string = this.cleansedFormulaString): boolean =>
+    Formula.isAtomicString(string);
 
   /**
    * Compares two formulas for equality (same propositions/operators/operands).
@@ -173,11 +177,14 @@ export class Formula {
   /**
    * Remove all whitespace from a string.
    *
-   * @param string - String to be trimmed.
+   * @param str - String to be trimmed.
    * @return - String with whitespace removed.
    */
-  removeWhiteSpace = (string = this.cleansedFormulaString): string =>
+  static removeWhiteSpace = (string: string): string =>
     string.replace(/\s/g, '');
+
+  removeWhiteSpace = (str = this.cleansedFormulaString): string =>
+    Formula.removeWhiteSpace(str);
 
   /**
    * Find the index of the main binary operator in a formula string,
@@ -263,7 +270,9 @@ export class Formula {
     if (!formula) return;
     const parsed = this.parseString(formula);
     if (!parsed.operator) {
-      return formula && Formula.trimOuterParens(this.removeWhiteSpace(formula));
+      return (
+        formula && Formula.trimOuterParens(Formula.removeWhiteSpace(formula))
+      );
     }
     let op1 = this.cleanseFormulaString(parsed.operands[0]);
     let op2 = this.cleanseFormulaString(parsed.operands[1]);
@@ -276,7 +285,7 @@ export class Formula {
     } else {
       result = operator + op1;
     }
-    return Formula.trimOuterParens(this.removeWhiteSpace(result));
+    return Formula.trimOuterParens(Formula.removeWhiteSpace(result));
   };
 
   /**
@@ -291,10 +300,10 @@ export class Formula {
     // TODO: Should an atomic proposition just return no operator or operands?
 
     // Remove whitespace and any unnecessary parens.
-    formulaString = this.removeWhiteSpace(formulaString);
+    formulaString = Formula.removeWhiteSpace(formulaString);
     formulaString = Formula.trimOuterParens(formulaString);
 
-    if (this.isAtomicString(formulaString)) {
+    if (Formula.isAtomicString(formulaString)) {
       // Atomic formula.
       // An atomic formula is a Formula with no operator and one operand.
       return {
@@ -358,9 +367,10 @@ export class Formula {
    */
   isWFFString = (formulaString: string): boolean => {
     // TODO: this.cleanseFormulaString()?
-    formulaString = this.removeWhiteSpace(formulaString);
+    formulaString = Formula.removeWhiteSpace(formulaString);
     formulaString = Formula.trimOuterParens(formulaString);
-    if (formulaString.length === 1) return this.isAtomicString(formulaString);
+    if (formulaString.length === 1)
+      return Formula.isAtomicString(formulaString);
     // Not an atomic formula, so parse it and continue.
     const formula = this.parseString(formulaString);
     if (formula === null) return false; // couldn't parse
@@ -389,15 +399,15 @@ export class Formula {
   ): boolean => {
     if (!this.isWFFString(formulaString)) return null;
     // Clean the formula.
-    formulaString = this.removeWhiteSpace(formulaString);
+    formulaString = Formula.removeWhiteSpace(formulaString);
     formulaString = Formula.trimOuterParens(formulaString);
-    if (this.isAtomicString(formulaString)) {
+    if (Formula.isAtomicString(formulaString)) {
       // Base case - atomic formula
       return assignment[formulaString];
     }
     const parsed = this.parseString(formulaString);
     const values = parsed.operands.map(operand => {
-      if (this.isAtomicString(operand)) {
+      if (Formula.isAtomicString(operand)) {
         return assignment[operand];
       } else {
         // If an operand is complex, recurse on it to get the value.
@@ -421,13 +431,13 @@ export class Formula {
     const result: Set<string> = new Set();
     const helper = (formulaString: string): void => {
       result.add(formulaString);
-      if (this.isAtomicString(formulaString)) {
+      if (Formula.isAtomicString(formulaString)) {
         // Base case - atomic formula
         return;
       }
       const parsed = this.parseString(formulaString);
       parsed.operands.forEach(operand => {
-        if (this.isAtomicString(operand)) {
+        if (Formula.isAtomicString(operand)) {
           result.add(operand);
         } else {
           // If an operand is complex, recurse on it to get the value.
