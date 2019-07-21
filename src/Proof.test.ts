@@ -43,7 +43,6 @@ describe('Proof', function() {
         );
       }
       const conclusion = mockProof[mockProof.length - 1][0];
-      // console.log('CONCLUSION', conclusion);
       proof.setConclusion(conclusion);
       it(`Should validate the proof:
         ${inspect(mockProof)}
@@ -65,7 +64,6 @@ describe('Proof', function() {
         );
       }
       const conclusion = invalidProof[invalidProof.length - 1][0];
-      // console.log('CONCLUSION', conclusion);
       proof.setConclusion(conclusion);
       it(`Should reject the proof:
         ${inspect(invalidProof)}
