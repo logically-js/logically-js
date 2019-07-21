@@ -17,6 +17,10 @@
   ],
   "author": "JDR",
   "license": "ISC",
+  "repository": {
+    "type" : "git",
+    "url" : "https://github.com/logically-js/logically-js"
+  },
   "dependencies": {},
   "devDependencies": {
     "@babel/cli": "^7.2.3",
