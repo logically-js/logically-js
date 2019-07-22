@@ -540,4 +540,24 @@ describe('Formula', function() {
       });
     });
   });
+
+  describe('generateRandomFormulaString', function() {
+    it('should generate a random formula string', () => {
+      for (let i = 0; i < 10; i++) {
+        const randomString = Formula.generateRandomFormulaString();
+        console.log('RANDOM STRING', randomString);
+        assert.isString(randomString);
+      }
+    });
+  });
+
+  describe('generateRandomFormula', function() {
+    it('should generate a random formula', () => {
+      for (let i = 0; i < 100; i++) {
+        const randomFormula = Formula.generateRandomFormula();
+        console.log('RANDOM STRING', randomFormula.prettifiedFormula);
+        assert.isTrue(randomFormula instanceof Formula);
+      }
+    });
+  });
 });
