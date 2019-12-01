@@ -186,7 +186,7 @@ export class Proof implements ProofInterface {
         new Set(
           line.citedLines
             .map(l => this.getAssumptions(this.lines[l - 1]))
-            .reduce((acc, arr) => acc.concat(arr))
+            .reduce((acc, arr) => acc.concat(arr), [])
         )
       );
     }
