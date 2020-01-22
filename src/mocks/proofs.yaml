@@ -391,3 +391,10 @@
   - [p & (q & r), Associativity, [1]]
   - [(p & (q & r)) V (p V t), Addition, [2]]
   - [((p & (q & r)) V p) V t, Associativity, [3]]
+
+-
+  - [m -> (u -> h), Premise, []]
+  - [(h V (~u)) -> f, Premise, []]
+  - [m -> ((~u) V h), Material Implication, [1]]
+  - [m -> (h V (~u)), Commutativity, [3]]
+  - [m -> f, Hypothetical Syllogism, [4, 2]]
