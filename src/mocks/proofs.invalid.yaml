@@ -43,6 +43,43 @@
   - [~p, Premise, []]
   - [p, Disjunctive Syllogism, [1,2]]
 
+-
+  - [p V q, Premise, []]
+  - [~q, Premise, []]
+  - [q, Disjunctive Syllogism, [1,2]]
+
+-
+  - [F(x), Premise, []]
+  - [F(a), Universal Instantiation, [1]]
+
+-
+  - [p V q, Premise, []]
+  - [p -> (p V q), Material Equivalence, [1]]
+
+-
+  - [(p -> q) -> (q -> p), Premise, []]
+  - [p <->, Material Equivalence, [1]]
+
+-
+  - [(p V q) -> r, Premise, []]
+  - [p -> (q -> r), Exportation, [1]]
+
+-
+  - [Ex(F(x)), Premise, []]
+  - [Ex(p V q), Existential Generalization, [1]]
+  - [EyFa, Existential Generalization, [1]]
+
+-
+  - [Ex(F(x)), Premise, []]
+  - [~(Ex(p)), Existential Generalization, [1]]
+
+-
+  - [Ex(F(x)), Premise, []]
+  - [p, Existential Generalization, [1]]
+
+-
+  - [Ex(F(x)), Premise, []]
+  - [p V (q & r), Existential Generalization, [1]]
 
 # BAD PROOFS WITH ASSUMPTIONS
 -
@@ -61,3 +98,71 @@
   - [p -> q, Premise, []]
   - [p, Assumption, []]
   - [q, Modus Ponens, [1, 2]]
+
+-
+  - [(p & q) -> r, Premise, []]
+  - [p -> (s -> r), Exportation, [1]]
+
+-
+  - [(p & q) -> r, Premise, []]
+  - [p -> (q -> s), Exportation, [1]]
+
+-
+  - [p, Premise, []]
+  - [p & q, Constructive Dilemma, [1]]
+
+-
+  - [p V r, Premise, []]
+  - [(p -> q) V (r -> s), Premise, []]
+  - [q V s, Constructive Dilemma, [1, 2]]
+
+-
+  - [p -> r, Premise, []]
+  - [(p -> q) V (r -> s), Premise, []]
+  - [q V s, Constructive Dilemma, [1, 2]]
+
+-
+  - [(p & q) & (r -> s), Premise, []]
+  - [p V r, Premise, []]
+  - [s V q, Constructive Dilemma, [1, 2]]
+
+-
+  - [(p -> q) & (r & s), Premise, []]
+  - [r V p, Premise, []]
+  - [q V s, Constructive Dilemma, [1, 2]]
+
+-
+  - [p & (q & r), Premise, []]
+  - [(p & q) -> r, Associativity, [1]]
+
+-
+  - [p & (q V r), Premise, []]
+  - [(p & q) & (p V r), Distribution, [1]]
+
+-
+  - [p & (q V r), Premise, []]
+  - [(p & q) & (p V r), Distribution, [1]]
+
+-
+  - [p V (q & r), Premise, []]
+  - [Ex(p & (q & r)), Existential Generalization, [1]]
+
+-
+  - [p V, Premise, []]
+  - [p, Simplification, [1]]
+
+-
+  - [p V (q & r), Premise, []]
+  - [Ep(p V (q & r)), Existential Generalization, [1]]
+
+-
+  - [Ex(F(a)), Premise, []]
+  - [Ex(Ex(F(a))), Existential Generalization, [1]]
+
+-
+  - [Ex(F(a)), Premise, []]
+  - [Ea(Ex(F(a))), Existential Generalization, [1]]
+
+-
+  - [p, Premise, []]
+  - [p V q, Foo, []]

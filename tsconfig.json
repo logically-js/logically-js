@@ -1,13 +1,17 @@
 {
   "compilerOptions": {
+    "baseUrl": "./src",
     "checkJs": false,
     "allowJs": true,
-    "target": "es6",
+    "target": "es2018",
     "module": "commonjs",
     "noImplicitAny": true,
     "sourceMap": true,
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "rootDir": ".",
+    "allowSyntheticDefaultImports": true,
+    "esModuleInterop" : true
   },
-  "include": ["src"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", ".nyc_output"]
 }

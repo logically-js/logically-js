@@ -11,7 +11,7 @@ import {
  * Material Equivalence has two forms, as you can transform a biconditional
  * into either a conjunction of conditionals, or a disjunction of conjunctions:
  * (i) p <-> q; (ii) (p -> q) & (q -> p)
- * (i) p <-> q; (ii) (p & q) V (~p & ~q)
+ * (i) p <-> q; (ii) (p & q) | (~p & ~q)
  * We validate this rule by first identifying the longer vs. shorter input
  * proposition. Then we check whether the longer proposition is a `V` case or a
  * `&` case. Then we check whether the operands have the appropriate relations.

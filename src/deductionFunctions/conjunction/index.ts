@@ -9,7 +9,7 @@ import { DeductionRuleInterface } from '../index';
  *
  * @note: This is a slightly permissive version of `conjunction`.
  * Classically, we would expect it to accept a proof like:
- * (1) p V r; (2) q; (3) (p V r) & q
+ * (1) p | r; (2) q; (3) (p | r) & q
  * However, it also accepts the following: (1) p; (2) q; (3) p & p
  * It isn't clear to me whether this behavior is good or bad.
  * On the plus side it gives a straightforward deduction for:

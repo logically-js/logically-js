@@ -110,27 +110,6 @@ export class Proof implements ProofInterface {
   }
 
   /**
-   * Add a premise to the proof.
-   * @param {string} formulaString - String representation of the premise.
-   */
-  addPremiseToProof = (formulaString: string): void => {
-    try {
-      const proposition: Formula = new Formula(formulaString);
-      const rule = DEDUCTION_RULES.PREMISE;
-      this.premises.push(proposition);
-      const newLineOfProof = new LineOfProof({
-        assumptions: [],
-        proposition,
-        rule,
-        citedLines: []
-      });
-      this.lines.push(newLineOfProof);
-    } catch (e) {
-      throw new Error('Could not process input formula string.');
-    }
-  };
-
-  /**
    * Add a LineOfProof to the proof.
    * @param newLine - the line to be added
    */
@@ -205,8 +184,6 @@ export class Proof implements ProofInterface {
       }
     } else if (conclusion instanceof Formula) {
       this.conclusion = conclusion;
-    } else {
-      throw new Error('Does not recognize input type.');
     }
   };
 

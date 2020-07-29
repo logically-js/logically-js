@@ -1,11 +1,14 @@
 {
   "name": "logically",
-  "version": "0.1.6",
+  "version": "0.1.24",
   "description": "Library for representing and evaluating symbolic logic formulas.",
-  "main": "dist/index.js",
+  "main": "dist/src/index.js",
   "types": "dist/index.d.ts",
+  "files": [
+    "dist/*"
+  ],
   "scripts": {
-    "build": "tsc && npm run docs",
+    "build": "rimraf ./dist/ && tsc && npm run docs",
     "docs": "rimraf ./docs/ && typedoc --out ./docs/  --listInvalidSymbolLinks ./src/",
     "lint": "eslint src/ --ext .ts,.tsx,.js,.jsx",
     "test": "nyc mocha src/**/*.test.ts --require ts-node/register",
@@ -33,6 +36,7 @@
     "@types/js-yaml": "^3.12.1",
     "@types/mocha": "^5.2.7",
     "@types/node": "^12.0.10",
+    "@typescript-eslint/eslint-plugin": "^3.7.0",
     "@typescript-eslint/parser": "^1.11.0",
     "chai": "^4.2.0",
     "eslint": "^5.12.1",
@@ -47,7 +51,7 @@
     "rimraf": "^2.6.3",
     "ts-loader": "^6.0.4",
     "ts-node": "^8.3.0",
-    "typedoc": "^0.14.2",
-    "typescript": "^3.5.2"
+    "typedoc": "^0.17.8",
+    "typescript": "^3.9.7"
   }
 }

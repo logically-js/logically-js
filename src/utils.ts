@@ -53,3 +53,31 @@ export const someAndOther = (
  */
 export const flipOperator = (operator: string): string =>
   operator === '&' ? 'V' : operator === 'V' ? '&' : operator;
+
+// const getNoParensGroup = (str = '', index: number): any => {
+//   let result = '';
+//   // const exec = /^/g
+// };
+
+export const getParensGroup = (string: string, index: number): any => {
+  // TODO: Type
+  // debugger;
+  let count = 0;
+  for (let i = index; i < string.length; i++) {
+    const char = string[i];
+    if (char === '(') {
+      count++;
+    }
+    if (char === ')') {
+      count--;
+    }
+    if (count === 0) {
+      return {
+        string: string.slice(index + 1, i),
+        start: index,
+        end: i,
+        length: i - index - 1
+      };
+    }
+  }
+};

@@ -1,11 +1,24 @@
 # BASIC TRUTH TABLES
 
 -
+  formula: p
+  headers: [p]
+  table:
+    - [true]
+    - [false]
+  partial:
+    - [true]
+    - [false]
+
+-
   formula: ~p
   headers: [p, ~p]
   table:
     - [true, false]
     - [false, true]
+  partial:
+    - [true, null]
+    - [false, null]
 
 -
   formula: ((  ~ p)) # Spacing/extra parentheses shouldn't matter
@@ -13,6 +26,9 @@
   table:
     - [true, false]
     - [false, true]
+  partial:
+    - [true, null]
+    - [false, null]
 
 -
   formula: p & q
@@ -22,6 +38,11 @@
     - [true, false, false]
     - [false, true, false]
     - [false, false, false]
+  partial:
+    - [true, true, null]
+    - [true, false, null]
+    - [false, true, null]
+    - [false, false, null]
 
 -
   formula: p V q
@@ -31,6 +52,11 @@
     - [true, false, true]
     - [false, true, true]
     - [false, false, false]
+  partial:
+    - [true, true, null]
+    - [true, false, null]
+    - [false, true, null]
+    - [false, false, null]
 
 -
   formula: p -> q
@@ -40,6 +66,11 @@
     - [true, false, false]
     - [false, true, true]
     - [false, false, true]
+  partial:
+    - [true, true, null]
+    - [true, false, null]
+    - [false, true, null]
+    - [false, false, null]
 
 -
   formula: p <-> q
@@ -49,6 +80,11 @@
     - [true, false, false]
     - [false, true, false]
     - [false, false, true]
+  partial:
+    - [true, true, null]
+    - [true, false, null]
+    - [false, true, null]
+    - [false, false, null]
 
 
 
@@ -62,15 +98,25 @@
     - [true, false, false, true]
     - [false, true, false, true]
     - [false, false, false, true]
+  partial:
+    - [true, true, null, null]
+    - [true, false, null, null]
+    - [false, true, null, null]
+    - [false, false, null, null]
 
 -
   formula: (p V q) <-> (q -> ~p)
-  headers: [p, q, ~p, p V q, q -> ~p, (p V q) <-> (q -> ~p)]
+  headers: [p, q, ~p, p V q, q -> (~p), (p V q) <-> (q -> (~p))]
   table:
     - [true, true, false, true, false, false]
     - [true, false, false, true, true, true]
     - [false, true, true, true, true, true]
     - [false, false, true, false, true, false]
+  partial:
+    - [true, true, null, null, null, null]
+    - [true, false, null, null, null, null]
+    - [false, true, null, null, null, null]
+    - [false, false, null, null, null, null]
 
 -
   formula: (p & q) V r
@@ -84,3 +130,12 @@
     - [false, true, false, false, false]
     - [false, false, true, false, true]
     - [false, false, false, false, false]
+  partial:
+    - [true, true, true, null, null]
+    - [true, true, false, null, null]
+    - [true, false, true, null, null]
+    - [true, false, false, null, null]
+    - [false, true, true, null, null]
+    - [false, true, false, null, null]
+    - [false, false, true, null, null]
+    - [false, false, false, null, null]

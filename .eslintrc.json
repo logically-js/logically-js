@@ -5,7 +5,7 @@
       "ecmaVersion": 6,
       "sourceType": "module"
     },
-    "plugins": ["prettier"],
+    "plugins": ["prettier", "@typescript-eslint"],
     "rules": {
       "no-invalid-this": 0,
       "prettier/prettier": 2,

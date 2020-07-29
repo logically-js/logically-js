@@ -4,7 +4,7 @@ import { DeductionRuleInterface } from '../index';
 
 /**
  * Function to identify an application of the rule of `Addition`.
- * Consider a basic case - source: p; target: p V q;
+ * Consider a basic case - source: p; target: p | q;
  * We can verify that this is a valid application of `Addition` simply
  * by checking whether any of the 0-2 `target.proposition.operands` is
  * equal to the `source.proposition`, and that the [[Operator]] for the

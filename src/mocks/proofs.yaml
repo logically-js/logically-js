@@ -19,6 +19,28 @@
   - [r & s, Simplification, [2]]
   - [s, Simplification, [3]]
 
+-
+  - ["F(a, b) & F(b)", Premise, []]
+  - [F(b), Simplification, [1]]
+
+-
+  - ["((p -> F(a, b)) & F(a, b)) & (r & (s & G(a)))", Premise, []]
+  - [r & (s & G(a)), Simplification, [1]]
+  - [s & G(a), Simplification, [2]]
+  - [s, Simplification, [3]]
+  - [r, Simplification, [2]]
+  - ["((p -> F(a, b)) & F(a, b))", Simplification, [1]]
+  - ["p -> F(a, b)", Simplification, [6]]
+  - ["F(a, b)", Simplification, [6]]
+
+-
+  - ["~(a & b) & c", Premise, []]
+  - ["~(a & b)", Simplification, [1]]
+
+-
+  - ["~F(a) & c", Premise, []]
+  - ["~(F(a))", Simplification, [1]]
+
 
 # ADDITION
 -
@@ -27,6 +49,18 @@
   - [s V (p & q), Addition, [1]]
   - [(s V (p & q)) V r, Addition, [3]]
   - [t V ((s V (p & q)) V r), Addition, [4]]
+
+-
+  - [p, Premise, []]
+  - [p V q, Addition, [1]]
+  - [(p V q) V ((s & t) -> (t <-> s)), Addition, [2]]
+
+-
+  - ["F(a) & q", Premise, []]
+  - ["(F(a) & q) V r", Addition, [1]]
+  - ["s V (F(a) & q)", Addition, [1]]
+  - ["(s V (F(a) & q)) V r", Addition, [3]]
+  - ["t V ((s V (F(a) & q)) V r)", Addition, [4]]
 
 -
   - [p, Premise, []]
@@ -74,6 +108,12 @@
   - [p, Assumption, []]
   - [q, Modus Ponens, [1, 2]]
   - [p -> q, Conditional Proof, [2, 3]]
+
+-
+  - [p -> q, Premise, []]
+  - [p, Assumption, []]
+  - [q, Modus Ponens, [1, 2]]
+  - [p -> q, Conditional Proof, [3, 2]]
 
 -
   - [p, Premise, []]
@@ -159,6 +199,16 @@
   - [p V q, Premise, []]
   - [~p, Premise, []]
   - [q, Disjunctive Syllogism, [1, 2]]
+
+-
+  - [p V q, Premise, []]
+  - [~q, Premise, []]
+  - [p, Disjunctive Syllogism, [1, 2]]
+
+-
+  - [~q, Premise, []]
+  - [p V q, Premise, []]
+  - [p, Disjunctive Syllogism, [1, 2]]
 
 -
   - [(p -> q) V ((r & s) V (r & t)), Premise, []]
@@ -272,6 +322,12 @@
   - [p & ~p, Conjunction, [1, 2]]
   - [p, Indirect Proof, [2, 3]]
 
+-
+  - [p, Premise, []]
+  - [~p, Assumption, []]
+  - [p & ~p, Conjunction, [1, 2]]
+  - [p, Indirect Proof, [3, 2]]
+
 # Extra unnecessary assumption
 -
   - [p & q, Premise, []]
@@ -331,7 +387,12 @@
 -
   - [p -> ~q, Premise, []]
   - [q, Premise, []]
-  - [~p, Modus Tollens, [1,2]]
+  - [~p, Modus Tollens, [1, 2]]
+
+-
+  - [q, Premise, []]
+  - [p -> ~q, Premise, []]
+  - [~p, Modus Tollens, [1, 2]]
 
 
 # TAUTOLOGY
@@ -398,3 +459,107 @@
   - [m -> ((~u) V h), Material Implication, [1]]
   - [m -> (h V (~u)), Commutativity, [3]]
   - [m -> f, Hypothetical Syllogism, [4, 2]]
+
+-
+  - [F(a), Premise, []]
+  - [Ex(F(a)), Existential Generalization, [1]]
+
+-
+  - [F(a), Premise, []]
+  - [Ex(F(a)), Existential Generalization, [1]]
+  - [Ey(Ex(F(a))), Existential Generalization, [2]]
+
+-
+  - [F(a), Premise, []]
+  - [Ex(F(x)), Existential Generalization, [1]]
+
+# -
+#  - [Ex(~F(x)) & p, Premise, []]
+#  - [Ex(~F(x)), Simplification, [1]]
+
+-
+  - ["F(a, b)", Premise, []]
+  - ["Ex(F(x, b))", Existential Generalization, [1]]
+
+-
+  - [F(a) & p, Premise, []]
+  - [F(a), Simplification, [1]]
+
+#-
+#  - ["F(a, b)", Premise, []]
+#  - ["Ex(F(x, b))", Existential Generalization, [1]]
+#  - ["Ey(ExF(x, y))", Existential Generalization, [2]]
+
+-
+  - ["F(a, a)", Premise, []]
+  - ["Ex((F(x, x)))", Existential Generalization, [1]]
+
+-
+  - ["F(a) & p", Premise, []]
+  - ["Ex(F(x)) & p", Existential Generalization, [1]]
+
+-
+ - ["F(a) & p", Premise, []]
+ - ["Ex(F(x) & p)", Existential Generalization, [1]]
+
+-
+  - [Ax(F(b)), Premise, []]
+  - [F(b), Universal Instantiation, [1]]
+
+-
+  - [Ax(F(x)), Premise, []]
+  - [F(a), Universal Instantiation, [1]]
+
+-
+  - ["Ax(F(x, b))", Premise, []]
+  - ["F(a, b)", Universal Instantiation, [1]]
+
+-
+  - ["Ax(Ay(F(x, y)))", Premise, []]
+  - ["Ay(F(a, y))", Universal Instantiation, [1]]
+  - ["F(a, b)", Universal Instantiation, [2]]
+
+-
+  - ["~(Ax(F(x)))", Premise, []]
+  - ["Ex(~F(x))", Quantifier Negation, [1]]
+
+-
+  - ["Ex(~F(x))", Premise, []]
+  - ["~(Ax(F(x)))", Quantifier Negation, [1]]
+
+-
+  - ["Ax(F(x))", Premise, []]
+  - ["~(Ex(~F(x)))", Quantifier Negation, [1]]
+
+-
+  - [p V F(a), Premise, []]
+  - [p V Ex(F(x)), Existential Generalization, [1]]
+
+-
+  - [((p) V F(a)), Premise, []]
+  - [p V (((Ex(F(x))))), Existential Generalization, [1]]
+
+-
+  - [p V F(a), Premise, []]
+  - [p V Ex(F(x)), Existential Generalization, [1]]
+  - [p V Ey(Ex(F(x))), Existential Generalization, [2]]
+
+-
+  - [Ax(F(x) & p), Premise, []]
+  - [F(x) & p, Universal Instantiation, [1]]
+
+-
+  - [p V q, Premise, []]
+  - [Ex(p V q), Existential Generalization, [1]]
+
+-
+  - [(p & r) V q, Premise, []]
+  - [Ex((p & r) V q), Existential Generalization, [1]]
+
+-
+  - [(p & r) V (p & r), Premise, []]
+  - [Ex(p & r) V (p & r), Existential Generalization, [1]]
+
+-
+  - [(p &  r ) V ( p  & r), Premise, []]
+  - [(p &  r ) V Ex(p & r), Existential Generalization, [1]]

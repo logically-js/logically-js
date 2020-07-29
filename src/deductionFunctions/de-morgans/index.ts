@@ -11,7 +11,7 @@ import { flipOperator } from '../../utils';
  * Function for identifying valid applications of DeMorgan's Rule at the top
  * level. DeMorgan's Rule is a Rule of Equivalence. It is used for transforming
  * a negated conjunction/disjunction into a disjunction/conjunction of
- * negations (and vice versa). E.g.: (1) ~(p & q); (2) ~p V ~q.
+ * negations (and vice versa). E.g.: (1) ~(p & q); (2) ~p | ~q.
  *
  * To identify this rule (at the top level), we observe that
  * one of the arguments must start with a negation, and the other
@@ -22,7 +22,7 @@ import { flipOperator } from '../../utils';
 const simpleDeMorgans: SimpleDeductionRuleInterface = (t, s) => {
   const [negatedFormula, otherFormula] = t.operator === '~' ? [t, s] : [s, t];
   if (negatedFormula.operator !== '~' || !otherFormula.operator.match(/[&V]/)) {
-    // the other formula's operator must be a `&` or a `V`
+    // the other formula's operator must be a `&` or a `|`
     return false;
   }
   const innerFormula = negatedFormula.operands[0];

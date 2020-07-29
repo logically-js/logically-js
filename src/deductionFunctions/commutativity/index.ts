@@ -12,9 +12,9 @@ import {
  * the two formulas have the same operators, and the same operands,
  * but in different order.
  *
- * @param {Formula} t - Target formula
- * @param {Formula} s - Source formula
- * @return {boolean} - Does Commutativity apply at the top level?
+ * @param t - Target formula
+ * @param s - Source formula
+ * @return - Does Commutativity apply at the top level?
  */
 const simpleCommutativity: SimpleDeductionRuleInterface = (t, s) =>
   t.operator === s.operator &&

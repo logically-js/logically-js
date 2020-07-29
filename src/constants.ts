@@ -14,6 +14,7 @@ export const DEDUCTION_RULES = <DeductionRulesInterface>{
   DISJUNCTIVE_SYLLOGISM: 'Disjunctive Syllogism',
   DISTRIBUTION: 'Distribution',
   EXPORTATION: 'Exportation',
+  EXISTENTIAL_GENERALIZATION: 'Existential Generalization',
   DOUBLE_NEGATION: 'Double Negation',
   HYPOTHETICAL_SYLLOGISM: 'Hypothetical Syllogism',
   INDIRECT_PROOF: 'Indirect Proof',
@@ -21,10 +22,13 @@ export const DEDUCTION_RULES = <DeductionRulesInterface>{
   MATERIAL_IMPLICATION: 'Material Implication',
   MODUS_PONENS: 'Modus Ponens',
   MODUS_TOLLENS: 'Modus Tollens',
+  QUANTIFIER_NEGATION: 'Quantifier Negation',
   PREMISE: 'Premise',
   SIMPLIFICATION: 'Simplification',
   TAUTOLOGY: 'Tautology',
-  TRANSPOSITION: 'Transposition'
+  TRANSPOSITION: 'Transposition',
+  UNIVERSAL_INSTANTION: 'Universal Instantiation',
+  FOO: 'Foo' // for testing/coverage purposes
 };
 
 interface CitedLinesCount {
@@ -44,16 +48,20 @@ export const CITED_LINES_COUNT = <CitedLinesCount>{
   [DEDUCTION_RULES.DISTRIBUTION]: 1,
   [DEDUCTION_RULES.DOUBLE_NEGATION]: 1,
   [DEDUCTION_RULES.EXPORTATION]: 1,
+  [DEDUCTION_RULES.EXISTENTIAL_GENERALIZATION]: 1,
   [DEDUCTION_RULES.HYPOTHETICAL_SYLLOGISM]: 2,
   [DEDUCTION_RULES.INDIRECT_PROOF]: 2,
   [DEDUCTION_RULES.MATERIAL_EQUIVALENCE]: 1,
   [DEDUCTION_RULES.MATERIAL_IMPLICATION]: 1,
   [DEDUCTION_RULES.MODUS_PONENS]: 2,
   [DEDUCTION_RULES.MODUS_TOLLENS]: 2,
+  [DEDUCTION_RULES.QUANTIFIER_NEGATION]: 1,
   [DEDUCTION_RULES.PREMISE]: 0,
   [DEDUCTION_RULES.SIMPLIFICATION]: 1,
   [DEDUCTION_RULES.TAUTOLOGY]: 1,
-  [DEDUCTION_RULES.TRANSPOSITION]: 1
+  [DEDUCTION_RULES.TRANSPOSITION]: 1,
+  [DEDUCTION_RULES.UNIVERSAL_INSTANTION]: 1,
+  [DEDUCTION_RULES.FOO]: 0 // for testing/coverage purposes
 };
 
 interface REInterface {
@@ -67,7 +75,11 @@ export type Operator = '~' | '&' | 'V' | '->' | '<->';
  */
 export const RE = <REInterface>{
   // Any lowercase alphabetic letter is an atomic variable.
+  // TODO differentiate between propositional variables and names.
   atomicVariable: /^([a-z])$/,
+  atomicPLStatement: /^[B-DF-Z]\((\s*[a-z]\s*,\s*|\s*[a-z]\s*)+\)$/, // NOTE: No spaces allowed..
+  // TODO: Change for-all to 'A'.
+  // atomicPLStatement: /^[A-DF-UW-Z]\(\s*([a-z]\s*,?)+\s*\)$/, // NOTE: No spaces allowed..
   // Operators are ~, V, &, ->, and <->.
   binaryOperator: /^(V|&|->|<->)/,
   operator: /^(~|V|&|->|<->)/,

@@ -56,7 +56,7 @@ export const checkRuleRecursively = (
 
   // If left operands match, recurse to the rights
   if (
-    target.operands[0].isEqual(source.operands[0]) &&
+    target.operands[0]?.isEqual(source.operands[0]) &&
     target.operator === source.operator
   ) {
     if (checkRuleRecursively(rule)(target.operands[1], source.operands[1])) {
@@ -66,7 +66,7 @@ export const checkRuleRecursively = (
 
   // If right operands match, recurse to the left
   if (
-    target.operands[1].isEqual(source.operands[1]) &&
+    target.operands[1]?.isEqual(source.operands[1]) &&
     target.operator === source.operator
   ) {
     if (checkRuleRecursively(rule)(target.operands[0], source.operands[0])) {
@@ -108,20 +108,23 @@ export const DEDUCTION_FUNCTIONS = <DeductionRulesDictInterface>{
   [DEDUCTION_RULES.CONSTRUCTIVE_DILEMMA]: DF.constructiveDilemma,
   [DEDUCTION_RULES.DEMORGANS]: DF.deMorgans,
   [DEDUCTION_RULES.DISJUNCTIVE_SYLLOGISM]: DF.disjunctiveSyllogism,
-  // This assumes a structure like `p & (q V r)` instead of `(q V r) & p`
+  // This assumes a structure like `p & (q | r)` instead of `(q | r) & p`
   // If we wanted to allow the latter, we could define a more permissive
   // version of this that tries to commute the arguments as well
   [DEDUCTION_RULES.DISTRIBUTION]: DF.distribution,
   [DEDUCTION_RULES.DOUBLE_NEGATION]: DF.doubleNegation,
   [DEDUCTION_RULES.EXPORTATION]: DF.exportation,
+  [DEDUCTION_RULES.EXISTENTIAL_GENERALIZATION]: DF.existentialGeneralization,
   [DEDUCTION_RULES.HYPOTHETICAL_SYLLOGISM]: DF.hypotheticalSyllogism,
   [DEDUCTION_RULES.INDIRECT_PROOF]: DF.indirectProof,
   [DEDUCTION_RULES.MATERIAL_EQUIVALENCE]: DF.materialEquivalence,
   [DEDUCTION_RULES.MATERIAL_IMPLICATION]: DF.materialImplication,
   [DEDUCTION_RULES.MODUS_PONENS]: DF.modusPonens,
   [DEDUCTION_RULES.MODUS_TOLLENS]: DF.modusTollens,
+  [DEDUCTION_RULES.QUANTIFIER_NEGATION]: DF.quantifierNegation,
   [DEDUCTION_RULES.PREMISE]: () => true,
   [DEDUCTION_RULES.SIMPLIFICATION]: DF.simplification,
   [DEDUCTION_RULES.TRANSPOSITION]: DF.transposition,
-  [DEDUCTION_RULES.TAUTOLOGY]: DF.tautology
+  [DEDUCTION_RULES.TAUTOLOGY]: DF.tautology,
+  [DEDUCTION_RULES.UNIVERSAL_INSTANTION]: DF.universalInstantiation
 };
