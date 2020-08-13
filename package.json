@@ -1,6 +1,6 @@
 {
   "name": "logically",
-  "version": "0.1.24",
+  "version": "0.2.0",
   "description": "Library for representing and evaluating symbolic logic formulas.",
   "main": "dist/src/index.js",
   "types": "dist/index.d.ts",
