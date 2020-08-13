@@ -27,8 +27,7 @@ export const DEDUCTION_RULES = <DeductionRulesInterface>{
   SIMPLIFICATION: 'Simplification',
   TAUTOLOGY: 'Tautology',
   TRANSPOSITION: 'Transposition',
-  UNIVERSAL_INSTANTION: 'Universal Instantiation',
-  FOO: 'Foo' // for testing/coverage purposes
+  UNIVERSAL_INSTANTION: 'Universal Instantiation'
 };
 
 interface CitedLinesCount {
@@ -60,8 +59,7 @@ export const CITED_LINES_COUNT = <CitedLinesCount>{
   [DEDUCTION_RULES.SIMPLIFICATION]: 1,
   [DEDUCTION_RULES.TAUTOLOGY]: 1,
   [DEDUCTION_RULES.TRANSPOSITION]: 1,
-  [DEDUCTION_RULES.UNIVERSAL_INSTANTION]: 1,
-  [DEDUCTION_RULES.FOO]: 0 // for testing/coverage purposes
+  [DEDUCTION_RULES.UNIVERSAL_INSTANTION]: 1
 };
 
 interface REInterface {
